@@ -1,3 +1,7 @@
+wss://stream.binance.com:9443
+
+wss://stream.binance.com:9443/ws/btcusdt@trade
+
 ## Binance Part 1 - Websockets and Real-Time LightWeight Charts
 
 * What is binance and how does it compare to other exchanges?
