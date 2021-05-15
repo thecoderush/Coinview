@@ -1,6 +1,7 @@
 wss://stream.binance.com:9443
 
 wss://stream.binance.com:9443/ws/btcusdt@trade
+wss://stream.binance.com:9443/ws/btcusdt@kline_5m
 
 ## Binance Part 1 - Websockets and Real-Time LightWeight Charts
 

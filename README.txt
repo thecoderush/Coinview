@@ -288,7 +288,7 @@ So it looks like a Bitcoin at that time was (trading at eight thousand one hundr
 
         "50403.47000000" (usd)
 
-and then we have some other some other data here, so if you look at the documentation you can see, you have an event type.
+and then we have some other some other data here, so if you look at the documentation you can see, you have an event type, it's a trade ...
 
         Payload:
 
@@ -306,144 +306,74 @@ and then we have some other some other data here, so if you look at the document
                   "M": true         // Ignore
                 }
 
+you have your timestamp which is your trade time, you have a buyer order ID, and seller order ID, and you have a price, quantity, and so forth.
 
- it's a trade you
+So that's how you get real-time data over WebSockets from Binance, right.
 
-have your timestamp which is your trade
+All right so usually I'm not as interested in getting every single trade, some people might have the strategy that uses every single trade for some reason but usually I'm interested in a candlestick, if you're a day trader, right, you might be interested in let's say the 15-minute time frame, or the hourly time frame, right, and if you're a swing trader maybe you're only interested in candlesticks for the day or the week or the month, right, because your time frame is a little bit longer.
 
-time you have a buyer order ID and
+So since we're doing a real-time stream right now, I'm going to do a time frame, let's just do five minutes to start, and see how that looks.
 
-seller order ID and you have a price
+So I'm gonna try this Candlestick Stream. 
 
-quantity and so forth so that's how you
+So it looks like you just pass a symbol ...
 
-get real-time data over WebSockets from
+        Kline/Candlestick chart intervals:
 
-finance right all right so usually I'm not
+            Stream Name: <symbol>@kline_<interval>
 
-as interested in getting every single
+instead of @trade, you give it Kline, I think, I usually don't use that term Kline, I usually just say Candlestick, so you give it a Kline and an interval, and I think kline is just 
+another name for candlestick charts, and so let's give it a five-minute interval.
 
-trade some people might have the
+So I'm gonna do that, all right, and I'll do that, and then I'll put this (@kline) and then underscore five M, right.
 
-strategy that uses every single trade
+        wss://stream.binance.com:9443/ws/btcusdt@kline_5m
 
-for some reason but usually I managed
+and I'm going to run this one more time, and so I'm going to do WS cat dash SC and then subscribe to that stream :
 
-interested in a candlestick if you're a
+        $ wscat -c wss://stream.binance.com:9443/ws/btcusdt@kline_5m
 
-day trader right you might be interested
+and see what happens right, and then look at that, so I'm getting some data, but it's coming
+in a little bit slower, and you'll see that I have a different format, right : 
 
-in let's say the 15-minute times time
 
-frame or the hourly time frame right and
+        < {"e":"kline","E":1621109661790,"s":"BTCUSDT","k":{"t":1621109400000,"T":1621109699999,        "s":"BTCUSDT","i":"5m","f":835570074,"L":835575605,"o":"48364.48000000","c":"48364.80000000",       "h":"48461.73000000","l":"48325.00000000","v":"200.92067000","n":5532,"x":false,"q":"9725079.   25195099","V":"106.52648500","Q":"5155591.37065720","B":"0"}}
+        < {"e":"kline","E":1621109663839,"s":"BTCUSDT","k":{"t":1621109400000,"T":1621109699999,        "s":"BTCUSDT","i":"5m","f":835570074,"L":835575628,"o":"48364.48000000","c":"48373.68000000",       "h":"48461.73000000","l":"48325.00000000","v":"201.77948200","n":5555,"x":false,"q":"9766621.   80940916","V":"106.56816100","Q":"5157607.19260893","B":"0"}}
+        < {"e":"kline","E":1621109665930,"s":"BTCUSDT","k":{"t":1621109400000,"T":1621109699999,        "s":"BTCUSDT","i":"5m","f":835570074,"L":835575653,"o":"48364.48000000","c":"48364.80000000",       "h":"48461.73000000","l":"48325.00000000","v":"203.08149100","n":5580,"x":false,"q":"9829601.   08583875","V":"106.59331200","Q":"5158823.61594524","B":"0"}}
+        < {"e":"kline","E":1621109668158,"s":"BTCUSDT","k":{"t":1621109400000,"T":1621109699999,        "s":"BTCUSDT","i":"5m","f":835570074,"L":835575673,"o":"48364.48000000","c":"48364.95000000",       "h":"48461.73000000","l":"48325.00000000","v":"203.48707500","n":5600,"x":false,"q":"9849217.   34691895","V":"106.92130900","Q":"5174687.22495024","B":"0"}}
 
-if you're a swing trader maybe you're
+So we have a timestamp, and you see we have more data coming in, but you'll notice this timestamp isn't changing and I think that's because I specified a five minute time frame, and so we're just seeing five minutes of data, and so if I take that timestamp for instance, we'll
+know what bar we're on, and so let's go back to Unix timestamp, right
 
-only interested in candlesticks for the
+Right, and so you see this is for 6:45 p.m. UTC, right and, so this isn't going to change for a while, it's not going to change until we change minute bars, and so this data is just going to keep coming in, and whenever we change to 650 for instance you'll see a new timestamp there and so I'm going to go ahead and copy this, and look at it here, and just so we can see the structure for the candlestick data, and how it's a little bit different so you see we have this extra dictionary or object, nested inside, and then we also have, let me put this in a new notepad just so we can prettify it a little bit, so I have this little prettify JSON thing, and let's see if, yep there we go :
 
-day or the week or the month right
+        {
+            "e":"kline",
+            "E":1621109668158,
+            "s":"BTCUSDT",
+            "k":{
+                "t":1621109400000,
+                "T":1621109699999,
+                "s":"BTCUSDT",
+                "i":"5m",
+                "f":835570074,
+                "L":835575673,
+                "o":"48364.48000000",
+                "c":"48364.95000000",       
+                "h":"48461.73000000",
+                "l":"48325.00000000",
+                "v":"203.48707500",
+                "n":5600,       
+                "x":false,
+                "q":"9849217.34691895",
+                "V":"106.92130900",
+                "Q":"5174687.22495024",
+                "B":"0"
+            }
+        }
 
-because your your time frame is a little
 
-bit longer so since we're doing a
-
-real-time stream right now I'm going to
-
-do a time frame let's just do five
-
-minutes to start and see how that looks
-
-so I'm gonna try this candlestick stream
-
-so it looks like you just pass a symbol
-
-instead of a trade you give it K line I
-
-think I usually don't use that term K
-
-line I usually just say Candlestick so
-
-you give it a Klein or K line and an
-
-interval and I think kayla is just
-
-another name for candlestick charts and
-
-so let's give it a five-minute interview
-
-in interval so I'm gonna do that all right
-
-and I'll do that and then I'll put this
-
-and then underscore five M right
-
-and I'm going to run this one more time
-
-and so I'm going to do WS cat SC and
-
-then subscribe to that stream and see
-
-what happens right and then look at that
-
-so I'm getting some data but it's coming
-
-in a little bit slower and you'll see
-
-that I have a different format right so
-
-we have a timestamp and you see we have
-
-more data coming in but you'll notice
-
-this timestamp isn't changing and I
-
-think that's because I specified a five
-
-minute time frame and so we're just
-
-seeing five minutes of data and so if I
-
-take that timestamp for instance we'll
-
-know what bar we're on and so let's go
-
-back to you next time stamp right right
-
-and so you see this is for 6:45 p.m. UTC
-
-right and so this isn't going to change
-
-for a while it's it's not going to
-
-change until we change minute bars and
-
-so this data is just going to keep
-
-coming in and whenever we change to 650
-
-for instance you'll see a new timestamp
-
-there and so I'm going to go ahead and
-
-copy this and look at it here and just
-
-so we can see the structure for the
-
-candlestick data and how it's a little
-
-bit different so you see we have this
-
-extra dictionary or object a nested
-
-inside and then we also have an let me
-
-let me put this in a new notepad just so
-
-we can prettify it a little bit so I
-
-have this little prettify JSON thing and
-
-let's see if yep there we go so for this
+ so for this
 
 you see we have our symbol for a Bitcoin
 
