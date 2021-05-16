@@ -1,9 +1,10 @@
 By
 Part Time Larry
 
-https://www.youtube.com/watch?v=rvhnz1yBHgQ
 
-Binance API Tutorial (Part 1) - Crypto Trading Bot Design - Jun 20, 2020
+############# Binance API Tutorial (Part 1) - Crypto Trading Bot Design - Jun 20, 2020 #############
+
+https://www.youtube.com/watch?v=rvhnz1yBHgQ
 
 Hey everyone and welcome back to another video, today I'm going to be discussing cryptocurrency. 
 
@@ -55,6 +56,9 @@ So the first thing I'm going to do is so you how to connect to Binance websocket
 And I'm also show you how to do it using Python. 
 I'm going to show you how to capture that data to a file, and then we're going to also visualize that data with a frontend using javascript. 
 And I going to be using this library calls 'lightweight-charts'.
+
+        https://www.tradingview.com/lightweight-charts/
+
 And 'tradingview' actually open sourced a charting library. 
 So it's very powerful, and it's very specific unlike other charting library out there for the web, this one is very specific to a financial data so you get a lot of that power of a site like Tradingview.
 So you can do things like building this candlesticks charts, there's custom themes, you can see, watermark the charts, and add more advanced features they have different price scales, and you can do this real-time data emulation. 
@@ -93,9 +97,11 @@ So thanks a lot for watching and stay tuned in the next video we're going to get
 
 
 
+
+##### Binance API Tutorial (Part 2) - Real-Time Crypto Price Data over Websockets- Jun 20, 2020 ####
+
 https://www.youtube.com/watch?v=d-2GoqQbagI&list=LL&index=344
 
-Binance API Tutorial (Part 2) - Real-Time Crypto Price Data over Websockets- Jun 20, 2020
 
 All right so I'm logged in to my Binance account and I have point zero zero one bitcoins worth about eight dollars and ninety three cents in US dollars.
 And I'm interested in figuring out you know how to make some trades how to analyze some data sets and figure out some kind of automated trading system.
@@ -110,6 +116,9 @@ You can use either a command line tool like WS (cat), you can use a JavaScript t
 So I'm in the Binance documentation, the official API Doc's here :
 
         https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md
+
+        Offcial docs for binance APIS and Streams
+        https://github.com/binance/binance-spot-api-docs 
 
 and this gives me the information that I need in order to connect to the Binance WebSockets. 
 
@@ -373,513 +382,172 @@ Right, and so you see this is for 6:45 p.m. UTC, right and, so this isn't going 
         }
 
 
- so for this
+So for this you see we have our symbol for a Bitcoin, right 
+and then we have our time stamp here, and so this is a 5-minute time interval, 
+and then we can see the ohlc data so for that particular candlestick we know the current open high low and close, so that candle opened at 48364 and 48 cents and it's not closed yet but I
+think it updates this closing time as we get more and more data you'll see this closing candlestick what's it actually closest we'll know the final closing value and then a high and low are going to be adjusted as we get more data so you'll see if I scroll down, right 
+I look here unless see what the current values are for that exact data right 
 
-you see we have our symbol for a Bitcoin
+So I'm going to paste another one of these in and then prettify that, and there we go, and let's
+just compare like what we're getting now versus a second ago so we're still on the same timestamp the same 5-minute candlestick and then the open should stay the same because it's still the same candlestick so we have the open of 8 9 6.6 right, so the opening price is the same but you'll see the high is still the same but you'll notice the low for that candlestick went from 89 6007 to 89 45 so we're updating the highs and lows as we go it still hasn't went above 80 nine eight eight thousand hundred sixty nine dollars and forty cents so the high that's still the high points and the closes is getting adjusted as we get more and more data 
 
-right and then we have our time stamp
+So eventually this candlestick is kind of close and then we'll have the final value for the open high and low and close for that particular five-minute candlestick 
 
-here and so this is a 5-minute time
+So that's all good now what so maybe I don't want to just stream this to my console maybe I want to capture this output to a file so I can save it for analysis later, and so what I can do here
+is rerun this command, and then I can pipe it with this pipe and then I'll do it to the tee  command which will output it to my console but also save it to a file
 
-interval and then we can see the ohlc
+        $ wscat -c wss://stream.binance.com:9443/ws/btcusdt@kline_5m | tee dataset.txt
 
-data so for that particular candlestick
+so I'm gonna save it to dataset dot txt, right, and so this will stream it and you'll notice it continues to output the information to the console but then whenever I end this command line program you'll see that we have a file called dataset dot text, that where we've captured all these all of this candlestick data to a file that way if we want to use a program later to analyze this data set we can do so, and so a lot of people have been asking me 'do you know where I can get historical option data or historical future data or any historical data sets?'
+and a lot of companies charge a lot of money for all this historical data but if you can use your own tools, and just capture them day by day you know maybe snapshot your own historical data set, and just build that up over time I'll leave something like this running for days or
+whatever time frame you're interested in and you know capture and save your own data to a file, you know it's not that, it's not that complicated.
 
-we know the current open high low and
+So now that that's done you can see we've rolled over to a new five minute candlestick so I wanted to show that and so you can see this timestamp it's updated right, and so if I type this
+timestamp in, and that includes the milliseconds so what I've been doing is taking off those last three digits and I'll show you it's rolled over to the 50 minute mark there and we've rolled over to a new candlestick and now when I stop this program, control c, I look and I have this dataset dot text, and so now if I look in my directory, there's this dataset.txt with tons of data and we can use it later so we could capture as much of the state as we want, and then
+process it later if we want to, if we don't want to deal with it in real time at the moment.
 
-close so that candle opened at 89 68 and
+All right, now that I've shown you how to connect to a WebSocket from the command line you might be wondering how you can connect to it from your favorite programming language, so the first one I'm going to use is JavaScript, so we can include this WebSocket data and stream it on to the web and create some charts from it
 
-60 cents and it's not closed yet but I
+So let's create, so I have this directory called coinview, which I'm using for this project, and I'll publish the source code later, so if you see I'm in this coinview directory here and I also have Visual Studio code open and I just open the coinview directory, which is pretty empty, it has my readme about what we're going to do, and it has this dataset that I just saved, so let's just create an index.html, just to start super basic right, and so I can do HTML right and I'll do a coinview is what I'll call this app, because it's like kind of a tradingview for crypto, and it's just a little small lightweight UI, right
 
-think it updates this closing time as we
+So we have a head and, right, I need a title, now you don't need one but I'm just going to do it since it's quick, right, and I'm gonna do a body right and I'll just say hello, and let's just open this file in our browser to make sure we're good, so, I'll do that, and so, let's go to projects 
+we got coinview, and we have an index.html, and it's just a 'hello' website, right, and so now what we want to do is connect a WebSocket, so I'm going to open the JavaScript console, I'm using Chrome, and let's see how we use WebSockets from JavaScript, it's actually very easy so writing 
+websocket applications, right 
 
-get more and more data you'll see this
+        https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications  
 
-closing candlestick what's it actually
+So JavaScript has this WebSocket object that's built in and you can instantiate it and connect to a WebSocket :
 
-closest we'll know the final closing
+        webSocket = new WebSocket(url, protocols);
+   
+So let's try this example right, so open that index.html and then in my head here let's just do, actually I'll do it at the bottom, at the end of the body, it's a process right, and I'll do a script tag, let's do an example socket, and I am going to take the web socket address that I copied
+earlier, for the kline, or the trade data, right
 
-value and then a high and low are going
 
-to be adjusted as we get more data so
+All right, so I get that and I copy it, and instead of this address I'm going to use binance, and I don't need this second parameter : 
 
-you'll see if I scroll down right I look
+        <script>
+            // Create WebSocket connection.
+            var exampleSocket = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@trade');
+            console.log(exampleSocket); 
+        </script>
 
-here unless
+it's just something optional, and let's see if we can log that, and see if this runs, right, 
 
-see what the current values are for that
+So I'm going to reload the page and you see I logged this to the console, and it looks like we have some kind of WebSocket, we have an object here,and so yeah what's happening I don't know yet
 
-exact data right so I'm going to paste
+So we we have this WebSocket connection, right, so what do we do next?
+We need to actually receive the messages from the WebSocket, so let's go back to the mozilla documentation for instance, and you can send data to the server or you can receive messages from the server, and, so you need to do is define an on-message function, and so that function just says what do you want to do when you receive a message
 
-another one of these in and then
+So I'm going to rename this I'm gonna call it binanceSocket and I'll say, when I receive a message, so binanceSocket.onmessage we want to execute this function right :
 
-prettify that and there we go and let's
+        <script>
+            // Create WebSocket connection.
+            var binanceSocket = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@trade');
+            console.log(binanceSocket); 
 
-just compare like what we're getting now
+            binanceSocket.onmessage = function (event) {
+                console.log(event.data)
+            }
+        </script>
 
-versus a second ago so we're still on
+so I'm going to execute that function and log it to the console, so let's see what our data looks like 
+So i refresh it, now exampleSocket is not defined because I'm not using that anymore, I renamed it, all right, so I refreshed it and now look at that, we have a web page already that's using Javascript to connect to a Binance WebSocket, and we're streaming trades from Binance to the web
 
-the same timestamp the same 5-minute
+Awesome! that was really quick, we started from scratch from an empty file, right, so let's pretend we don't want those in the console, we could actually make a div here, and then we could do, we
+could call this, trades div ID equals trades 
 
-candlestick and then the open should
+        <div id="trades"></div>
 
-stay the same because it's still the
+and let's just start that empty, and then instead of 'hello' let's just type H little heading here h2 we'll just type it 'Trades' and then instead of just console outing it we can do, here we can
+do a div we can do a document dot getElementById, and then we'll do 'trades'
 
-same candlestick so we have the open of
+        <body>
+            <h1>Trades</h1>
+    
+            <div id="charts"></div>
 
-8 9 6.6 right so the opening price is
+            <script>
+                // Create WebSocket connection.
+                var binanceSocket = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@trade');
 
-the same but you'll see the high is
+                var tradeDiv = document.getElementById('trades')
+       
+                binanceSocket.onmessage = function (event) {
+                    console.log(event.data)
 
-still the same but you'll notice the low
+        
 
-for that candlestick went from 89 6007
+                }
+            </script>
+        </body>
 
-to 89 45 so we're updating the highs and
+and then so we'll create a variable called 'tradeDiv', and then that's going to be equal to this particular element on the page, we're going to get a reference to it
+So now in our on message event we're going to process this 'event.data' so we have this, this is actually a JSON string but we want to access it as an object that way we can pull out individual attributes like the price and the timestamp, 
 
-lows as we go it still hasn't went above
+So what I'll do is, I'll create a new variable and I'm going to call it 'messageObject' and I'm going to set it equal to JSON.parse (event.data) 
 
-80 nine eight eight thousand hundred
+                binanceSocket.onmessage = function (event) {
+                    console.log(event.data)
 
-sixty nine dollars and forty cents so
+                    var messageObject = JSON.parse(event.data)
+                
+                }
 
-the high that's still the high points
+and then we'll be able to access this like an object, and we'll be able to type things like messageObject dot P for instance, to access this price attribute, right 
 
-and the clothes is getting adjusted as
 
-we get more and more data so eventually
+                binanceSocket.onmessage = function (event) {
+                    console.log(event.data)
 
-this candlestick is going to close and
+                    var messageObject = JSON.parse(event.data)
+                    messageObject.p
+                }
 
-then we'll have the final value for the
+So now what we'll do is take this trade div and then we'll just append messageObject dot P, right 
 
-open high low and close for that
+        <body>
+            <h1>Trades</h1>
+    
+            <div id="charts"></div>
 
-particular five-minute candlestick so
+            <script>
+                // Create WebSocket connection.
+                var binanceSocket = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@trade');
 
-that's all good now what so maybe I
+                var tradeDiv = document.getElementById('trades')
+       
+                binanceSocket.onmessage = function (event) {
+                    console.log(event.data)
 
-don't want to just stream this to my
+                    var messageObject = JSON.parse(event.data)
+                    //messageObject.p
+                    
+                    tradeDiv.append(messageObject.p)
+                }
+            </script>
+        </body>
 
-console maybe I want to capture this
+and it should just append it to the div, so I'll reload the page and look at that
+I have real-time price data, and it's just getting appended to the web page over and over again which is great!
 
-output to a file so I can save it for
+So we already have at the start of a UI, we have a way to connect from WebSockets using javascript and a way to append those to a web page 
 
-analysis later and so what I can do here
+So I think this video has gone on, quite a bit, so we've learned how to connect to Binance WebSocket data from the command-line, and also connected to it from the web and show show it, and
+we're able to show that price data on a web page now
 
-is rerun this command and then I can
+So I think I'll do a quick break here, and take a break, I'm gonna go outside, bike around, walk around, and then when we come back, I'll actually hook up this real time price data to this lightweight charts 
 
-pipe it with this pipe and then I'll do
+        https://www.tradingview.com/lightweight-charts/
 
-it to the T command which will output it
+and we're going to try to do this a real-time WebSocket candlestick chart here using Binance data So stay tuned for the next video and thanks for watching!
 
-to my console but also save it to a file
 
-so I'm gonna save it to dataset dot txt
 
-right and so this will stream it and
 
-you'll notice it continues to output the
 
-information to the console but then
+########### Binance API Tutorial (Part 3) - Candelstick Chart UI with Lightweight Charts ###########
 
-whenever I end this command line program
-
-you'll see that we have a file called
-
-dataset text that where we've captured
-
-all these all of this candlestick data
-
-to a file that way if we want to use a
-
-program later to analyze this data set
-
-we can do so and so a lot of people have
-
-been asking me do you know where I can
-
-get historical option data or historical
-
-future data or any historical data sets
-
-and a lot of companies charge a lot of
-
-money for all this historical data but
-
-if you can use your own tools and just
-
-capture them day by day
-
-you know maybe snapshot your own
-
-historical data set and just build that
-
-up over time
-
-I'll leave something like this running
-
-for days or
-
-or whatever time frame you're interested
-
-in and you know capture and save your
-
-own data to a file you know it's not
-
-that it's not that complicated so now
-
-that that's done you can see we've
-
-rolled over to a new five minute
-
-candlestick so I wanted to show that and
-
-so you can see this timestamp it's
-
-updated right and so if I type this
-
-timestamp in and that includes the
-
-milliseconds so what I've been doing is
-
-taking off those last three digits and
-
-I'll show you it's rolled over to the 50
-
-minute mark there and we've rolled over
-
-to a new candlestick and now when I stop
-
-this program control see I look and I
-
-have this data set dot text and so now
-
-if I look in my directory there's this
-
-data set text with tons of data and we
-
-can use it later so we could capture as
-
-much of the state as we want and then
-
-process it later if we want to if we
-
-don't want to deal with it in real time
-
-at the moment all right now that I've
-
-shown you how to connect to a WebSocket
-
-from the command line you might be
-
-wondering how you can connect to it from
-
-your favorite programming language so
-
-the first one I'm going to use is
-
-JavaScript so we can include this
-
-WebSocket data and stream it on to the
-
-web and create some charts from it so
-
-let's create so I have this directory
-
-called coin view which I'm using for
-
-this project and I'll publish the source
-
-code later so if you see I'm in this
-
-coin view directory here and I also have
-
-Visual Studio code open and I just open
-
-the coin view directory which is pretty
-
-empty it has my readme about what we're
-
-going to do and it has this data set
-
-that I just saved so let's just create
-
-an index.html just to start super basic
-
-right and so I can do HTML right and
-
-I'll do a coin view is what I'll call
-
-this app because it's like kind of a
-
-trading view for crypto and it's just a
-
-little small lightweight UI right so we
-
-have a head and right I need a title now
-
-you don't need one but I'm just going to
-
-do it since it's quick right and I'm
-
-gonna do a body right and I'll just say
-
-hello and let's just open this file in
-
-our browser to make sure we're good so
-
-I'll do that and so let's go to projects
-
-we got coin view and we have an
-
-index.html and it's just a whole website
-
-right and so now what we want to do is
-
-connect a WebSocket so I'm going to open
-
-the JavaScript console
-
-I'm using Chrome and let's see how we
-
-use WebSockets from JavaScript it's
-
-actually very easy so writing web
-
-shopping socket applications right so
-
-JavaScript has this WebSocket object
-
-that's built in and you can instantiate
-
-it and connect to a WebSocket
-
-so let's try this example right so open
-
-that and then in my head here let's just
-
-do actually I'll do it at the bottom at
-
-the end of the body it's a process right
-
-and I'll do a script tag let's do an
-
-example socket and I am going to take
-
-the web socket address that I copied
-
-earlier for the e key line or the trade
-
-data right all right so I get that and I
-
-copy it and instead of this address I'm
-
-going to use by Nance and I don't need
-
-this second parameter
-
-it's just something optional and let's
-
-see if we can log that and see if this
-
-runs right so I'm going to reload the
-
-page and you see I logged this to the
-
-console and it looks like we have some
-
-kind of WebSocket we have an object here
-
-and so yeah what's happening I don't
-
-know yet so we we have this WebSocket
-
-connection right so what do we do next
-
-we need to actually receive the messages
-
-from the WebSocket so let's go back to
-
-the mozilla documentation for instance
-
-and you can send data to the server or
-
-you can receive messages from the server
-
-and so you need to do is define an
-
-on-message function and so that function
-
-just says what do you want to do when
-
-you receive a message so I'm going to
-
-rename this I'm gonna call it Finance
-
-socket and I'll say when I receive a
-
-message so buying a socket on message we
-
-want to execute this function right so
-
-I'm going to execute that function and
-
-log it to the console so let's see what
-
-our data looks like so i refresh it now
-
-example sockets not defined because I'm
-
-not using that anymore I renamed it all
-
-right so I refreshed it and now look at
-
-that we have a web page already that's
-
-using Java
-
-to connect to a finance WebSocket and
-
-we're streaming trades from finance to
-
-the web awesome that was really quick we
-
-started from scratch from an empty file
-
-right so let's pretend we don't want
-
-those in the console we could actually
-
-make a div here and then we could do we
-
-could call this trades div ID equals
-
-trades and let's just start that empty
-
-and then setup hello let's just type
-
-each little heading here h2 we'll just
-
-type it traits and then instead of just
-
-console outing it we can do here we can
-
-do a div we can do a document dot get
-
-element by ID and then we'll do traits
-
-and then so we'll create a variable
-
-called trade div and then that's going
-
-to be equal to this particular element
-
-on the page we're going to get a
-
-reference to it so now in our on message
-
-event we're going to process this event
-
-data so we have this this is actually a
-
-JSON string but we want to access it as
-
-an object that way we can pull out
-
-individual attributes like the price and
-
-the timestamp so what I'll do is I'll
-
-create a new variable and I'm going to
-
-call it message object and I'm going to
-
-set it equal to json.parse event data
-
-and then we'll be able to access this
-
-like an object and we'll be able to type
-
-things like message object dot P for
-
-instance to access this price attribute
-
-right so now what we'll do is take this
-
-trade div and then we'll just append
-
-message object dot message object dot P
-
-right and it should just append it to
-
-the div so I'll reload the page and look
-
-at that
-
-I have real-time price data and it's
-
-just getting appended to the web page
-
-over and over again which which is great
-
-so we already have at the start of a UI
-
-we have a way to connect from WebSockets
-
-using javascript and a way to append
-
-those to a web page so I think this
-
-video has gone on quite a bit so we've
-
-learned how to connect to finance
-
-WebSocket data from
-
-the command-line and also connected to
-
-it from the web and show show it and
-
-we're able to show that price data on a
-
-web page now so I think I'll do a quick
-
-break here and take a break I'm gonna go
-
-outside a bike around walk around and
-
-then when we come back I'll actually
-
-hook up this real time price data to
-
-this lightweight charts and we're going
-
-to try to do this a real-time WebSocket
-
-candlestick chart here using finance
-
-data so stay tuned for the next video
-
-and thanks for watching
-
-
-
-
-
-
-
-
-wss://stream.binance.com:9443/ws/btcusdt@trade
-
-https://www.unixtimestamp.com/
-
-Offcial docs for binance APIS and Streams
-https://github.com/binance/binance-spot-api-docs 
-
-
-
-Binance API Tutorial (Part 3) - Candelstick Chart UI with Lightweight Charts
 
 TradingView library Lightweight-Charts
 https://www.tradingview.com/lightweight-charts/
