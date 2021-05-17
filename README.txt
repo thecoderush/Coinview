@@ -2,7 +2,7 @@ By
 Part Time Larry
 
 
-############# Binance API Tutorial (Part 1) - Crypto Trading Bot Design - Jun 20, 2020 #############
+Binance API Tutorial (Part 1) - Crypto Trading Bot Design - Jun 20, 2020 
 
 https://www.youtube.com/watch?v=rvhnz1yBHgQ
 
@@ -98,7 +98,7 @@ So thanks a lot for watching and stay tuned in the next video we're going to get
 
 
 
-##### Binance API Tutorial (Part 2) - Real-Time Crypto Price Data over Websockets- Jun 20, 2020 ####
+Binance API Tutorial (Part 2) - Real-Time Crypto Price Data over Websockets- Jun 20, 2020 
 
 https://www.youtube.com/watch?v=d-2GoqQbagI&list=LL&index=344
 
@@ -544,13 +544,394 @@ and we're going to try to do this a real-time WebSocket candlestick chart here u
 
 
 
+Binance API Tutorial (Part 3) - Candelstick Chart UI with Lightweight Charts 
+
+https://www.youtube.com/watch?v=6PnCr14chcY
+
+all right that was great so now that i'm back inside, i wanted to continue where we left off,
+if you'll remember last time i mentioned that we're going to try to use this lightweight charts library to add a candlestick chart to our u, and just start sketching out the ui a little bit, uh i'm just going to start very simple in this video and then we'll add on to it over time, i don't want to spend too much time on ui yet, but i want to figure out how to add this chart library to our web page.
+
+So you remember last time we had a file here, an index.html and all we're doing is uh connecting to websockets, and we're streaming out this price data, and then we're displaying and appending the bitcoin prices to our webpage 
+
+So in addition to that, let's see if we can go ahead and include some type of chart here
+So i am going to stop this stream for a bit, so i'm going to comment this out for a minute,
+all this websocket stuff, and let's just focus on the charting aspect 
+
+So what we'll do here is i'm going to include a new javascript at the end here, and i'm going to say source equals chart.js
+
+        <script src="chart.js"></script>
+
+and we're going to create a new file called chart dot js, just so because i know we're gonna have a lot of javascript i want to include it in a separate file
+
+so i'll do a new file and i'll call it chart.js, right, and here we'll just put all of our 
+javascript for lightweight charts, and we're gonna include it at the bottom of the page 
+
+all right so i'm going to look at lightweight charts here, and see how we get the library, and learn more
+
+        https://www.tradingview.com/lightweight-charts/
+
+so it links to a github page right 
+
+        https://github.com/tradingview/lightweight-charts
+
+it looks like you can install it as a node package to access these imports, or there's a CDN which is 'content distribution network' and so you can just include this URL straight up,
+
+        https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js
+
+so just to make it simple for everyone, i'm going to use use it in this fashion
+so what you can do is add a script tag, so script in your head, you just do script source equals and then just include that script :
+
+        <head>
+            <title>Coinview</title>
+            <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+        </head>
+
+and then you'll have lightweight charts included and it's just hosted on another uh on another host it's already hosted here, and ready to go, right, and then we have this chart.js here which where we'll put our javascript that's custom, and you'll see uh they provided an example here, of
+how to initialize this chart :
+
+        const chart = LightweightCharts.createChart(document.body, { width: 400, height: 300 });
+        const lineSeries = chart.addLineSeries();
+        lineSeries.setData([
+            { time: '2019-04-11', value: 80.01 },
+            { time: '2019-04-12', value: 96.63 },
+            { time: '2019-04-13', value: 76.64 },
+            { time: '2019-04-14', value: 81.89 },
+            { time: '2019-04-15', value: 74.43 },
+            { time: '2019-04-16', value: 80.01 },
+            { time: '2019-04-17', value: 96.63 },
+            { time: '2019-04-18', value: 76.64 },
+            { time: '2019-04-19', value: 81.89 },
+            { time: '2019-04-20', value: 74.43 },
+        ]);
+
+so i'm going to take that, let's see, yeah let's take that, and let's just put it in our chart.js so i'm going to paste that in there, and so we have chart equals, so it looks like you create a new
+chart, and you give it a width and a height, and you choose where it's added on the page
+
+so it's using document.body here, uh which will erase our other stuff in the body,
+so what i want to do is create a new div just for the chart and i'll call it id equals chart 
+
+        <div id="charts"></div>
+
+and let's see if i can just say instead of document.body i'm going to do document.getelementbyid 'chart'
+and i'll just pass it the id of our 'chart' element
+
+        const chart = LightweightCharts.createChart(document.getElementById('chart'), { width: 400, height: 300 });
+
+and then yeah let's just add this default line series that they include out of the box
+and then later we'll replace this data with our data from binance 
+
+so let's just see if this renders and see if we have any errors
+all right so i'm gonna refresh that, and look at that, we already have this line chart here with some data it doesn't look exactly like we want it to look yet, but very promising we've already included the
+charting library 'lightweight charts', it's already on our web page and it's already displaying some price data which is great, that's a great great start 
+
+so let's see if we can change this up a little bit
+um see if we can add it as a candlestick chart, so let's look at our examples here, and let's see what a candlestick chart looks like 
+
+so i'm going to click their examples for candlestick chart 
+
+        https://www.tradingview.com/lightweight-charts/
+        
+        Candlestick chart       </> 
+
+and it'll look a little bit different, and it looks like you can do, yeah so i'm going to copy this :
+
+        https://jsfiddle.net/TradingView/eaod9Lq8/
+
+        var chart = LightweightCharts.createChart(document.body, {
+	    width: 600,
+            height: 300,
+	    layout: {
+		backgroundColor: '#000000',
+		textColor: 'rgba(255, 255, 255, 0.9)',
+	    },
+	    grid: {
+		vertLines: {
+			color: 'rgba(197, 203, 206, 0.5)',
+	        },
+		horzLines: {
+			color: 'rgba(197, 203, 206, 0.5)',
+		},
+	     },
+	    crosshair: {
+		mode: LightweightCharts.CrosshairMode.Normal,
+	    },
+	    rightPriceScale: {
+		borderColor: 'rgba(197, 203, 206, 0.8)',
+	    },
+	    timeScale: {
+		borderColor: 'rgba(197, 203, 206, 0.8)',
+	    },
+        });
+
+        var candleSeries = chart.addCandlestickSeries({
+            upColor: 'rgba(255, 144, 0, 1)',
+            downColor: '#000',
+            borderDownColor: 'rgba(255, 144, 0, 1)',
+            borderUpColor: 'rgba(255, 144, 0, 1)',
+            wickDownColor: 'rgba(255, 144, 0, 1)',
+            wickUpColor: 'rgba(255, 144, 0, 1)',
+        });
+
+        candleSeries.setData([
+	    { time: '2018-10-19', open: 180.34, high: 180.99, low: 178.57, close: 179.85 },
+	    { time: '2018-10-22', open: 180.82, high: 181.40, low: 177.56, close: 178.75 },
+	    { time: '2018-10-23', open: 175.77, high: 179.49, low: 175.44, close: 178.53 },
+	    { time: '2018-10-24', open: 178.58, high: 182.37, low: 176.31, close: 176.97 },
+	    { time: '2018-10-25', open: 177.52, high: 180.50, low: 176.83, close: 179.07 },
+	    { time: '2018-10-26', open: 176.88, high: 177.34, low: 170.91, close: 172.23 },
+	    { time: '2018-10-29', open: 173.74, high: 175.99, low: 170.95, close: 173.20 },
+	    { time: '2018-10-30', open: 173.16, high: 176.43, low: 172.64, close: 176.24 },
+	    { time: '2018-10-31', open: 177.98, high: 178.85, low: 175.59, close: 175.88 },
+	    { time: '2018-11-01', open: 176.84, high: 180.86, low: 175.90, close: 180.46 },
+	    { time: '2018-11-02', open: 182.47, high: 183.01, low: 177.39, close: 179.93 },
+	    { time: '2018-11-05', open: 181.02, high: 182.41, low: 179.30, close: 182.19 },
+	    { time: '2018-11-06', open: 181.93, high: 182.65, low: 180.05, close: 182.01 },
+	    { time: '2018-11-07', open: 183.79, high: 187.68, low: 182.06, close: 187.23 },
+	    { time: '2018-11-08', open: 187.13, high: 188.69, low: 185.72, close: 188.00 },
+	    { time: '2018-11-09', open: 188.32, high: 188.48, low: 184.96, close: 185.99 },
+	    { time: '2018-11-12', open: 185.23, high: 186.95, low: 179.02, close: 179.43 },
+	    { time: '2018-11-13', open: 177.30, high: 181.62, low: 172.85, close: 179.00 },
+	    { time: '2018-11-14', open: 182.61, high: 182.90, low: 179.15, close: 179.90 },
+	    { time: '2018-11-15', open: 179.01, high: 179.67, low: 173.61, close: 177.36 },
+	    { time: '2018-11-16', open: 173.99, high: 177.60, low: 173.51, close: 177.02 },
+	    { time: '2018-11-19', open: 176.71, high: 178.88, low: 172.30, close: 173.59 },
+	    { time: '2018-11-20', open: 169.25, high: 172.00, low: 167.00, close: 169.05 },
+	    { time: '2018-11-21', open: 170.00, high: 170.93, low: 169.15, close: 169.30 },
+	    { time: '2018-11-23', open: 169.39, high: 170.33, low: 168.47, close: 168.85 },
+	    { time: '2018-11-26', open: 170.20, high: 172.39, low: 168.87, close: 169.82 },
+	    { time: '2018-11-27', open: 169.11, high: 173.38, low: 168.82, close: 173.22 },
+	    { time: '2018-11-28', open: 172.91, high: 177.65, low: 170.62, close: 177.43 },
+	    { time: '2018-11-29', open: 176.80, high: 177.27, low: 174.92, close: 175.66 },
+	    { time: '2018-11-30', open: 175.75, high: 180.37, low: 175.11, close: 180.32 },
+	    { time: '2018-12-03', open: 183.29, high: 183.50, low: 179.35, close: 181.74 },
+	    { time: '2018-12-04', open: 181.06, high: 182.23, low: 174.55, close: 175.30 },
+	    { time: '2018-12-06', open: 173.50, high: 176.04, low: 170.46, close: 175.96 },
+	    { time: '2018-12-07', open: 175.35, high: 178.36, low: 172.24, close: 172.79 },
+	    { time: '2018-12-10', open: 173.39, high: 173.99, low: 167.73, close: 171.69 },
+	    { time: '2018-12-11', open: 174.30, high: 175.60, low: 171.24, close: 172.21 },
+	    { time: '2018-12-12', open: 173.75, high: 176.87, low: 172.81, close: 174.21 },
+	    { time: '2018-12-13', open: 174.31, high: 174.91, low: 172.07, close: 173.87 },
+	    { time: '2018-12-14', open: 172.98, high: 175.14, low: 171.95, close: 172.29 },
+	    { time: '2018-12-17', open: 171.51, high: 171.99, low: 166.93, close: 167.97 },
+	    { time: '2018-12-18', open: 168.90, high: 171.95, low: 168.50, close: 170.04 },
+	    { time: '2018-12-19', open: 170.92, high: 174.95, low: 166.77, close: 167.56 },
+	    { time: '2018-12-20', open: 166.28, high: 167.31, low: 162.23, close: 164.16 },
+	    { time: '2018-12-21', open: 162.81, high: 167.96, low: 160.17, close: 160.48 },
+	    { time: '2018-12-24', open: 160.16, high: 161.40, low: 158.09, close: 158.14 },
+	    { time: '2018-12-26', open: 159.46, high: 168.28, low: 159.44, close: 168.28 },
+	    { time: '2018-12-27', open: 166.44, high: 170.46, low: 163.36, close: 170.32 },
+	    { time: '2018-12-28', open: 171.22, high: 173.12, low: 168.60, close: 170.22 },
+	    { time: '2018-12-31', open: 171.47, high: 173.24, low: 170.65, close: 171.82 },
+	    { time: '2019-01-02', open: 169.71, high: 173.18, low: 169.05, close: 172.41 },
+	    { time: '2019-01-03', open: 171.84, high: 171.84, low: 168.21, close: 168.61 },
+	    { time: '2019-01-04', open: 170.18, high: 174.74, low: 169.52, close: 173.62 },
+	    { time: '2019-01-07', open: 173.83, high: 178.18, low: 173.83, close: 177.04 },
+	    { time: '2019-01-08', open: 178.57, high: 179.59, low: 175.61, close: 177.89 },
+	    { time: '2019-01-09', open: 177.87, high: 181.27, low: 177.10, close: 179.73 },
+	    { time: '2019-01-10', open: 178.03, high: 179.24, low: 176.34, close: 179.06 },
+	    { time: '2019-01-11', open: 177.93, high: 180.26, low: 177.12, close: 179.41 },
+	    { time: '2019-01-14', open: 177.59, high: 179.23, low: 176.90, close: 178.81 },
+	    { time: '2019-01-15', open: 176.08, high: 177.82, low: 175.20, close: 176.47 },
+	    { time: '2019-01-16', open: 177.09, high: 177.93, low: 175.86, close: 177.04 },
+	    { time: '2019-01-17', open: 174.01, high: 175.46, low: 172.00, close: 174.87 },
+	    { time: '2019-01-18', open: 176.98, high: 180.04, low: 176.18, close: 179.58 },
+	    { time: '2019-01-22', open: 177.49, high: 178.60, low: 175.36, close: 177.11 },
+	    { time: '2019-01-23', open: 176.59, high: 178.06, low: 174.53, close: 176.89 },
+	    { time: '2019-01-24', open: 177.00, high: 177.53, low: 175.30, close: 177.29 },
+	    { time: '2019-01-25', open: 179.78, high: 180.87, low: 178.61, close: 180.40 },
+	    { time: '2019-01-28', open: 178.97, high: 179.99, low: 177.41, close: 179.83 },
+	    { time: '2019-01-29', open: 178.96, high: 180.15, low: 178.09, close: 179.69 },
+	    { time: '2019-01-30', open: 180.47, high: 184.20, low: 179.78, close: 182.18 },
+	    { time: '2019-01-31', open: 181.50, high: 184.67, low: 181.06, close: 183.53 },
+	    { time: '2019-02-01', open: 184.03, high: 185.15, low: 182.83, close: 184.37 },
+	    { time: '2019-02-04', open: 184.30, high: 186.43, low: 183.84, close: 186.43 },
+	    { time: '2019-02-05', open: 186.89, high: 186.99, low: 184.69, close: 186.39 },
+	    { time: '2019-02-06', open: 186.69, high: 186.69, low: 184.06, close: 184.72 },
+	    { time: '2019-02-07', open: 183.74, high: 184.92, low: 182.45, close: 184.07 },
+	    { time: '2019-02-08', open: 183.05, high: 184.58, low: 182.72, close: 184.54 },
+	    { time: '2019-02-11', open: 185.00, high: 185.42, low: 182.75, close: 182.92 },
+	    { time: '2019-02-12', open: 183.84, high: 186.40, low: 183.52, close: 185.52 },
+	    { time: '2019-02-13', open: 186.30, high: 188.68, low: 185.92, close: 188.41 },
+	    { time: '2019-02-14', open: 187.50, high: 188.93, low: 186.00, close: 187.71 },
+	    { time: '2019-02-15', open: 189.87, high: 192.62, low: 189.05, close: 192.39 },
+	    { time: '2019-02-19', open: 191.71, high: 193.19, low: 191.28, close: 192.33 },
+	    { time: '2019-02-20', open: 192.39, high: 192.40, low: 191.11, close: 191.85 },
+	    { time: '2019-02-21', open: 191.85, high: 192.37, low: 190.61, close: 191.82 },
+	    { time: '2019-02-22', open: 191.69, high: 192.54, low: 191.62, close: 192.39 },
+	    { time: '2019-02-25', open: 192.75, high: 193.42, low: 189.96, close: 189.98 },
+	    { time: '2019-02-26', open: 185.59, high: 188.47, low: 182.80, close: 188.30 },
+	    { time: '2019-02-27', open: 187.90, high: 188.50, low: 183.21, close: 183.67 },
+	    { time: '2019-02-28', open: 183.60, high: 185.19, low: 183.11, close: 185.14 },
+	    { time: '2019-03-01', open: 185.82, high: 186.56, low: 182.86, close: 185.17 },
+	    { time: '2019-03-04', open: 186.20, high: 186.24, low: 182.10, close: 183.81 },
+	    { time: '2019-03-05', open: 184.24, high: 185.12, low: 183.25, close: 184.00 },
+	    { time: '2019-03-06', open: 184.53, high: 184.97, low: 183.84, close: 184.45 },
+	    { time: '2019-03-07', open: 184.39, high: 184.62, low: 181.58, close: 182.51 },
+	    { time: '2019-03-08', open: 181.49, high: 181.91, low: 179.52, close: 181.23 },
+	    { time: '2019-03-11', open: 182.00, high: 183.20, low: 181.20, close: 182.44 },
+	    { time: '2019-03-12', open: 183.43, high: 184.27, low: 182.33, close: 184.00 },
+	    { time: '2019-03-13', open: 183.24, high: 183.78, low: 181.08, close: 181.14 },
+	    { time: '2019-03-14', open: 181.28, high: 181.74, low: 180.50, close: 181.61 },
+	    { time: '2019-03-15', open: 182.30, high: 182.49, low: 179.57, close: 182.23 },
+	    { time: '2019-03-18', open: 182.53, high: 183.48, low: 182.33, close: 183.42 },
+	    { time: '2019-03-19', open: 184.19, high: 185.82, low: 183.48, close: 184.13 },
+	    { time: '2019-03-20', open: 184.30, high: 187.12, low: 183.43, close: 186.10 },
+	    { time: '2019-03-21', open: 185.50, high: 190.00, low: 185.50, close: 189.97 },
+	    { time: '2019-03-22', open: 189.31, high: 192.05, low: 188.67, close: 188.75 },
+	    { time: '2019-03-25', open: 188.75, high: 191.71, low: 188.51, close: 189.68 },
+	    { time: '2019-03-26', open: 190.69, high: 192.19, low: 188.74, close: 189.34 },
+	    { time: '2019-03-27', open: 189.65, high: 191.61, low: 188.39, close: 189.25 },
+	    { time: '2019-03-28', open: 189.91, high: 191.40, low: 189.16, close: 190.06 },
+	    { time: '2019-03-29', open: 190.85, high: 192.04, low: 190.14, close: 191.89 },
+	    { time: '2019-04-01', open: 192.99, high: 195.90, low: 192.85, close: 195.64 },
+	    { time: '2019-04-02', open: 195.50, high: 195.50, low: 194.01, close: 194.31 },
+	    { time: '2019-04-03', open: 194.98, high: 198.78, low: 194.11, close: 198.61 },
+	    { time: '2019-04-04', open: 199.00, high: 200.49, low: 198.02, close: 200.45 },
+	    { time: '2019-04-05', open: 200.86, high: 203.13, low: 200.61, close: 202.06 },
+	    { time: '2019-04-08', open: 201.37, high: 203.79, low: 201.24, close: 203.55 },
+	    { time: '2019-04-09', open: 202.26, high: 202.71, low: 200.46, close: 200.90 },
+	    { time: '2019-04-10', open: 201.26, high: 201.60, low: 198.02, close: 199.43 },
+	    { time: '2019-04-11', open: 199.90, high: 201.50, low: 199.03, close: 201.48 },
+	    { time: '2019-04-12', open: 202.13, high: 204.26, low: 202.13, close: 203.85 },
+	    { time: '2019-04-15', open: 204.16, high: 205.14, low: 203.40, close: 204.86 },
+	    { time: '2019-04-16', open: 205.25, high: 205.99, low: 204.29, close: 204.47 },
+	    { time: '2019-04-17', open: 205.34, high: 206.84, low: 205.32, close: 206.55 },
+	    { time: '2019-04-18', open: 206.02, high: 207.78, low: 205.10, close: 205.66 },
+	    { time: '2019-04-22', open: 204.11, high: 206.25, low: 204.00, close: 204.78 },
+	    { time: '2019-04-23', open: 205.14, high: 207.33, low: 203.43, close: 206.05 },
+	    { time: '2019-04-24', open: 206.16, high: 208.29, low: 205.54, close: 206.72 },
+	    { time: '2019-04-25', open: 206.01, high: 207.72, low: 205.06, close: 206.50 },
+	    { time: '2019-04-26', open: 205.88, high: 206.14, low: 203.34, close: 203.61 },
+	    { time: '2019-04-29', open: 203.31, high: 203.80, low: 200.34, close: 202.16 },
+	    { time: '2019-04-30', open: 201.55, high: 203.75, low: 200.79, close: 203.70 },
+	    { time: '2019-05-01', open: 203.20, high: 203.52, low: 198.66, close: 198.80 },
+	    { time: '2019-05-02', open: 199.30, high: 201.06, low: 198.80, close: 201.01 },
+	    { time: '2019-05-03', open: 202.00, high: 202.31, low: 200.32, close: 200.56 },
+	    { time: '2019-05-06', open: 198.74, high: 199.93, low: 198.31, close: 199.63 },
+	    { time: '2019-05-07', open: 196.75, high: 197.65, low: 192.96, close: 194.77 },
+	    { time: '2019-05-08', open: 194.49, high: 196.61, low: 193.68, close: 195.17 },
+	    { time: '2019-05-09', open: 193.31, high: 195.08, low: 191.59, close: 194.58 },
+	    { time: '2019-05-10', open: 193.21, high: 195.49, low: 190.01, close: 194.58 },
+	    { time: '2019-05-13', open: 191.00, high: 191.66, low: 189.14, close: 190.34 },
+	    { time: '2019-05-14', open: 190.50, high: 192.76, low: 190.01, close: 191.62 },
+	    { time: '2019-05-15', open: 190.81, high: 192.81, low: 190.27, close: 191.76 },
+	    { time: '2019-05-16', open: 192.47, high: 194.96, low: 192.20, close: 192.38 },
+	    { time: '2019-05-17', open: 190.86, high: 194.50, low: 190.75, close: 192.58 },
+	    { time: '2019-05-20', open: 191.13, high: 192.86, low: 190.61, close: 190.95 },
+	    { time: '2019-05-21', open: 187.13, high: 192.52, low: 186.34, close: 191.45 },
+	    { time: '2019-05-22', open: 190.49, high: 192.22, low: 188.05, close: 188.91 },
+	    { time: '2019-05-23', open: 188.45, high: 192.54, low: 186.27, close: 192.00 },
+	    { time: '2019-05-24', open: 192.54, high: 193.86, low: 190.41, close: 193.59 },
+        ]);
+
+i'm going to put it in a temporary file real quick just so i can study it
+so it looks like they do time open high low and close, and then also it has a lot of scale information, we should probably just take this one actually instead as our example
+
+so i'm gonna go back to chart.js and let's try this one, 
+
+createChart, and then we'll do document.getelementbyid again, and we'll use chart there, and let's just
+use the actual style that we're using right, and there you go, i refreshed it and now i have a zoomable candlestick chart, which is in our webpage, and then i can also refresh our page,
+
+and let's say i want to reconnect to this websocket and i also want to append price data to my trade div
+and i can get that going again and then what we're going to want to do is start interacting with our chart and we're going to append this price data to this candlestick series
+
+and we're going to gradually hook that up, um i'm not quite ready to do that, i don't really feel like doing that yet so, i'm going to comment this back out, and i'm not as much in the ui mode at the moment so i just want to get this started so that we can move on to the python portion
+
+okay next let's put in some placeholders on the ui to accept some user input,
+let's say the user wants to configure some indicators they're interested in uh on their custom, on this uh custom trading platform, right
+
+and so under the trades div let's do an id for 'settings' and this will be a place to store all of our settings right, and so i'll do an h3, and just say 'settings' right and then here let's just put some options the user can configure, and let's say this thing it's going to hold some indicators that the user is interested in
+
+so i'm going to say input type equals text and let's say label and let's say you know we have a simple RSI indicator right, so that's RSI um and we can let's just add another div there just to give it a little bit of room right, so we have an rsi setting right, and so let's see what the settings look like in trading view for instance and we can just uh make this kind of work similarly, so i'm going to go to markets on trading view, i'm going to go to bitcoin, and then let's click this guy and then let's look at the full featured chart
+
+so you see, i have this RSI indicator already up so i'm going to close it real quick, and then i'm going to add it back so i'm going to click f of x here
+or this, yeah indicators and strategies button, and then if i do relative strength index right
+that'll add it to my chart and you see we have this rsi oscillator on the chart and maybe we'll figure out how to add that to the chart visually 
+
+but i'm mainly interested in the settings they let you configure,  and so let's see so over here, i hover
+click little gear and it looks like they let you set a couple inputs you can do the length or the source
+
+so i'll just let it let's do the length, right, so i'll do name equals 'rsi length' and then id oops
+and then i'll give it an id to id equals 'rsi length' right, and that'll just be a setting and
+let's say we also need want a checkbox to say we're interested in using this indicator so
+
+i'll just do input type equals checkbox and i'm going to save a lot of the details for a bit
+for a little bit later i just want to sketch out the baseline for a ui right, so we got a checkbox here and i'm just going to put them all in one line
+
+so i'm just going to do rsi and then i'll put next to it the check box so i'll put check box then i'll put the rsi and then i'll put the text box right next to it like that and then let's just do it all
+in one line right
+
+so i'm interested in the rsi right and i can type like a 14 there, so i can do like a placeholder equals 14. right 
+
+so that'll be a setting for the period right, and i believe there should be an overbought oversold so they're using 30 and 70 so also make a little input for type equals text, and i'll call this id equals 'rsi oversold' and then i'll do name equals 'rsi oversold' and then i'll do placeholder equals 30 and that'll be like a threshold this below 30 is when it's oversold and then i'll also do input type equals
+text id equals 'rsi overbought' right and then placeholder equals 70. so let's say we just have this configurable rsi indicator component that's on our ui, the user can tweak whether or not they want to use it, what the period is and the overbought and oversold thresholds, right 
+
+and let's put a label there 'Oversold' and 'Overbought' and i will put i want to put 'Overbought' on top
+let's see that 
+
+all right cool so we have a few settings here and we have a chart, and so i'm feeling pretty good about that, so i'm not going to hook this all up yet, 
+what i want to do is start working on a backend for this, so i'm going to use python and do the same thing try to connect to the web sockets
+but also i'm going to explore the rest api for binance in the next video, download some historical data and actually use rsi and some other indicators from TAlib
+
+and then you hook that up into Backtrader to backtest those indicators against some historical data
+
+and then we're gonna tie that all together by hooking up this ui to the real data and to the binance api to place some trades 
+
+so i think that's it for this video so stay tuned for the next one and we're going to dive into some python
 
 
-########### Binance API Tutorial (Part 3) - Candelstick Chart UI with Lightweight Charts ###########
 
 
-TradingView library Lightweight-Charts
-https://www.tradingview.com/lightweight-charts/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 https://github.com/tradingview/lightweight-charts
 
