@@ -1,5 +1,6 @@
 import config, csv
-from binance.client import Client
+
+from binance.client import Client, ThreadedWebsocketManager, ThreadedDepthCacheManager
 
 client = Client(config.API_KEY, config.API_SECRET)
 

@@ -881,63 +881,484 @@ so i think that's it for this video so stay tuned for the next one and we're goi
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-https://github.com/tradingview/lightweight-charts
-
-
-
 Binance API Tutorial (Part  4) - Historical candlestick Data and the Python Binance Package
+
+https://www.youtube.com/watch?v=FmfTK5dFOZk&t=8s
+
+hey everyone welcome back to another video and happy Memorial Day 
+
+today we're going to continue the series on Binance by using the Python binance package, in order to retrieve current and historical candlestick data 
+Using the Python binance package, we're going to start by figuring out how to authenticate using our API key and API secret, and then we'll see if we can retrieve some current candlesticks
+So that we can use those to initialize our lightweight charts that we created in our last video
+
+and then we'll see about downloading some historical candlestick data that we can use to get maybe data for the past year, 
+so and run that through some technical analysis libraries, such as TAlib right and so we want to try running some of these TALib indicators against this data set,
+and also try to hook up this TALib to Backtrader and it's back tests those indicators against our historical data set 
+
+so let's get started before we jump too far ahead, let's just start with the basics
+so what I'm gonna do is, when you google user type by python binance right, that'll bring you to this Python package, and I'm going to go to this read the docs page here 
+
+        https://python-binance.readthedocs.io/en/latest/
+
+and this is just a Python package like any other, it's a wrapper for the binance API, and it makes it very easy for you to call the binance API using just basic Python functions and objects 
+
+so just like any other package we've covered in the channel, all you have to do is pip install the name of the package :
+
+        $ sudo apt install python3-pip
+
+        $ pip install python-binance
+
+so it's python - binance, pip install python-binance and you can see I've installed it already, and then the second thing you need to do is go to your dashboard, for binance, and what you can do is click
+settings here and there'll be a sub tab here that says API information or something along those lines actually I'll go ahead and click it and type API management ya and I can delete this key later so it's not that big of a deal so what you want to do yeah let's go ahead and create one and it looks like I can just show you I can just show you it 
+
+so Binance, and I just give it a name, I send myself an SMS text 
+
+all right so I got my API key and my API secret after I verified an SMS text message and I also had to do a verification via my email address in order to make sure the API key was going to me
+and so now that I have that API key, what I do is create a file in my directory called config dot py 
+
+        config.py
+
+here's a sample_config dot py just to show you and all you need to do is paste your API key and we're just going to create a variable called API key and API secret, and put our actual keys in there, and so I've already done that, I've placed it in a file called config dot py, and then what I'll be able to do is create a new script also called, let's just call it
+get_data 
+
+        get_data.py 
+
+and we're gonna just test out the Binance API, and make sure we can connect so let's go back to this Python Binance package, and I'm going to scroll down a bit, and so you see we've already installed Python binance and so it looks like the first step you need to take, is you got to import the package:
+
+        from binance import Client, ThreadedWebsocketManager, ThreadedDepthCacheManager
+        client = Client(api_key, api_secret)
+
+after its installed, so you have from binance import Client and then you just make a new instance of Client, a Client object, and let's see
+
+so it takes an API key an API secret, so what I want to do is import my config, very simple, and since my config has an API key and API secret,
+I will just plug that in, so config dot API key and config dot API secret,
+
+        client = Client(config.API_KEY, config.API_SECRET)
+
+and so I should have a client, and so let's test that we can actually successfully authenticate, and retrieve some information 
+
+so it looks like the first method that give us, is an example, is this get all tickers, and so let's see what that looks like 
+
+        # get all symbol prices
+        prices = client.get_all_tickers()
+
+prices equals client dot get_all_tickers, ok and so, yeah let's just print prices, let's see if this returns anything 
+
+        print(prices)
+
+all right, so I will hit play, or type python get data dot py:
+
+        $ python3 get_data.py
+
+and look at that, we have a whole bunch of data and it looks like it's in a list,
+so I can just do for price in prices, right, and we'll just traverse that list and display them each on a line
+
+        for price in prices:
+          print(price)
+
+so I'll clear that out, and let's run it again
+
+        $ python3 get_data.py
+
+and look at that, all kinds of, yeah, all kinds of crypto coins that I've never even heard of,
+so yeah, we're gonna take something simple here, like, the Bitcoin US dollar one, and we're gonna use that, but just see you know,
+there's tons of priced it in here about look 'Ethereum' and maybe 'rubles', all kinds of currencies that I've never used here
+
+so that's great, so this package has many different endpoints available, you see there's 'General endpoints' 'Market Data Endpoints' 'Account Endpoints',
+a lot of different stuff that's provided, but for this tutorial what I'm mainly interested in, is the 'market data', specifically we want to get some candlestick data, both
+the current days candlestick data, so we could initialize our lightweight charts, but also some historical data so that we can use it to do back testing and things like that
+
+        https://python-binance.readthedocs.io/en/latest/market_data.html
+
+So looks like there's this historical candlestick function here 
+
+        'Get Kline/Candledsticks'
+        'Get Historical Kline/Candlesticks'
+
+        https://python-binance.readthedocs.io/en/latest/market_data.html#id6
+
+and so let's see what that does.
+
+so get, get Klines here, 
+
+        'Get Kline/Candlesticks'
+
+        candles = client.get_klines(symbol='BNBBTC', interval=Client.KLINE_INTERVAL_30MINUTE)
+
+so let's see that, let's try this first one, for candles, so I'm going to do, and get Klines,
+so candles equals clients like get_klines and I believe if we wanted Bitcoin USDT is what we've been using, and then looks like this is a they have a variety of constants here,
+so I could do Client dot Kline you can see I can use any of these constants to get data about whatever interval I'm interested in 
+
+so if I want a day-by-day candlesticks, or hourly candlesticks, or the meet up-to-the-minute I could do that
+but let's say I just want 15 minutes for instance
+
+        # get Kline/Candlesticks
+        candles = client.get_klines(symbol='BTCUSDT', interval=Client.KLINE_INTERVAL_15MINUTE)
+
+all right, and for that particular symbol, and let's see, let's try that, let's see what we get 
+
+So we print the candles there, 
+
+        print(candles)
+
+and let's run it, all right that was pretty fast, so this is a bit hard to read, so let's try to break this down a little bit, and see what we have
+So the first thing I'll do is print the length of candles just to see how many this returns by default 
+
+        print(len(candles))
+
+and then I'm also going to print them a line by line, 
+
+        for candlesticks in candles:
+          print(candlesticks)
+
+so for candlestick in candles, let's print the candlestick, right
+and when I run that, you see we have them line by line
+so quite a bit of them and so I'm gonna print the length at the end, and then we'll just look at the format
+
+let's see in the documentation what this a data format is 
+so I'm gonna do that, I'm gonna run it one more time
+
+all right, so it looks like it gave us 500 x 15-minute candlesticks, and so this isn't a dictionary that has any kind of labels
+so it looks like they're just, it's just a list of lists 
+
+so I want to know which one of these numbers correspond to what, just by glance, this looks like a UNIX timestamp, and then some of these are probably open high low and close, so let's go ahead and check the documentation, to see what all of these are 
+
+so I'm going to go over here and then in the Binance documentation, the official Doc's here on github,
+
+        'binance-docs github'
+        https://binance-docs.github.io/apidocs/futures/en/#change-log
+
+        'Market Data Endpoints'
+        https://binance-docs.github.io/apidocs/futures/en/#market-data-endpoints
+
+        'Kline/Candlestick Data'
+        https://binance-docs.github.io/apidocs/futures/en/#kline-candlestick-data
+
+
+you can see there's this Kline/Candlestick Data endpoint,
+and then the response here:
+
+        Response:
+
+        [
+          [
+            1499040000000,      // Open time
+            "0.01634790",       // Open
+            "0.80000000",       // High
+            "0.01575800",       // Low
+            "0.01577100",       // Close
+            "148976.11427815",  // Volume
+            1499644799999,      // Close time
+            "2434.19055334",    // Quote asset volume
+            308,                // Number of trades
+            "1756.87402397",    // Taker buy base asset volume
+            "28.46694368",      // Taker buy quote asset volume
+            "17928899.62484339" // Ignore.
+          ]
+        ]
+
+
+they actually have it documented, and so it's a list of lists, and then yeah as we suspected, there is a timestamp and that looks like it just goes in order,
+so open high/low close, and then yeah we have some information about the volume
+
+so now
+
+that we know the structure of the
+
+candlesticks what we'll do is write that
+
+information to a file that we can use in
+
+Bac trader or another system so let's
+
+remind ourselves I always forget
+
+so let's look up Python the csv module
+
+right and let's just see how we write to
+
+a csv file right so we just import the
+
+CSV package which is built into the
+
+Python into Python and let's open a file
+
+for writing right so we can take this
+
+and we just want to open a file and
+
+we'll call it 15 minutes dot CSV and
+
+we're writing it to a file and so we're
+
+gonna define the file as f right and
+
+then all we got to do is write a row so
+
+let's write a row so we want a csv
+
+writer and the ability to write a row
+
+right so it's a csv writer so we're
+
+gonna call this a candlestick writer
+
+right a candlestick writer and that's a
+
+csv writer we give it a reference to our
+
+file so yeah we'll just call this see
+
+to be filed just like that so we're
+
+writing to the CSV file the delimiter
+
+we'll use a comma we don't need any of
+
+this quoting stuff because we're not
+
+using quotes these are just numbers so I
+
+think we just need a file handle and a
+
+writer and then we just need to specify
+
+the delimiter and then looks like we
+
+just write rows right so let's see what
+
+right row looks like it looks like you
+
+can just set a list and it'll convert
+
+that to a CSV file so let's do a
+
+candlestick writer right row and then
+
+we'll do candlestick right yeah we could
+
+specify them individually - we could do
+
+like Candlestick 0 candlestick one right
+
+or we can just pass the entire list so
+
+let's let's try it this way let's just
+
+pass the entire candlestick and let's
+
+see what we get so I'm gonna do that
+
+right and look at that so we have this
+
+15-minute CSV appeared right and so we
+
+have a CSV file from finance there right
+
+so that looks pretty good and that gives
+
+us the timestamp open high low and close
+
+that we can run through whatever
+
+software we want we can load it to later
+
+into the panda's data frame or use back
+
+trader or whatever whatever we want all
+
+right so let's go ahead and get a much
+
+larger data set so let's say I want all
+
+the 5-minute candlesticks from the past
+
+year or so so let's do that so we have
+
+this Kalin's function but there's also
+
+this historical historical data so let's
+
+go here historical data and yeah we can
+
+get a lot of candlesticks so let's
+
+comment out some stuff so let's go
+
+candlesticks equals a client get
+
+historical kay lines and then we'll also
+
+get Bitcoin USD T and then we can get
+
+past it and interval or we can pass it
+
+the state range here so grab that part
+
+I'll just do five minute I don't think I
+
+need one minute and then let's go from
+
+December of 2017 now let's go even
+
+further than that let's go January of
+
+2012 to January no to May 24th 2020 and
+
+let's see how it handles that that's a
+
+lot of data right five minute data for
+
+like eight years worth of data so let's
+
+try that again
+
+and then I'll do you for candlestick in
+
+candles and let's create a new file I'm
+
+going to get rid of this and then I'm
+
+gonna write it to a file called 2012
+
+through 2020 dot CSV and that'll be my
+
+candlestick writer and then we can just
+
+write we can write this to the file cow
+
+stick writer and candlesticks and will
+
+write the roast and then we can also
+
+close the file as well so CSV file dot
+
+close right all right so let's run that
+
+and that might take a little while to
+
+run for candlestick and candlesticks and
+
+let me close those parentheses right I'm
+
+gonna run that and let it run for a
+
+while let's see how quick this happens
+
+all right so I took a quick break and
+
+came back I think that ran for a minute
+
+or two and then now if I come back you
+
+see I have this 2012 through 2020 CSV
+
+file right and it looks like there's
+
+tons of data in here like what almost a
+
+few hundred thousand lines here a few
+
+hundred thousand candlesticks so those
+
+are 5-minute candlesticks and let's just
+
+double check on the range it gave me so
+
+if I go to UNIX timestamp right and
+
+let's display what that looks like we
+
+have looks like it gave me data starting
+
+at Olga 17 2017 which is you know about
+
+yeah we've got nearly three years worth
+
+of data
+
+I'm not sure we asked for from the year
+
+2012 but it looks like I only gave us a
+
+few years so I'm not sure if that's due
+
+to there being some maximum number of
+
+data points you can request at one time
+
+or if it it's due to just the symbol we
+
+use - maybe there's not a data going
+
+back that far in finance at least and so
+
+yeah I'm not sure the reason that yet
+
+for that yet but you know we had three
+
+years of data three years of five minute
+
+candlestick data which you know if you
+
+can't do anything with that then you
+
+know what's the point so yeah we have a
+
+few hundred thousand data points to work
+
+with so that that should be good enough
+
+for what we want to do so I think it's
+
+been it's been at least 10 or 15 minutes
+
+so I'm hearing the ideal length for a
+
+YouTube video is around 10 or 15 minutes
+
+so I'm gonna stop it there we showed you
+
+how to use the by Nance Python package
+
+in order to connect to the by Nance API
+
+and we're able to download some
+
+historical data to a file and so we have
+
+this historic and historical data set in
+
+a CSV file of all this five-minute
+
+candlestick data so in the next video
+
+let's try to process these candlestick
+
+files and try to run them through some
+
+ta Lib indicators so the next video I
+
+think I'm gonna focus on using ta Lib so
+
+I'm going to install that and try some
+
+of the built-in indicators to see what I
+
+think about it and also maybe explore
+
+some other packages as well there might
+
+be some newer Python packages for
+
+technical analysis that I'm not aware of
+
+so I'd like to try that as well so
+
+thanks a lot for watching and stay tuned
+
+for the next video
+
 
 https://www.binance.com/fr/my/settings/api-management
 
