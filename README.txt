@@ -1,10 +1,22 @@
-By
+By 
 Part Time Larry
+
+
+
+
+
+
+
+
 
 
 Binance API Tutorial (Part 1) - Crypto Trading Bot Design - Jun 20, 2020 
 
 https://www.youtube.com/watch?v=rvhnz1yBHgQ
+
+
+
+
 
 Hey everyone and welcome back to another video, today I'm going to be discussing cryptocurrency. 
 
@@ -98,9 +110,18 @@ So thanks a lot for watching and stay tuned in the next video we're going to get
 
 
 
+
+
+
+
+
+
 Binance API Tutorial (Part 2) - Real-Time Crypto Price Data over Websockets- Jun 20, 2020 
 
 https://www.youtube.com/watch?v=d-2GoqQbagI&list=LL&index=344
+
+
+
 
 
 All right so I'm logged in to my Binance account and I have point zero zero one bitcoins worth about eight dollars and ninety three cents in US dollars.
@@ -544,9 +565,20 @@ and we're going to try to do this a real-time WebSocket candlestick chart here u
 
 
 
+
+
+
+
+
+
+
 Binance API Tutorial (Part 3) - Candelstick Chart UI with Lightweight Charts 
 
 https://www.youtube.com/watch?v=6PnCr14chcY
+
+
+
+
 
 all right that was great so now that i'm back inside, i wanted to continue where we left off,
 if you'll remember last time i mentioned that we're going to try to use this lightweight charts library to add a candlestick chart to our u, and just start sketching out the ui a little bit, uh i'm just going to start very simple in this video and then we'll add on to it over time, i don't want to spend too much time on ui yet, but i want to figure out how to add this chart library to our web page.
@@ -881,9 +913,21 @@ so i think that's it for this video so stay tuned for the next one and we're goi
 
 
 
+
+
+
+
+
+
+
+
 Binance API Tutorial (Part  4) - Historical candlestick Data and the Python Binance Package
 
 https://www.youtube.com/watch?v=FmfTK5dFOZk&t=8s
+
+
+
+
 
 hey everyone welcome back to another video and happy Memorial Day 
 
@@ -1236,6 +1280,787 @@ so I'd like to try that as well
 
 so thanks a lot for watching and stay tuned for the next video
 
+
+
+
+
+
+
+
+
+
+Binance API Tutorial (Part  5) - Python TALib RSI indicator (16:36)
+
+https://www.youtube.com/watch?v=0XQjgmChtE4&t=50s
+
+
+
+
+All right let's keep going
+
+So in the last video we downloaded some historical Bitcoin data using the by Binance API 
+
+so in this video we're gonna see if we can apply some technical analysis to that data using a package called TALib 
+ 
+so I think TALib is actually written in C or C++, but there's actually a Python 'wrapper' for TALib, so I have it pulled up here 
+
+        https://mrjbq7.github.io/ta-lib/
+
+so if you go to ta - lib dot org, 
+
+        https://ta-lib.org/
+
+it will pull up the technical analysis library, so this is actually I believe written in C or C++ originally, but there's a Python wrapper around it, that allows you to use the same functions
+
+        https://ta-lib.org/function.html
+
+so if you browse through this website you'll see it has a variety of indicators that are built in, including you know Bollinger Bands, you can detect various candlestick patterns,
+there's some volume, on beyond balance volume, a relative strength index RSI, a whole bunch of different indicators that you can use in your own programs
+
+and although this library is fairly old, you know these indicators are nothing new, many of them are invented many decades ago so they still apply today 
+so now
+
+I've searched for Python TALib and you'll see we get the Python wrapper for TALib 
+
+        https://mrjbq7.github.io/ta-lib/
+
+and it has some installation instructions here, and so, here's how you install it, so you click this 
+
+        Install TA-Lib
+
+        https://mrjbq7.github.io/ta-lib/install.html
+
+and I'm installing this on Mac OSX, so if you're following along, you should be able to do what I'm doing 
+I can't install it on every operating system, but there should be installation instructions for whatever operating system you're on 
+
+I've heard it can be a little bit tricky depending on your OS, but I verified that this works
+so I'm gonna I'm going to go to visual studio code for instance, and there's this just like any other Python package there's pip install TA-Lib 
+so I'm gonna do that TA Lib right 
+
+        Installing TA-Lib on Ubuntu
+
+        https://artiya4u.medium.com/installing-ta-lib-on-ubuntu-944d8ca24eae
+
+        # Installing TA-Lib on Ubuntu
+
+                $ sudo apt install build-essential wget -y
+
+        # Download and extract the source code
+
+                $ wget https://artiya4u.keybase.pub/TA-lib/ta-lib-0.4.0-src.tar.gz
+                $ tar -xvf ta-lib-0.4.0-src.tar.gz
+
+        # Config and build from source.
+
+                $ tar -xvf ta-lib-0.4.0-src.tar.gz
+                $ ./configure --prefix=/usr
+                $ make
+        
+        # Install to system
+
+                $ sudo make install
+
+        # sudo make install
+
+                $ sudo pip install TA-Lib
+
+        or
+
+        # All in one script
+
+                #!/usr/bin/env bash
+                sudo apt install build-essential wget -y
+                wget https://artiya4u.keybase.pub/TA-lib/ta-lib-0.4.0-src.tar.gz
+                tar -xvf ta-lib-0.4.0-src.tar.gz
+                cd ta-lib/
+                ./configure --prefix=/usr
+                make
+                sudo make install
+
+
+and so I'm gonna
+
+install that and you'll see it's
+
+installed and now I'll notice this if I
+
+run Python 3 and try to import it it
+
+gives me this error it says image not
+
+found so it throws some errors here so
+
+one thing there's actually a dependency
+
+so if you scroll down here on OSX you
+
+should have something called homebrew
+
+right
+
+homebrew for OSX and so if you have that
+
+installed it's a package manager for OSX
+
+and there's actually a dependency here
+
+so you want to make sure you have this
+
+installed so if you type brew install ta
+
+live like this
+
+using homebrew this will install a ta
+
+Lib dependency so you see it that's look
+
+quick download for the Mac OSX version
+
+that I'm on and installs it right and so
+
+now I'm gonna rerun python 3 and import
+
+TALib and you'll see there's no error
+
+there so it looks like I've successfully
+
+installed it so let's see what we can do
+
+with that ok so I'm gonna close up some
+
+of this stuff that already had open so
+
+close that that and yeah we have a bunch
+
+of difference no pads that I have to
+
+open so I'm going to start a little more
+
+fresh here so we have our chart and we
+
+ever read me and I won't save that's
+
+alright cool so let's let's let's try ta
+
+PI and let's see if we can use this
+
+library now so let's see if we can find
+
+like a hello world example using TALib
+
+so it looks like it imports numpy so
+
+let's go ahead and add a requirements
+
+text here to this project
+
+and it looks like I've used a Python
+
+finance so far and I've used a TALib
+
+and that is TALib like that so I'll add
+
+that in there and also it looks like we
+
+need numpy so I'll put that in there I
+
+believe I already have numpy installed
+
+but just in case I'll do pip3 install
+
+numpy right and so numpy is just a
+
+library scientific computing library so
+
+it looks like TALib accepts numpy
+
+arrays okay so now that I know all my
+
+packages are installed I'm going to
+
+close that and look at my ta PI and
+
+let's just take this little example here
+
+and make sure we can import numpy and ta
+
+lib right so we're setting a value
+
+called close where a variable called
+
+close equal to num PI dot random 100 and
+
+let's see what that does right
+
+I'm going to print close so I'm going to
+
+run that and you see it generates this
+
+list structure with a bunch of random
+
+numbers and it looks like it's just
+
+numbers between zero and one there's all
+
+decimals so well is this a list or is it
+
+an array or what's it what's a numpy
+
+array so let's let's look that up what
+
+is the difference between a numpy array
+
+and a list so a numpy array it says it's
+
+a grid of values and it's indexed by a
+
+tuple of non-negative integers a list in
+
+Python it's equipment array but as
+
+resizable and contained elements so what
+
+is the real difference here so it looks
+
+like numpy arrays are actually optimized
+
+for memory consumption and have a bunch
+
+of optimizations for spaced memory speed
+
+and calculations so looks like numpy is
+
+just faster for some scientific
+
+computing so if you're multiplying these
+
+huge lists or these huge arrays of
+
+millions of numbers and performing all
+
+this floating-point arithmetic and
+
+matrix operations and so forth it's
+
+designed for the scientific computing
+
+purposes so looks like TALibs since
+
+it's for technical analysis chose to use
+
+numpy arrays as it's for all of the data
+
+types that it operates on so we have a
+
+number array here of 100 random numbers
+
+here
+
+all right so an array of 100 numbers
+
+it's not that interesting
+
+but what is interesting is that we can
+
+build up a numpy array of closing prices
+
+for Bitcoin for instance or closing
+
+prices for the S&P 500 and we can have
+
+those in a numpy array as a sequence and
+
+then we can use TALib to operate on
+
+that sequence of values and apply all
+
+the different built-in functions and
+
+indicators that ta lip has and let it
+
+perform calculations for us so what's an
+
+example right so let's pretend we have a
+
+sequence
+
+yeah let's still do it on this random
+
+number first and so let's look at the
+
+docs and looks like the simplest example
+
+right is a moving average everyone
+
+understands that it just gets the
+
+average of the previous you know ex
+
+periods right and so if I paste that in
+
+right we have our moving average equals
+
+TALib and it has dot s ma so there's a
+
+bunch of indicators built in so I could
+
+do TALib RSI for instance and that's
+
+one of the built-in functions right and
+
+so yeah let's see what the simple moving
+
+average is of this numpy array which is
+
+just an array of closing values right
+
+and so if I print moving average here
+
+and I run this again you'll see
+
+previously if we have this array of 100
+
+numbers and then if you look at the
+
+second array which is the moving average
+
+you can see a bunch of nada numbers here
+
+so there's 1 2 3 4 5 6
+
+24:29 so there's not a number a value
+
+here until the 30th a slot in this array
+
+and so what that means is by default it
+
+uses the 30 day SMA so there's not an
+
+average to take until 30 elements in and
+
+then at the 31st element you know it
+
+does the previous 30 before those so
+
+it's just an average that rolls through
+
+this entire sequence right and so let's
+
+see how we might adjust that a little
+
+bit so let's see indicators momentum
+
+indicators and so SMA if we're correct
+
+it's yeah so it's on overlap studies
+
+here and so if we look at 30 day at SMA
+
+here you can see the time period as we
+
+thought
+
+by default based on our analysis that's
+
+the default time period is 30 but let's
+
+say we wanted the 10 10 day moving
+
+average for instance so we'll do time
+
+period equals 10 and I'll run it again
+
+and you'll see the first nine slots are
+
+not a number and then we have an average
+
+of the first 10 values so that's how you
+
+calculate a moving average using TALib
+
+so you might not care moving average
+
+very simple you don't need a special
+
+library for that it's just an average so
+
+let's let's start getting more and more
+
+complex a lot of these are actually very
+
+simple even you know RSI very simple
+
+calculation so let's go to momentum
+
+indicators here and let's go to relative
+
+strength index and so this is a way to
+
+calculate the RSI and so what we can do
+
+now is do RSI equals t a lift RSI close
+
+and then looks like the time period by
+
+default is 14 so I like that value and
+
+so let's just print the RSI so I run
+
+again and you see we have a bunch of
+
+varying values there random numbers
+
+and so the RSI 14 and it looks like it's
+
+you know this is just some random
+
+numbers so the it's never really
+
+overbought or oversold we just have some
+
+values that are like 40 or 50 so if we
+
+use that with some real price data we'll
+
+probably be able to see some overbought
+
+or oversold values so overbought is
+
+usually over 70 and oversold is below 30
+
+so these random numbers aren't very
+
+interesting so let's see if we can use
+
+some of the Bitcoin price data that we
+
+downloaded in the last video so I have
+
+this 15-minute CSV I already forgot what
+
+time period that was for let me see
+
+let's get that real quick and we can
+
+just see if there's some overbought or
+
+oversold values so we can calculate the
+
+RSI for this particular time period of
+
+prices so this is from May 20th until
+
+let's see maybe we have May 20th through
+
+May 25th so we should get be able to
+
+pull out some overbought and oversold
+
+values from there and so let's figure
+
+out how we can load this 15-minute CSV
+
+data and to get the open high low close
+
+let's see if we can get the closing
+
+prices into a numpy array and run this
+
+RSI indicator on that so let's see how
+
+we do that so I will use Google and I
+
+type build numpy array from CSV and
+
+let's see what it gives me so it looks
+
+like there's this Jen from text function
+
+so I will import that and I'll say my
+
+data equals Jen from text and I'll try
+
+this 15 minutes dot CSV and we give it a
+
+delimiter of comma and yeah let's print
+
+that out and see how it works let's see
+
+if that gives us what we need so I'm
+
+going to comment out some stuff here and
+
+print just that my data there all right
+
+so I'm gonna run it again all right so
+
+look at that so we have a lot of so it
+
+looks like an array of arrays which is
+
+good and this first index from each list
+
+is the timestamp and then we have some
+
+prices so that's like nine thousand six
+
+hundred twenty three because you see
+
+that exponent it's like
+
+e to the third ten to the third and then
+
+yeah so it looks like that worked
+
+we're able to pull in an array of numpy
+
+arrays using this Jen from TechSoup
+
+function right so the next thing I want
+
+to do I want just with the closing value
+
+from here so we have time stamp open
+
+high/low close and so I want the 0 1 2 3
+
+the 4th 4th value here I don't I'm not
+
+really that interested and all these
+
+other ones I want to use the closing
+
+price so I want to extract you know this
+
+value this value this value all the way
+
+down like this entire column of data and
+
+so let's look up how we do that right so
+
+how to import a CSV file it's numpy
+
+array and it looks like you can access
+
+this sequence like this so let's try
+
+that syntax just like accessing a list
+
+like that so we're gonna say the 0 1 2 3
+
+4 0 1 2 3 4 all right cool so we want
+
+the closing price low so let's see if we
+
+say the closing price is my data and
+
+then we have a colon and a 4 there and
+
+let's print the close I run that and
+
+spell it correctly and look at that so
+
+let's see is that correct yeah nine
+
+thousand six hundred fourteen eighty
+
+seven nine thousand four 14.5 nine
+
+sixteen eighty seven nine four four
+
+fourteen fifty 9470 so that's great so
+
+we have a sequence of this closing price
+
+in these 15-minute candles and we have
+
+it in a single numpy array which is
+
+great so and then this was the 15-minute
+
+sharks and so let's see if we apply our
+
+RSI indicator to that so tle RSI for the
+
+close of our Bitcoin data and then we
+
+print the RSI I'm gonna run it so you
+
+have a lot of different values here that
+
+are between 0 and 100 so these are RSI
+
+values and let's see if we can find any
+
+points at which the price was overbought
+
+or oversold so you'll see here near the
+
+end there's a case where the RSI was
+
+above 70 which would be overbought
+
+so let's see if we can verify that using
+
+the data so we'll go one two
+
+three four or five data points back so
+
+if you go back five data points so from
+
+the end so you'll see that the value is
+
+Duke one two three four five so 8950
+
+here was when it was overbought and so
+
+if you look before that you would expect
+
+prices to be rising rapidly so there was
+
+probably a lot of momentum leading to an
+
+overbought State and so let's see if
+
+those numbers rose and if that's correct
+
+right so you'll look look at that so we
+
+have you'll see it was eighty seven
+
+fifty five a seven sixty nine a 789 and
+
+so it was rising until it's eighty eight
+
+hundred then kept rising into eighty
+
+eight hundreds and then went all the way
+
+to eighty nine fifty so there was a lot
+
+of momentum upward there leading to an
+
+overbought state and also let's see if
+
+we can validate that let's try something
+
+like a trading view right and then let's
+
+see what date and time that corresponds
+
+to so that was May 25th which is today
+
+and that was around 12:15 p.m. Pacific
+
+so I'm going to pull up the
+
+cryptocurrency data for Bitcoin right
+
+and let's see Bitcoin UST et and I'm
+
+gonna go to the fully featured chart
+
+here and let's try to pull up the RSI
+
+and compare so what we got from TALib
+
+just to verify we're doing this
+
+correctly so I'm going to look at the
+
+15-minute chart and then I already have
+
+the RSI pulled up and if you look here
+
+sure enough at 12:15 here it looks like
+
+this is where that overbought condition
+
+occurred which was when Bitcoin was
+
+about eighty nine fifty so you see this
+
+run here this led to the overbought and
+
+so you see this RSI at the bottom and
+
+then it rose and briefly went above
+
+seventy okay so I think I'm going to end
+
+the video here this one's running a bit
+
+long I'm trying to keep every video
+
+between ten and fifteen minutes or so
+
+this one's already over fifteen minutes
+
+and I feel pretty good about what we
+
+covered so far we showed how to install
+
+the TALib library as a Python package
+
+we showed how to read in some data using
+
+an umpire arrays so we read in our
+
+Bitcoin historical price data into a
+
+numpy array and then we were able to run
+
+some TALib indicators against this
+
+numpy array so we were able to calculate
+
+a simple moving average using TALib and
+
+we're also able to calculate the RSI and
+
+determine a point at which Bitcoin price
+
+was overbought today and we compared
+
+that against this graph this RSI
+
+indicator in trading view just to
+
+confirm our analysis was correct and we
+
+were able to detect when this price rose
+
+here from 8702 8950 and confirm that the
+
+RSI went above 70 at that point in time
+
+so it looks like we have a pretty good
+
+idea of how to use CA lib indicators so
+
+I'm gonna stop it here and in the next
+
+video we're gonna continue our
+
+discussion of TALib and try to combine
+
+it with back trader for back testing and
+
+maybe we'll cover some more indicators
+
+and see what happens when we buy and
+
+sell Bitcoin based on these indicators
+
+and see what our results would be when
+
+initializing an account with a certain
+
+balance of say $100,000 so stay tuned
+
+for the next video and thanks for
+
+watching
 
 
 
