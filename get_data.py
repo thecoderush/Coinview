@@ -23,7 +23,7 @@ candles = client.get_klines(symbol='BTCUSDT', interval=Client.KLINE_INTERVAL_15M
 
 #   candlestick_writer.writerow(candlesticks)
 
-# fetch 1 minute klines for the last day up until now
+# fetch 5 minute klines interval for the 1st january of 2012 day to May 24th 2020
 candlesticks = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_5MINUTE, "1 Jan, 2012", "24 May, 2020")
 
 for candlestick in candlesticks:

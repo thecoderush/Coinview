@@ -1061,319 +1061,184 @@ and then the response here:
 they actually have it documented, and so it's a list of lists, and then yeah as we suspected, there is a timestamp and that looks like it just goes in order,
 so open high/low close, and then yeah we have some information about the volume
 
-so now
+so now that we know the structure of the candlesticks, what we'll do is write that information to a file, that we can use in Backtrader or another system,
+so let's remind ourselves, I always forget, so let's look up Python, the csv module, right 
 
-that we know the structure of the
+        'python write csv'
 
-candlesticks what we'll do is write that
+        https://docs.python.org/3/library/csv.html
 
-information to a file that we can use in
 
-Bac trader or another system so let's
+and let's just see how we write to a csv file right 
+so we just import the CSV package which is built into Python 
 
-remind ourselves I always forget
+        import csv
 
-so let's look up Python the csv module
+and let's open a file for writing right 
 
-right and let's just see how we write to
+        open('eggs.csv', 'w', newline='')
 
-a csv file right so we just import the
+so we can take this and we just want to open a file, and we'll call it 15 minutes dot CSV, and we're writing it to a file, and so we're gonna define the file as f right 
 
-CSV package which is built into the
+        f = open('15minutes.csv', 'w', newline='')
 
-Python into Python and let's open a file
+and then all we got to do is write a row, so let's write a row, so we want a csv writer, and the ability to write a row right 
 
-for writing right so we can take this
+        spamwriter = csv.writer(csvfile, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        spamwriter.writerow(['Spam'] * 5 + ['Baked Beans'])
+        spamwriter.writerow(['Spam', 'Lovely Spam', 'Wonderful Spam'])
 
-and we just want to open a file and
+so it's a csv writer, so we're gonna call this a candlestick writer right, a candlestick writer, and that's a csv writer, we give it a reference to our file,
+So yeah we'll just call this csv file just like that 
 
-we'll call it 15 minutes dot CSV and
+        csvfile = open('15minutes.csv', 'w', newline='')
 
-we're writing it to a file and so we're
+so we're writing to the CSV file the delimiter, we'll use a comma 
+we don't need any of this quoting stuff because we're not using quotes these are just numbers 
 
-gonna define the file as f right and
+so I think we just need a file handle and a writer and then we just need to specify the delimiter,
+and then looks like we just write rows right 
 
-then all we got to do is write a row so
+so let's see what right row looks like, it looks like you can just set, passing a list and it'll convert that to a CSV file 
 
-let's write a row so we want a csv
+        csvfile = open('15minutes.csv', 'w', newline='')
+        candlestick_writer = csv.writer(csvfile, delimiter=',')
 
-writer and the ability to write a row
+so let's do a candlestick writer right row and then
 
-right so it's a csv writer so we're
+        for candlesticks in candles:
+          print(candlesticks)
 
-gonna call this a candlestick writer
+          candlestick_writer.writerow(candlesticks)
+        
+        print(len(candles))
 
-right a candlestick writer and that's a
+we'll do candlestick right, yeah we could specify them individually too, we could do like candlestick[0], candlestick[1] right, 
+or we can just pass the entire list 
+so let's try it this way, let's just pass the entire candlestick and let's see what we get 
 
-csv writer we give it a reference to our
+so I'm gonna do that right, and look at that, so we have this 15minute.csv appeared, right 
 
-file so yeah we'll just call this see
+        15minutes.csv
 
-to be filed just like that so we're
+and so we have a CSV file from Binance there right
 
-writing to the CSV file the delimiter
+so that looks pretty good and that gives us the timestamp, open high, low, and close
+that we can run through whatever software we want, we can load it to later into the (appendix)? data frame, or use backtrader, or whatever we want, all right 
 
-we'll use a comma we don't need any of
+so let's go ahead and get a much larger data set, 
+so let's say I want all the 5-minute candlesticks from the past year or so 
+so let's do that 
+so we have this Kline's function but there's also this historical data, 
 
-this quoting stuff because we're not
+        https://binance-docs.github.io/apidocs/futures/en/#recent-trades-list
 
-using quotes these are just numbers so I
+        Old Trades Lookup (MARKET_DATA)
+        
+        GET /fapi/v1/historicalTrades
 
-think we just need a file handle and a
+        Get older market historical trades.
 
-writer and then we just need to specify
+            Response:
 
-the delimiter and then looks like we
+            [
+              {
+                "id": 28457,
+                "price": "4.00000100",
+                "qty": "12.00000000",
+                "quoteQty": "8000.00",
+                "time": 1499865549590,
+                "isBuyerMaker": true,
+              }
+            ]
 
-just write rows right so let's see what
+so let's go here  historical data 
 
-right row looks like it looks like you
+        https://python-binance.readthedocs.io/en/latest/market_data.html#id7
 
-can just set a list and it'll convert
+        Get Historical Kline/Candlesticks
 
-that to a CSV file so let's do a
+        Fetch klines for any date range and interval
 
-candlestick writer right row and then
+        # fetch 1 minute klines for the last day up until now
+        klines = client.get_historical_klines("BNBBTC", Client.KLINE_INTERVAL_1MINUTE, "1 day ago UTC")
 
-we'll do candlestick right yeah we could
+        # fetch 30 minute klines for the last month of 2017
+        klines = client.get_historical_klines("ETHBTC", Client.KLINE_INTERVAL_30MINUTE, "1 Dec, 2017", "1 Jan, 2018")
 
-specify them individually - we could do
+        # fetch weekly klines since it listed
+        klines = client.get_historical_klines("NEOBTC", Client.KLINE_INTERVAL_1WEEK, "1 Jan, 2017")
 
-like Candlestick 0 candlestick one right
+and yeah, we can get a lot of candlesticks, so let's comment out some stuff, 
+so let's go candlesticks equals a client get historical kay lines and then we'll also get Bitcoin USDT and then we can get, past it and interval, or we can pass it the state range here,
+so grab that part, I'll just do five minute I don't think I need one minute, and then let's go from December of 2017, now let's go even further than that, let's go January of 2012 to May 24th 2020,
 
-or we can just pass the entire list so
+        # fetch 5 minute klines interval for the 1st january of 2012 day to May 24th 2020
+        candlesticks = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_5MINUTE, "1 Jan, 2012", "24 May, 2020")
 
-let's let's try it this way let's just
+and let's see how it handles that, that's a lot of data, right, five minute data for like eight years (worth)? of data, so let's try that again
+and then I'll do you for candlestick in candles, and let's create a new file
 
-pass the entire candlestick and let's
+I'm going to get rid of this 
 
-see what we get so I'm gonna do that
+        # csvfile = open('15minutes.csv', 'w', newline='')
 
-right and look at that so we have this
+        # for candlesticks in candles:
+        #   print(candlesticks)
 
-15-minute CSV appeared right and so we
+        #   candlestick_writer.writerow(candlesticks)
 
-have a CSV file from finance there right
+        # print(len(candles))
 
-so that looks pretty good and that gives
+and then I'm gonna write it to a file called 2012 to 2020 dot CSV 
 
-us the timestamp open high low and close
+        csvfile = open('2012-2020.csv', 'w', newline='')
 
-that we can run through whatever
+and that'll be my candlestick writer, and then we can just write we can write this to the file, 
+candlestick_writer and candlesticks 
 
-software we want we can load it to later
+        for candlestick in candlesticks:
+          candlestick_writer.writerow(candlesticks)
 
-into the panda's data frame or use back
+and we'll writerow, and then, we can also close the file as well
 
-trader or whatever whatever we want all
+so CSV file dot close right 
 
-right so let's go ahead and get a much
+        csvfile.close()
 
-larger data set so let's say I want all
+all right so let's run that, and that might take a little while to run for candlestick and candlesticks, and let me close those parentheses right 
+I'm gonna run that and let it run for a while, let's see how quick this happens
 
-the 5-minute candlesticks from the past
+all right so I took a quick break and came back, I think that ran for a minute or two, and then now if I come back, you see I have this 2012 to 2020 CSV file right 
+and it looks like there's tons of data in here, like what, almost a few hundred thousand lines here, a few hundred thousand candlesticks, 
+so those are 5-minute candlesticks and let's just double check on the range it gave me, 
 
-year or so so let's do that so we have
+so if I go to UNIX timestamp right, and let's display what that looks like 
+we have looks like it gave me data starting at AUGUST 17 2017 which is you know about, yeah we've got, nearly three years worth of data
 
-this Kalin's function but there's also
+I'm not sure we asked for from the year 2012 but it looks like I only gave us a few years, so I'm not sure if that's due to, there being some maximum number of data points you can request at one time
+or if it it's due to just the symbol we use, to maybe there's not a data going back that far in Binance at least and so
+yeah I'm not sure the reason that yet for that yet, but you know we had three years of data, three years of five minute candlestick data which, 
+you know if you can't do anything with that then, you know what's the point, so yeah, we have a few hundred thousand data points to work with 
+so that that should be good enough for what we want to do
 
-this historical historical data so let's
+so I think it's been, it's been at least 10 or 15 minutes, so I'm hearing the ideal length for a YouTube video is around 10 or 15 minutes
+so I'm gonna stop it there
 
-go here historical data and yeah we can
+We showed you how to use the Binance Python package in order to connect to the Binance API
+and we're able to download some historical data to a file, and so we have this historical data set in a CSV file of all this five-minute candlestick data 
 
-get a lot of candlesticks so let's
+so in the next video, let's try to process these candlestick files, and try to run them through some TAlib indicators 
+so the next video I think I'm gonna focus on using TAlib 
+so I'm going to install that, and try some of the built-in indicators to see what I think about it, and also maybe explore some other packages as well, 
+there might be some newer Python packages for technical analysis that I'm not aware of,
+so I'd like to try that as well 
 
-comment out some stuff so let's go
+so thanks a lot for watching and stay tuned for the next video
 
-candlesticks equals a client get
 
-historical kay lines and then we'll also
 
-get Bitcoin USD T and then we can get
 
-past it and interval or we can pass it
-
-the state range here so grab that part
-
-I'll just do five minute I don't think I
-
-need one minute and then let's go from
-
-December of 2017 now let's go even
-
-further than that let's go January of
-
-2012 to January no to May 24th 2020 and
-
-let's see how it handles that that's a
-
-lot of data right five minute data for
-
-like eight years worth of data so let's
-
-try that again
-
-and then I'll do you for candlestick in
-
-candles and let's create a new file I'm
-
-going to get rid of this and then I'm
-
-gonna write it to a file called 2012
-
-through 2020 dot CSV and that'll be my
-
-candlestick writer and then we can just
-
-write we can write this to the file cow
-
-stick writer and candlesticks and will
-
-write the roast and then we can also
-
-close the file as well so CSV file dot
-
-close right all right so let's run that
-
-and that might take a little while to
-
-run for candlestick and candlesticks and
-
-let me close those parentheses right I'm
-
-gonna run that and let it run for a
-
-while let's see how quick this happens
-
-all right so I took a quick break and
-
-came back I think that ran for a minute
-
-or two and then now if I come back you
-
-see I have this 2012 through 2020 CSV
-
-file right and it looks like there's
-
-tons of data in here like what almost a
-
-few hundred thousand lines here a few
-
-hundred thousand candlesticks so those
-
-are 5-minute candlesticks and let's just
-
-double check on the range it gave me so
-
-if I go to UNIX timestamp right and
-
-let's display what that looks like we
-
-have looks like it gave me data starting
-
-at Olga 17 2017 which is you know about
-
-yeah we've got nearly three years worth
-
-of data
-
-I'm not sure we asked for from the year
-
-2012 but it looks like I only gave us a
-
-few years so I'm not sure if that's due
-
-to there being some maximum number of
-
-data points you can request at one time
-
-or if it it's due to just the symbol we
-
-use - maybe there's not a data going
-
-back that far in finance at least and so
-
-yeah I'm not sure the reason that yet
-
-for that yet but you know we had three
-
-years of data three years of five minute
-
-candlestick data which you know if you
-
-can't do anything with that then you
-
-know what's the point so yeah we have a
-
-few hundred thousand data points to work
-
-with so that that should be good enough
-
-for what we want to do so I think it's
-
-been it's been at least 10 or 15 minutes
-
-so I'm hearing the ideal length for a
-
-YouTube video is around 10 or 15 minutes
-
-so I'm gonna stop it there we showed you
-
-how to use the by Nance Python package
-
-in order to connect to the by Nance API
-
-and we're able to download some
-
-historical data to a file and so we have
-
-this historic and historical data set in
-
-a CSV file of all this five-minute
-
-candlestick data so in the next video
-
-let's try to process these candlestick
-
-files and try to run them through some
-
-ta Lib indicators so the next video I
-
-think I'm gonna focus on using ta Lib so
-
-I'm going to install that and try some
-
-of the built-in indicators to see what I
-
-think about it and also maybe explore
-
-some other packages as well there might
-
-be some newer Python packages for
-
-technical analysis that I'm not aware of
-
-so I'd like to try that as well so
-
-thanks a lot for watching and stay tuned
-
-for the next video
-
-
-https://www.binance.com/fr/my/settings/api-management
-
-https://python-binance.readthedocs.io/en/latest/
-
-pip install python-binance
-
-python3 get_data.py
-
-https://python-binance.readthedocs.io/en/latest/market_data.html
-
-https://binance-docs.github.io/apidocs/spot/en/#old-trade-lookup
-
-python write csv 
-https://docs.python.org/3/library/csv.html
 
 
 
