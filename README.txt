@@ -1378,305 +1378,234 @@ so I'm gonna do that TA Lib right
                 sudo make install
 
 
-and so I'm gonna
+and so I'm gonna install that, and you'll see it's installed,
+and now I'll notice this if I run Python 3 and try to import it, 
 
-install that and you'll see it's
+        $ python3
+        $ import talib
 
-installed and now I'll notice this if I
+it gives me this error, it says image not found, so it throws some errors here
+so one thing there's actually a dependency, so if you scroll down here on OSX you should have something called 'homebrew' right
+homebrew for OSX and so if you have that installed it's a package manager for OSX, and there's actually a dependency here, so you want to make sure you have this installed 
+so if you type 
+        
+        $ brew install ta-lib 
 
-run Python 3 and try to import it it
+like this using homebrew, this will install a ta Lib dependency so you see it that's look quick download for the Mac OSX version that I'm on, and installs it right, and so now I'm gonna rerun python 3 and import talib and you'll see there's no error there, so it looks like I've successfully installed it 
 
-gives me this error it says image not
+so let's see what we can do with that ok 
 
-found so it throws some errors here so
+so I'm gonna close up some of this stuff that already had open so close that, that, and yeah we have a bunch of difference no (pads)? that I have to open, so I'm going to start a little more fresh here,
+so we have our chart and we have our read me, and I won't save that 
 
-one thing there's actually a dependency
+alright cool so let's try ta dot py 
 
-so if you scroll down here on OSX you
+        $ touch ta.py
 
-should have something called homebrew
+and let's see if we can use this library now 
 
-right
+so let's see if we can find like a 'hello world' example using TALib, so it looks like it imports numpy 
 
-homebrew for OSX and so if you have that
+        https://mrjbq7.github.io/ta-lib/
 
-installed it's a package manager for OSX
+        import numpy
 
-and there's actually a dependency here
+so let's go ahead and add a requirements dot text here to this project
 
-so you want to make sure you have this
+        $ touch requirements.txt
 
-installed so if you type brew install ta
+and it looks like I've used a python-binance so far, and I've used a TALib, and that is TA-Lib like that, so I'll add that in there, and also it looks like we need numpy,
+so I'll put that in there
 
-live like this
+        python-binance 
+        TA-Lib
+        numpy
 
-using homebrew this will install a ta
+I believe I already have numpy installed but just in case, I'll do pip3 install numpy right 
 
-Lib dependency so you see it that's look
+        $ pip3 install numpy
 
-quick download for the Mac OSX version
+and until numpy is just a library, scientific computing library, so it looks like TALib accepts numpy arrays 
+okay so now that I know all my packages are installed, I'm going to close that, and look at my ta dot py 
 
-that I'm on and installs it right and so
+        $ nano ta.py
 
-now I'm gonna rerun python 3 and import
+and let's just take this little example here, and make sure we can import numpy and ta lib right 
 
-TALib and you'll see there's no error
+        import numpy
+        import talib
 
-there so it looks like I've successfully
+        close = numpy.random.random(100)
 
-installed it so let's see what we can do
+so we're setting a value called close, where a variable called close equal to numpy dot random 100, and let's see what that does right, 
+I'm going to print close 
 
-with that ok so I'm gonna close up some
+        print(close)
 
-of this stuff that already had open so
+so I'm going to run that 
 
-close that that and yeah we have a bunch
+        $ python3 ta.py
 
-of difference no pads that I have to
+        [0.86983193 0.78960432 0.65126663 0.38216547 0.30000493 0.74326948
+         0.27342276 0.17967592 0.02305641 0.67419051 0.53690503 0.6964192
+         0.51874032 0.82510687 0.46878464 0.8827212  0.92533801 0.67661258
+         0.74881267 0.28539529 0.13401968 0.22480298 0.37472739 0.79024145
+         0.76800599 0.79347149 0.72225872 0.76785194 0.15443234 0.45835669
+         0.90212719 0.95250666 0.03703968 0.62363581 0.14944983 0.56289757
+         0.71214539 0.91349061 0.46822946 0.27004871 0.78782475 0.27558914
+         0.4567252  0.40144626 0.31568156 0.9471158  0.61515842 0.1936563
+         0.45193616 0.54640122 0.22023052 0.96629215 0.20665873 0.45142079
+         0.6891244  0.32406061 0.16649167 0.18035352 0.58037465 0.25673302
+         0.17526001 0.26620237 0.95846434 0.28796741 0.73924312 0.06602095
+         0.95363059 0.27278343 0.39568007 0.81573064 0.53066213 0.76869594
+         0.66947651 0.87028089 0.62642289 0.15642658 0.69264091 0.04660276
+         0.60741515 0.41142797 0.47354743 0.87973504 0.30326609 0.58433482
+         0.9256456  0.67370802 0.8983113  0.25412395 0.65907143 0.64277622
+         0.61716781 0.74397234 0.73531434 0.44293829 0.40455724 0.29964488
+         0.92820265 0.74606829 0.72048463 0.63194907]
 
-open so I'm going to start a little more
+and you see it generates this list structure with a bunch of random numbers, and it looks like it's just numbers between zero and one there's all decimals 
 
-fresh here so we have our chart and we
+so well is this a list or is this an array, or what's a numpy array? 
 
-ever read me and I won't save that's
+so let's let's look that up 'what is the difference between a numpy array and a list'? (google search) 
 
-alright cool so let's let's let's try ta
+        https://www.google.com/search?channel=fs&client=ubuntu&q=what+is+the+difference+between+a+numpy+array+and+a+list
 
-PI and let's see if we can use this
+so a numpy array it says it's a grid of values and it's indexed by a tuple of non-negative integers, 
+a list in Python it's equivalent array but as resizable and contained elements 
 
-library now so let's see if we can find
+so what is the real difference here? 
 
-like a hello world example using TALib
+        https://webcourses.ucf.edu/courses/1249560/pages/python-lists-vs-numpy-arrays-what-is-the-difference
 
-so it looks like it imports numpy so
+so it looks like numpy arrays are actually optimized for memory consumption and have a bunch of optimizations for spaced memory speed, and calculations
+so looks like numpy is just faster for some scientific computing so if you're multiplying these huge lists or these huge arrays of millions of numbers, and performing all this floating-point arithmetic and matrix operations, and so forth it's designed for the scientific computing purposes 
 
-let's go ahead and add a requirements
+so looks like TALibs since it's for technical analysis chose to use numpy arrays as it's for all of the data types that it operates on 
 
-text here to this project
+so we have a number array here of 100 random numbers here
 
-and it looks like I've used a Python
+all right so an array of 100 numbers it's not that interesting, but what is interesting is that we can build up a numpy array of closing prices for Bitcoin for instance,
+or closing prices for the S&P 500 and we can have those in a numpy array as a sequence, and then we can use TALib to operate on that sequence of values, and apply all the different built-in functions and indicators that ta lib has, and let it perform calculations for us
 
-finance so far and I've used a TALib
+so that's an example right, so let's pretend we have a sequence, yeah let's still do it on this random number first, and so let's look at the docs,
+and looks like the simplest example right is a moving average, 
 
-and that is TALib like that so I'll add
+        #Calculate a simple moving average of the close prices:
+        output = talib.SMA(close)
 
-that in there and also it looks like we
+everyone understands that, it just gets the average of the previous, you know X periods right, and so if I paste that in, right, 
 
-need numpy so I'll put that in there I
+        #Calculate a simple moving average of the close prices:
+        moving_average = talib.SMA(close)
 
-believe I already have numpy installed
+we have our moving average equals talib, and it has dot SMA, 
 
-but just in case I'll do pip3 install
+so there's a bunch of indicators, built in, so I could do talib dot RSI for instance 
 
-numpy right and so numpy is just a
+        talib.RSI
 
-library scientific computing library so
+and that's one of the built-in functions, right 
+and so yeah, let's see what the simple moving average is of this numpy array which is, just an array of closing values right
 
-it looks like TALib accepts numpy
+and so if I print moving average here 
 
-arrays okay so now that I know all my
+        print(moving_average)
 
-packages are installed I'm going to
+and I run this again 
 
-close that and look at my ta PI and
+        $ python3 ta.py
 
-let's just take this little example here
+        [0.4908118  0.4117389  0.9272756  0.48106401 0.29615135 0.95439097
+         0.61335399 0.83540937 0.76146143 0.75053812 0.69522358 0.93450378
+         0.08171487 0.30119878 0.06826764 0.64119444 0.52722561 0.82042657
+         0.53471451 0.49604001 0.62911228 0.49355365 0.68792848 0.64062527
+         0.22534901 0.82479685 0.29158492 0.46186203 0.91489757 0.38166769
+         0.88112368 0.82711708 0.73921489 0.73045963 0.27527696 0.26592356
+         0.76499957 0.90410937 0.26632848 0.81132224 0.46002123 0.60079466
+         0.03391452 0.62580068 0.97497397 0.00579673 0.31380193 0.11840322
+         0.04289408 0.42244889 0.95889203 0.70536468 0.91989002 0.77949014
+         0.75854475 0.51891425 0.25684758 0.13002586 0.22011752 0.29088586
+         0.083216   0.42126499 0.67565837 0.21554984 0.7022949  0.59154706
+         0.78704013 0.10677738 0.24592596 0.25991086 0.85680665 0.50089351
+         0.09303239 0.17540168 0.61774748 0.98547769 0.23842184 0.84061914
+         0.48887153 0.57917432 0.52486426 0.66200814 0.95308389 0.1701595
+         0.39763226 0.02204815 0.31606821 0.62479518 0.61602481 0.45982162
+         0.36493536 0.97547631 0.63942344 0.92012467 0.75239025 0.5726532
+         0.63423718 0.16702716 0.41308506 0.71992151]
 
-and make sure we can import numpy and ta
+        [       nan        nan        nan        nan        nan        nan
+                nan        nan        nan        nan        nan        nan
+                nan        nan        nan        nan        nan        nan
+                nan        nan        nan        nan        nan        nan
+                nan        nan        nan        nan        nan 0.57246944
+         0.58547983 0.59932577 0.59305708 0.60137027 0.60067445 0.57772554
+         0.58278039 0.58507039 0.56856596 0.5705921  0.56275202 0.55162838
+         0.55003504 0.5608551  0.59107865 0.56989872 0.5627846  0.53938382
+         0.52298981 0.52053677 0.53152943 0.5385898  0.54632185 0.55095068
+         0.56872387 0.55852778 0.55736987 0.54630866 0.52314933 0.52012327
+         0.49352635 0.47999794 0.47787939 0.46071573 0.47494966 0.48580378
+         0.48653847 0.45996073 0.45928065 0.44090027 0.45412645 0.45079641
+         0.45276701 0.43775371 0.42584616 0.45850219 0.45598952 0.48006338
+         0.4949293  0.50015348 0.48568589 0.48424067 0.48534713 0.46503611
+         0.45300569 0.43644349 0.43841751 0.45490982 0.46810673 0.47373792
+         0.48312857 0.50160228 0.50039445 0.52388028 0.52555012 0.52492033
+         0.5198269  0.52183522 0.52740719 0.54274088]
 
-lib right so we're setting a value
 
-called close where a variable called
+you'll see previously if we have this array of 100 numbers, and then if you look at the second array which is the moving average
+you can see a bunch of note a numbers here
+so there's 1 2 3 4 5 6, 24, 29, so there's not a number a value here until the 30th a slot in this array
+and so what that means is by default it uses the 30 day SMA, so there's not an average to take until 30 elements in, and then at the 31st element you know, it does the previous 30 before those, so it's just an average that rolls through this entire sequence, right 
 
-close equal to num PI dot random 100 and
+and so let's see how we might adjust that a little bit, 
 
-let's see what that does right
+        https://mrjbq7.github.io/ta-lib/doc_index.html
 
-I'm going to print close so I'm going to
+        https://mrjbq7.github.io/ta-lib/funcs.html
 
-run that and you see it generates this
+so let's see indicators, momentum indicators, and so SMA if we're correct, it's yeah so it's on overlap studies here 
 
-list structure with a bunch of random
+        https://mrjbq7.github.io/ta-lib/func_groups/overlap_studies.html
 
-numbers and it looks like it's just
+and so if we look at 30 day at SMA here, you can see the time period as we thought by default based on our analysis,
 
-numbers between zero and one there's all
+        SMA - Simple Moving Average
 
-decimals so well is this a list or is it
+        eal = SMA(close, timeperiod=30)
 
-an array or what's it what's a numpy
+that's the default time period is 30 
 
-array so let's let's look that up what
+but let's say we wanted the 10 day moving average for instance, so we'll do time period equals 10 
 
-is the difference between a numpy array
+        moving_average = talib.SMA(close, timeperiod=10)
 
-and a list so a numpy array it says it's
+and I'll run it again
 
-a grid of values and it's indexed by a
+        $ python3 ta.py
 
-tuple of non-negative integers a list in
+        [       nan        nan        nan        nan        nan        nan
+                nan        nan        nan 0.68180449 0.70288098 0.66949703
+         0.62371054 0.58328548 0.5172058  0.52543254 0.55868137 0.56807102
+         0.53092741 0.49038641 0.49742848 0.46408997 0.41331903 0.35525749
+         0.37493918 0.28509121 0.24832163 0.2627829  0.24389292 0.22702523
+         0.19552195 0.26248713 0.30987607 0.37704371 0.34856607 0.35395896
+         0.32645993 0.30678188 0.35203824 0.35686266 0.39097902 0.40566962
+         0.37851984 0.39759511 0.43385128 0.46408071 0.45714316 0.53768064
+         0.45540943 0.4662932  0.47928554 0.40341021 0.41357963 0.4089608
+         0.4301564  0.44675975 0.51915312 0.47917479 0.52022834 0.56618624
+         0.55716699 0.56270402 0.59347141 0.53968688 0.48225206 0.51327344
+         0.47834174 0.48719851 0.50900309 0.47848372 0.44750252 0.47297568
+         0.47685429 0.53230957 0.58112017 0.5312171  0.56279951 0.53446843
+         0.53720634 0.56437187 0.61700998 0.60106851 0.62008311 0.56067823
+         0.55567776 0.5486292  0.53353717 0.50260893 0.49494553 0.48723012
+         0.48845722 0.53082141 0.47158383 0.51464998 0.53811827 0.58165925
+         0.57422962 0.57340474 0.6035598  0.62087756]
 
-Python it's equipment array but as
+and you'll see the first nine slots are not a number and then we have an average of the first 10 values 
 
-resizable and contained elements so what
-
-is the real difference here so it looks
-
-like numpy arrays are actually optimized
-
-for memory consumption and have a bunch
-
-of optimizations for spaced memory speed
-
-and calculations so looks like numpy is
-
-just faster for some scientific
-
-computing so if you're multiplying these
-
-huge lists or these huge arrays of
-
-millions of numbers and performing all
-
-this floating-point arithmetic and
-
-matrix operations and so forth it's
-
-designed for the scientific computing
-
-purposes so looks like TALibs since
-
-it's for technical analysis chose to use
-
-numpy arrays as it's for all of the data
-
-types that it operates on so we have a
-
-number array here of 100 random numbers
-
-here
-
-all right so an array of 100 numbers
-
-it's not that interesting
-
-but what is interesting is that we can
-
-build up a numpy array of closing prices
-
-for Bitcoin for instance or closing
-
-prices for the S&P 500 and we can have
-
-those in a numpy array as a sequence and
-
-then we can use TALib to operate on
-
-that sequence of values and apply all
-
-the different built-in functions and
-
-indicators that ta lip has and let it
-
-perform calculations for us so what's an
-
-example right so let's pretend we have a
-
-sequence
-
-yeah let's still do it on this random
-
-number first and so let's look at the
-
-docs and looks like the simplest example
-
-right is a moving average everyone
-
-understands that it just gets the
-
-average of the previous you know ex
-
-periods right and so if I paste that in
-
-right we have our moving average equals
-
-TALib and it has dot s ma so there's a
-
-bunch of indicators built in so I could
-
-do TALib RSI for instance and that's
-
-one of the built-in functions right and
-
-so yeah let's see what the simple moving
-
-average is of this numpy array which is
-
-just an array of closing values right
-
-and so if I print moving average here
-
-and I run this again you'll see
-
-previously if we have this array of 100
-
-numbers and then if you look at the
-
-second array which is the moving average
-
-you can see a bunch of nada numbers here
-
-so there's 1 2 3 4 5 6
-
-24:29 so there's not a number a value
-
-here until the 30th a slot in this array
-
-and so what that means is by default it
-
-uses the 30 day SMA so there's not an
-
-average to take until 30 elements in and
-
-then at the 31st element you know it
-
-does the previous 30 before those so
-
-it's just an average that rolls through
-
-this entire sequence right and so let's
-
-see how we might adjust that a little
-
-bit so let's see indicators momentum
-
-indicators and so SMA if we're correct
-
-it's yeah so it's on overlap studies
-
-here and so if we look at 30 day at SMA
-
-here you can see the time period as we
-
-thought
-
-by default based on our analysis that's
-
-the default time period is 30 but let's
-
-say we wanted the 10 10 day moving
-
-average for instance so we'll do time
-
-period equals 10 and I'll run it again
-
-and you'll see the first nine slots are
-
-not a number and then we have an average
-
-of the first 10 values so that's how you
-
-calculate a moving average using TALib
+so that's how you calculate a moving average using TALib
 
 so you might not care moving average
 
