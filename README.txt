@@ -1168,7 +1168,7 @@ so I'm gonna do that right, and look at that, so we have this 15minute.csv appea
 and so we have a CSV file from Binance there right
 
 so that looks pretty good and that gives us the timestamp, open high, low, and close
-that we can run through whatever software we want, we can load it to later into the (appendix)? data frame, or use backtrader, or whatever we want, all right 
+that we can run through whatever software we want, we can load it to later into the (appendix)?(panda)  data frame, or use backtrader, or whatever we want, all right 
 
 so let's go ahead and get a much larger data set, 
 so let's say I want all the 5-minute candlesticks from the past year or so 
@@ -1607,389 +1607,392 @@ and you'll see the first nine slots are not a number and then we have an average
 
 so that's how you calculate a moving average using TALib
 
-so you might not care moving average
+so you might not care moving average very simple, you don't need a special library for that, it's just an average
 
-very simple you don't need a special
+so let's start getting more and more complex
+a lot of these are actually very simple, even you know RSI very simple calculation
 
-library for that it's just an average so
+so let's go to momentum indicators here and let's go to relative strength index
+                        
+        https://mrjbq7.github.io/ta-lib/func_groups/momentum_indicators.html
 
-let's let's start getting more and more
+        RSI - Relative Strength Index
 
-complex a lot of these are actually very
+        NOTE: The RSI function has an unstable period.
 
-simple even you know RSI very simple
+        real = RSI(close, timeperiod=14)
+ 
+and so this is a way to calculate the RSI, and so what we can do now is do RSI equals talib.RSI close, and then looks like the time period by default is 14 
 
-calculation so let's go to momentum
+        rsi = talib.RSI(close, timeperiod=14)
 
-indicators here and let's go to relative
+so I like that value and so let's just print the RSI, so I run again 
 
-strength index and so this is a way to
+        print(rsi)
 
-calculate the RSI and so what we can do
+        $ python3 ta.py
 
-now is do RSI equals t a lift RSI close
+        [        nan         nan         nan         nan         nan         nan
+                 nan         nan         nan         nan         nan         nan
+                 nan         nan 49.15116931 48.5148285  46.30064555 43.91875642
+         51.235748   49.49845073 46.93671353 48.78303959 45.99238084 51.38381529
+         45.76246125 46.41642298 45.92999962 52.47483859 48.20046702 49.96261854
+         49.64689877 44.74006661 45.74441499 45.53812963 54.51625655 51.85039112
+         49.24396984 52.40741181 50.81286063 46.51621182 47.41116346 53.76554484
+         52.80516301 49.06107699 46.81978198 47.71636609 51.2380484  54.91694031
+         53.22630083 49.80967993 48.50815582 46.09493198 42.81316553 46.20552675
+         51.14691182 49.15306392 53.52682028 53.98740774 45.15724421 50.76924105
+         49.56607725 47.50882851 44.21875529 45.30049368 54.06816925 56.36502396
+         55.20850541 51.39127933 55.30163684 46.16969598 47.48543224 53.06721634
+         52.82261371 45.51692377 50.03811045 44.18008233 47.49253746 54.66551825
+         45.20628325 51.56617675 48.78836559 49.67224089 54.44196644 48.85761312
+         46.0645709  50.28722883 54.62006064 50.64783911 47.76644097 48.25920954
+         47.3804159  48.04353134 50.95373216 50.08723491 53.40239874 51.92434551
+         47.04373181 54.31729252 49.49618373 47.08393676]
 
-and then looks like the time period by
+and you see we have a bunch of varying values, there random numbers, and so the RSI 14, and it looks like, it's you know, this is just some random numbers,
+so the it's never really overbought or oversold, we just have some values that are like 40 or 50, so if we use that with some real price data, we'll probably be able to see some overbought
+or oversold values, so overbought is usually over 70 and oversold is below 30
 
-default is 14 so I like that value and
+so these random numbers aren't very interesting, so let's see if we can use some of the Bitcoin price data that we downloaded in the last video
+so I have this 15-minute.csv
 
-so let's just print the RSI so I run
+        15minutes.csv
 
-again and you see we have a bunch of
+I already forgot what time period that was for, let me see let's get that real quick, and we can just see if there's some overbought or oversold values, so we can calculate the
+RSI for this particular time period of prices so this is from May 20th until let's see maybe we have May 20th through May 25th 
 
-varying values there random numbers
+        https://www.unixtimestamp.com/
 
-and so the RSI 14 and it looks like it's
+        1614084300000 > Convert > Tue Feb 23 2021 12:45:00 GMT+0000
 
-you know this is just some random
+        1614533400000 > Convert > Sun Feb 28 2021 17:30:00 GMT+0000
 
-numbers so the it's never really
+so we should get be able to pull out some overbought and oversold values from there, and so let's figure out how we can load this 15-minute CSV data, and to get the open high low close
+let's see if we can get the closing prices into a numpy array and run this RSI indicator on that 
 
-overbought or oversold we just have some
+so let's see how we do that
+so I will use Google and I type 'build numpy array from CSV' 
 
-values that are like 40 or 50 so if we
+        https://www.google.com/search?channel=fs&client=ubuntu&q=build+numpy+array+from+CSV
 
-use that with some real price data we'll
+and
+        https://intellipaat.com/community/9398/how-do-i-read-csv-data-into-a-record-array-in-numpy
 
-probably be able to see some overbought
+let's see what it gives me
 
-or oversold values so overbought is
+        To read CSV data into a record array in NumPy you can use NumPy modules genfromtxt() function, In this function’s argument, you need to set the delimiter to a comma.
 
-usually over 70 and oversold is below 30
+                from numpy import genfromtxt
+                my_data = genfromtxt('my_file.csv', delimiter=',')
 
-so these random numbers aren't very
+        You can also use the pandas read_csv function to read CSV data into a record array in NumPy.
 
-interesting so let's see if we can use
+                import pandas as pd
+                df=pd.read_csv('myfile.csv', sep=',',header=None)
+                df.values array([[ 1. , 2. , 3. ], [ 4. , 5.5, 6. ]])
 
-some of the Bitcoin price data that we
 
-downloaded in the last video so I have
+so it looks like there's this genfromtxt() function
 
-this 15-minute CSV I already forgot what
+so I will import that and I'll say my data equals genfromtxt(), and I'll try this 15 minutes dot CSV, and we give it a delimiter of comma
 
-time period that was for let me see
+        from numpy import genfromtxt
 
-let's get that real quick and we can
+        my_data = genfromtxt('15minutes.csv', delimiter=',')
 
-just see if there's some overbought or
+        print(my_data)
 
-oversold values so we can calculate the
+and yeah let's print that out, and see how it works, let's see if that gives us what we need 
 
-RSI for this particular time period of
+so I'm going to comment out some stuff here 
 
-prices so this is from May 20th until
-
-let's see maybe we have May 20th through
-
-May 25th so we should get be able to
-
-pull out some overbought and oversold
-
-values from there and so let's figure
-
-out how we can load this 15-minute CSV
-
-data and to get the open high low close
-
-let's see if we can get the closing
-
-prices into a numpy array and run this
-
-RSI indicator on that so let's see how
-
-we do that so I will use Google and I
-
-type build numpy array from CSV and
-
-let's see what it gives me so it looks
-
-like there's this Jen from text function
-
-so I will import that and I'll say my
-
-data equals Jen from text and I'll try
-
-this 15 minutes dot CSV and we give it a
-
-delimiter of comma and yeah let's print
-
-that out and see how it works let's see
-
-if that gives us what we need so I'm
-
-going to comment out some stuff here and
-
-print just that my data there all right
-
-so I'm gonna run it again all right so
-
-look at that so we have a lot of so it
-
-looks like an array of arrays which is
-
-good and this first index from each list
-
-is the timestamp and then we have some
-
-prices so that's like nine thousand six
-
-hundred twenty three because you see
-
-that exponent it's like
-
-e to the third ten to the third and then
-
-yeah so it looks like that worked
-
-we're able to pull in an array of numpy
-
-arrays using this Jen from TechSoup
-
-function right so the next thing I want
-
-to do I want just with the closing value
-
-from here so we have time stamp open
-
-high/low close and so I want the 0 1 2 3
-
-the 4th 4th value here I don't I'm not
-
-really that interested and all these
-
-other ones I want to use the closing
-
-price so I want to extract you know this
-
-value this value this value all the way
-
-down like this entire column of data and
-
-so let's look up how we do that right so
-
-how to import a CSV file it's numpy
-
-array and it looks like you can access
-
-this sequence like this so let's try
-
-that syntax just like accessing a list
-
-like that so we're gonna say the 0 1 2 3
-
-4 0 1 2 3 4 all right cool so we want
-
-the closing price low so let's see if we
-
-say the closing price is my data and
-
-then we have a colon and a 4 there and
-
-let's print the close I run that and
-
-spell it correctly and look at that so
-
-let's see is that correct yeah nine
-
-thousand six hundred fourteen eighty
-
-seven nine thousand four 14.5 nine
-
-sixteen eighty seven nine four four
-
-fourteen fifty 9470 so that's great so
-
-we have a sequence of this closing price
-
-in these 15-minute candles and we have
-
-it in a single numpy array which is
-
-great so and then this was the 15-minute
-
-sharks and so let's see if we apply our
-
-RSI indicator to that so tle RSI for the
-
-close of our Bitcoin data and then we
-
-print the RSI I'm gonna run it so you
-
-have a lot of different values here that
-
-are between 0 and 100 so these are RSI
-
-values and let's see if we can find any
-
-points at which the price was overbought
-
-or oversold so you'll see here near the
-
-end there's a case where the RSI was
-
-above 70 which would be overbought
-
-so let's see if we can verify that using
-
-the data so we'll go one two
-
-three four or five data points back so
-
-if you go back five data points so from
-
-the end so you'll see that the value is
-
-Duke one two three four five so 8950
-
-here was when it was overbought and so
-
-if you look before that you would expect
-
-prices to be rising rapidly so there was
-
-probably a lot of momentum leading to an
-
-overbought State and so let's see if
-
-those numbers rose and if that's correct
-
-right so you'll look look at that so we
-
-have you'll see it was eighty seven
-
-fifty five a seven sixty nine a 789 and
-
-so it was rising until it's eighty eight
-
-hundred then kept rising into eighty
-
-eight hundreds and then went all the way
-
-to eighty nine fifty so there was a lot
-
-of momentum upward there leading to an
-
-overbought state and also let's see if
-
-we can validate that let's try something
-
-like a trading view right and then let's
-
-see what date and time that corresponds
-
-to so that was May 25th which is today
-
-and that was around 12:15 p.m. Pacific
-
-so I'm going to pull up the
-
-cryptocurrency data for Bitcoin right
-
-and let's see Bitcoin UST et and I'm
-
-gonna go to the fully featured chart
-
-here and let's try to pull up the RSI
-
-and compare so what we got from TALib
-
-just to verify we're doing this
-
-correctly so I'm going to look at the
-
-15-minute chart and then I already have
-
-the RSI pulled up and if you look here
-
-sure enough at 12:15 here it looks like
-
-this is where that overbought condition
-
-occurred which was when Bitcoin was
-
-about eighty nine fifty so you see this
-
-run here this led to the overbought and
-
-so you see this RSI at the bottom and
-
-then it rose and briefly went above
-
-seventy okay so I think I'm going to end
-
-the video here this one's running a bit
-
-long I'm trying to keep every video
-
-between ten and fifteen minutes or so
-
-this one's already over fifteen minutes
-
-and I feel pretty good about what we
-
-covered so far we showed how to install
-
-the TALib library as a Python package
-
-we showed how to read in some data using
-
-an umpire arrays so we read in our
-
-Bitcoin historical price data into a
-
-numpy array and then we were able to run
-
-some TALib indicators against this
-
-numpy array so we were able to calculate
-
-a simple moving average using TALib and
-
-we're also able to calculate the RSI and
-
-determine a point at which Bitcoin price
-
-was overbought today and we compared
-
-that against this graph this RSI
-
-indicator in trading view just to
-
-confirm our analysis was correct and we
-
-were able to detect when this price rose
-
-here from 8702 8950 and confirm that the
-
-RSI went above 70 at that point in time
-
-so it looks like we have a pretty good
-
-idea of how to use CA lib indicators so
-
-I'm gonna stop it here and in the next
-
-video we're gonna continue our
-
-discussion of TALib and try to combine
-
-it with back trader for back testing and
-
-maybe we'll cover some more indicators
-
-and see what happens when we buy and
-
-sell Bitcoin based on these indicators
-
-and see what our results would be when
-
-initializing an account with a certain
-
-balance of say $100,000 so stay tuned
-
-for the next video and thanks for
-
-watching
+        #close = numpy.random.random(100)
+
+        # print(close)
+
+        # #Calculate a simple moving average of the close prices:
+        # moving_average = talib.SMA(close, timeperiod=10)
+
+        # print(moving_average)
+
+        # rsi = talib.RSI(close, timeperiod=14)
+
+        # print(rsi)
+
+and print just that my data there, all right, so I'm gonna run it again 
+
+        $ python3 ta.py
+
+        [
+         [1.61408430e+12 4.76862400e+04 4.94555300e+04 ... 2.07375702e+03
+          1.01062795e+08 0.00000000e+00]
+         [1.61408520e+12 4.86705400e+04 4.93223800e+04 ... 1.16145442e+03
+          5.66780029e+07 0.00000000e+00]
+         [1.61408610e+12 4.92540700e+04 4.96000000e+04 ... 1.21149016e+03
+          5.93137781e+07 0.00000000e+00]
+         ...
+         [1.61453160e+12 4.35147700e+04 4.37305200e+04 ... 4.28064209e+02
+          1.86070359e+07 0.00000000e+00]
+         [1.61453250e+12 4.36034600e+04 4.39426200e+04 ... 3.89522200e+02
+          1.70398295e+07 0.00000000e+00]
+         [1.61453340e+12 4.35449200e+04 4.35820500e+04 ... 6.82783060e+01
+          2.97135217e+06 0.00000000e+00]
+        ]
+
+all right so look at that, so we have a lot of, so it looks like an array of arrays which is good, and this first index from each list is the timestamp, and then we have some prices 
+so that's like nine thousand six hundred twenty three because you see that exponent, it's like e to the third, ten to the third, 
+
+and then, yeah, so it looks like that worked
+we're able to pull in an array of numpy arrays using this genfromtxt() function, right 
+
+so the next thing I want to do, I want just the closing value from here, 
+
+        15minutes.csv
+
+        1614084300000,  47686.24000000,  49455.53000000,  47672.46000000,  48670.21000000, .......
+        timestamp       open             high             low              close      
+
+so we have timestamp, open high/low, close, and so I want the 0 1 2 3, the 4th 4th value here, I don't, I'm not really that interested, and all these other ones I want to use, 
+the closing price, so I want to extract, you know this value, this value, this value, all the way down like this entire column of data, 
+and so let's look up how we do that right so
+
+        'how to import a CSV file as numpy.array in python' 
+        
+        import numpy as np
+        csv = np.genfromtxt('file.csv', delimiter=",")
+        second = csv[:,1]
+        third = csv[:,2]
+
+and it looks like you can access this sequence like this, so let's try that syntax just like accessing a list like that 
+
+so we're gonna say the 0 1 2 3 4, all right cool, 
+
+        close = my_data[:,4]
+
+        print(close)
+
+so we want the closing price (low)? so let's see if we say the closing price is 'mydata', 
+and then we have a colon and a 4 there and let's print the close 
+
+I run that, and spell it correctly, and look at that 
+
+        $ python3 ta.py
+
+        [48670.21 49264.95 48680.01 48122.79 48750.   48915.53 48489.87 46667.72
+         46978.18 47920.6  48615.1  48949.62 48602.03 48530.37 48185.95 47429.07
+         47365.61 46952.38 47834.83 47309.43 47175.27 46525.06 47313.23 47507.11
+         46881.49 47057.34 46913.78 45668.94 45523.   45866.17 46871.85 47269.48
+         47814.5  47941.48 48045.96 48418.26 47937.33 48308.23 48187.51 48136.35
+         48589.69 48749.99 48407.39 48252.12 48891.   48115.61 47216.63 47713.91
+         48456.58 48723.21 49166.12 49719.52 50191.6  50286.16 50008.52 50055.72
+         50160.42 50367.19 50243.7  50405.6  50874.99 51246.79 50673.73 50353.33
+         50617.29 50620.01 50399.72 50406.5  50247.4  49736.62 49666.93 50055.59
+         50109.21 49552.56 49703.96 50100.   50090.57 50491.91 50626.76 50406.83
+         50634.36 50545.63 50717.02 51229.02 50847.51 50606.28 50404.42 50539.14
+         50075.   50387.83 50714.89 50366.22 50360.02 50818.7  51131.05 50891.81
+         50739.94 50431.67 49590.82 49453.55 49481.61 49428.22 49460.03 48774.57
+         49404.04 48914.08 49144.43 49222.17 49819.5  49741.63 49479.04 49577.25
+         49308.28 49740.36 49703.24 49842.78 50041.8  49618.18 49632.21 49855.7
+         49570.   49348.81 49405.57 48969.46 48959.93 49170.76 48864.96 48629.66
+         49101.18 48500.51 48152.16 48449.09 48707.72 48124.12 48686.94 48556.13
+         48811.63 49351.71 49309.66 49555.1  49676.2  49554.86 50316.84 50757.21
+         50507.25 50851.26 50832.65 50726.75 50504.71 50736.61 50490.37 50790.02
+         50650.95 50502.07 50117.23 50333.77 50206.97 50066.57 50287.94 49982.06
+         49627.34 49763.7  49701.93 50002.21 50388.6  50422.2  50280.78 50432.38
+         50453.54 50335.23 50485.   50466.71 50395.99 50155.1  50069.98 50037.94
+         49700.   49253.07 48935.78 48773.8  48977.03 49254.52 49077.05 49214.77
+         49551.51 49769.26 49606.17 49761.78 50294.8  50274.01 50366.31 50511.54
+         51487.06 51745.02 51430.06 51465.33 51347.6  51445.97 50851.58 50712.08
+         50830.88 51036.33 50927.95 50867.47 50849.99 51071.27 51074.8  50980.82
+         50630.66 50095.31 49716.41 49633.59 49550.95 49800.63 49740.38 49684.24
+         49544.14 49485.98 49527.09 49669.58 49443.86 48872.55 49099.99 48818.39
+         49152.75 49043.93 48905.54 48650.47 48101.99 47902.26 48697.68 48342.59
+         48235.85 47947.9  48265.5  47335.08 47073.73 47491.61 46752.35 46184.09
+         46801.05 46988.91 47153.56 47079.16 46480.48 46810.   47270.15 47756.44
+         47343.51 46728.53 47377.63 47235.96 47330.24 47439.79 47486.42 47098.34
+         47025.06 46700.01 46650.9  46223.88 45517.53 46107.44 45828.47 46048.53
+         46093.07 46046.82 45381.11 44397.85 44973.68 45434.57 45655.11 45694.47
+         45727.74 46334.34 45922.1  46092.24 46410.76 46411.45 46628.33 46579.39
+         46706.85 46409.55 46207.53 45783.26 46427.65 46427.71 47085.06 47067.59
+         46823.39 46531.1  46166.14 46182.55 45958.41 46072.31 46799.95 47356.81
+         46868.98 46571.96 46340.3  47486.16 47594.65 47735.77 47862.29 47722.01
+         48127.26 48061.74 47815.39 47746.74 47660.98 47768.68 47381.2  47738.15
+         47317.09 47256.71 47210.29 46641.27 46959.17 46821.43 46178.09 46588.57
+         46270.   46384.69 46773.99 46465.84 45677.46 45157.49 45746.23 45865.03
+         45476.3  45991.32 46214.23 46274.58 46276.87 46674.94 46720.95 47150.01
+         47525.07 47453.79 47565.15 47789.72 47761.97 47692.63 47739.43 47494.52
+         47375.34 47673.9  47487.24 47622.56 47423.08 47384.38 47746.29 47743.81
+         47657.47 47700.94 47573.28 47724.35 47803.71 47701.12 47708.31 48332.2
+         47566.6  47187.04 47359.38 47069.62 47158.53 47162.23 46552.38 46732.19
+         46620.5  46478.19 46566.89 46363.12 46671.04 46727.07 46832.04 46925.83
+         46775.51 46799.01 47274.79 47446.72 47299.99 47378.01 47017.04 47554.47
+         47429.99 47378.35 47559.73 47517.47 47441.91 47469.98 47254.51 46883.89
+         47079.64 47199.52 47060.84 46556.51 46528.64 46755.93 46944.39 46842.61
+         46883.19 46876.95 46997.11 46909.47 47042.53 46972.84 47042.11 47251.98
+         47136.3  47397.89 47184.17 47256.95 47405.39 47260.85 47324.96 46997.19
+         47081.07 47114.99 47048.75 46728.01 46825.3  46589.57 46337.28 46551.04
+         45828.43 45425.79 45170.47 45710.38 46106.43 46142.23 46255.95 46128.2
+         46345.94 46458.13 46469.65 46277.27 46442.5  46181.35 45845.7  45511.99
+         45397.23 45449.53 45388.83 44673.14 44629.17 44597.39 44644.48 44823.05
+         44384.14 44875.61 45075.05 44850.02 44791.27 43905.71 44875.53 44636.92
+         44372.43 44358.16 44545.56 44326.13 44400.83 44686.68 45095.79 44944.99
+         44856.61 45287.18 45103.2  45187.26 45067.61 45147.87 45346.76 45152.69
+         45177.2  45347.82 45359.22 45388.55 45284.86 45284.93 45039.61 44649.99
+         44756.99 44673.48 44452.55 44601.3  44178.8  43749.67 44176.88 44377.91
+         44561.92 44323.76 43744.47 43316.54 43391.14 43411.61 43334.35 43632.98
+         43514.78 43603.46 43544.92 43481.66]
+
+so let's see is that correct, yeah nine thousand six hundred fourteen dot eighty seven, nine thousand four fourteen dot five,  nine sixteen eighty seven nine four four fourteen fifty 9470
+
+
+        48670.21 = 48670.21000000 
+                   close             
+
+so that's great, so we have a sequence of this closing price in these 15-minute candles, and we have it in a single numpy array, which is great!
+so and then this was the 15-minute charts, and so let's see if we apply our RSI indicator to that 
+
+so talib.RSI for the close of our Bitcoin data 
+
+        rsi = talib.RSI(close)
+
+        print(rsi)
+
+        $ python3 ta.py
+
+        [        nan         nan         nan         nan         nan         nan
+                 nan         nan         nan         nan         nan         nan
+                 nan         nan 46.90490373 42.47891146 42.12004002 39.76425923
+         46.6291435  43.45379552 42.6550255  38.92087424 45.18515002 46.63503022
+         42.70931501 44.13288622 43.18937331 36.00190747 35.26104172 38.46758864
+         46.78587721 49.68225514 53.4242737  54.27741914 55.00769046 57.60606525
+         53.32211526 56.03742249 54.91765749 54.42134636 58.04006642 59.27143143
+         55.52127029 53.85808625 59.26517164 51.39358744 44.083058   48.45117547
+         54.20490488 56.09942278 59.12448389 62.59286434 65.2979426  65.83095192
+         62.78184328 63.09479335 63.82150161 65.27572514 63.63068619 64.88029779
+         68.28285682 70.7040151  62.75273306 58.7730507  60.96916003 60.99221898
+         58.00342633 58.07152679 55.78549333 49.1024959  48.25312625 53.12319647
+         53.76962449 46.58723137 48.59834949 53.52764679 53.39634314 58.10645465
+         59.58448219 56.10771055 58.78697954 57.31760465 59.42713983 64.99332906
+         58.54786684 54.84424672 51.88642018 53.68181373 47.15341401 51.43991633
+         55.50355567 50.63849406 50.55363822 56.3775385  59.84591115 56.16258926
+         53.89493908 49.52387191 39.99543133 38.68681597 39.12528135 38.56024272
+         39.12433843 32.25254076 42.27874851 37.61270745 40.91428283 42.02928255
+         49.85890053 48.93109415 45.8337281  47.18040946 43.9571294  49.88073377
+         49.39767423 51.30670287 53.97374741 47.95311235 48.1593633  51.45920556
+         47.31309358 44.3348313  45.28661177 39.67363105 39.55824792 43.4748232
+         39.47884068 36.68475028 45.07389588 38.14090123 34.79806276 39.65320127
+         43.59308137 37.62391338 45.39007987 44.01831985 47.36436432 53.6683526
+         53.1347636  55.89137858 57.22817885 55.41591236 63.27986171 66.91220952
+         63.09690961 65.97257061 65.67442308 63.90458281 60.23905993 62.64876093
+         58.58843455 61.83038657 59.50217919 57.02655659 51.10735048 54.00056992
+         52.05793779 49.91667292 53.18626143 48.47700137 43.65020702 45.88099774
+         45.01170263 49.9738011  55.53419342 55.99226675 53.49437731 55.77216826
+         56.09540412 53.73090837 56.24525129 55.8461343  54.24335358 49.07661166
+         47.35997178 46.69783614 40.29822967 33.71721577 29.974703   28.25072816
+         33.42443705 39.80672863 37.3411877  40.42492298 47.25963804 51.16145305
+         48.28041862 51.10937358 59.31789811 58.90249584 60.23395368 62.30339687
+         72.61314026 74.59200837 68.1200286  68.45015242 65.99359408 67.0574198
+         55.71565801 53.43153882 55.11898932 57.95634639 55.94699535 54.80510822
+         54.45914372 58.06778511 58.12479061 55.94422272 48.62472697 40.00658969
+         35.24525828 34.28476709 33.30933199 38.95988137 38.12053243 37.31386378
+         35.30599605 34.47660318 35.62771761 39.58920465 35.82780193 28.45789102
+         34.25589605 30.91518311 38.57495224 37.13197268 35.32236184 32.2068803
+         26.7443528  25.07642305 40.88754093 37.12141203 36.04657737 33.24966407
+         38.88251833 30.7072917  28.87102496 35.51137725 30.14910039 26.79915738
+         35.2155921  37.56940295 39.63938612 39.00996577 34.2914424  38.68738575
+         44.29205072 49.54151105 45.61113465 40.46255498 47.23295923 46.00335629
+         46.99233016 48.17999256 48.70679989 44.63943139 43.89405014 40.65150639
+         40.16870065 36.14848922 30.67887222 38.98256386 36.74118544 39.68712031
+         40.29318611 39.84543722 33.9905432  27.55111151 35.28352211 40.73563107
+         43.20145265 43.65206017 44.05607428 50.9600994  46.73868203 48.63005891
+         52.06215646 52.06962711 54.47133376 53.81601913 55.32351284 51.13118105
+         48.44474379 43.29949532 51.69164284 51.69235979 58.89076621 58.64067386
+         55.1171486  51.15509528 46.64624082 46.87298738 44.11520819 45.85844591
+         55.4245706  61.090545   54.54909821 50.97044118 48.3084556  59.55901712
+         60.43700137 61.60468919 62.66850927 60.66161175 64.2257782  63.22833379
+         59.48750005 58.44970487 57.10934316 58.39953269 52.30359365 56.77933954
+         50.73176764 49.91081301 49.25095495 41.93258161 46.69789982 44.97566939
+         37.93793658 43.96305666 40.66359684 42.34133772 47.74259702 44.21211347
+         36.72881339 32.78712252 40.56479052 42.02270628 38.67933977 44.93064467
+         47.42870364 48.11493018 48.14259147 52.84840933 53.3750569  58.07747897
+         61.71265884 60.63652949 61.75847468 63.98761468 63.4950785  62.20657955
+         62.75592795 58.00435285 55.7906182  59.91759194 56.37433215 58.29957084
+         54.48257101 53.747363   59.28115006 59.22885568 57.33264971 58.06065756
+         55.08798445 57.83894729 59.25098849 56.61144851 56.75684655 67.06904997
+         50.99739246 45.21291398 48.0919135  43.91361373 45.4788833  45.54698992
+         37.28063703 40.69805943 39.26683401 37.45924706 39.33378023 36.61839974
+         43.01975134 44.12558269 46.23094208 48.11222581 45.37218828 45.89099594
+         55.17323906 57.97857176 54.82517252 56.18963022 48.83965304 57.70936476
+         55.3171605  54.31135514 57.2514624  56.34173785 54.66906086 55.20114935
+         50.3185986  43.23490346 47.44330324 49.89327604 47.1547884  38.81185436
+         38.40745046 43.57135941 47.5016073  45.65229232 46.54584129 46.41945662
+         49.2756651  47.29537596 50.54502128 48.8462833  50.62266016 55.64795369
+         52.47765098 58.26757303 52.62619152 54.25060096 57.45488141 53.52378469
+         54.99465146 46.83388621 48.92275795 49.78200555 48.08097044 40.8095369
+         43.59601947 38.82660225 34.47906047 40.55280895 30.32047162 26.33336459
+         24.16349198 36.14575574 43.23143941 43.83810787 45.8188602  43.94388455
+         47.86024226 49.80609923 50.01239355 46.57019073 49.76800273 45.1667705
+         40.04255876 35.70536559 34.3283286  35.54827982 34.74162777 26.97058968
+         26.57726128 26.27895998 27.57609838 32.43127547 27.54366539 38.68648191
+         42.54771368 39.52333572 38.74892452 29.39839089 45.03999627 42.54267884
+         39.90165907 39.75825103 42.67217554 40.21902946 41.45296594 46.04264946
+         51.85934601 49.73120358 48.47565173 54.50222319 51.71856565 52.90216837
+         50.98620807 52.23585177 55.27870333 51.81033456 52.2180907  55.068263
+         55.26028915 55.78386529 53.40443234 53.40587725 47.81037587 40.54468589
+         43.10197098 41.59813083 37.83697092 41.66160114 35.06288619 29.88529451
+         39.46827117 43.38924893 46.78702003 43.17508076 35.91275577 31.6742718
+         33.15535418 33.58080781 32.73395937 39.1242724  37.60161738 39.50390202
+         38.66590577 37.73436833]
+
+        [ ...... 29.974703   28.25072816 ....... 29.88529451 .........]
+
+        (oversold = below 30)
+
+        oversold 15 data points back the price close at 43749.67000000 $ and so if you look before that you would expect prices to be decrease rapidly, so there was probably a lot of momentum leading to an oversold state,
+
+and then we print the RSI, I'm gonna run it, 
+so you have a lot of different values here that are between 0 and 100, so these are RSI values, and let's see if we can find any points at which the price was overbought or oversold 
+
+so you'll see here near the end there's a case where the RSI was above 70 which would be overbought 
+so let's see if we can verify that using the data, so we'll go, one, two, three, four, five data points back, so if you go back five data points, so from the end,
+so you'll see that the value, one two three four five, so 8950 here was when it was overbought, and so if you look before that you would expect prices to be rising rapidly
+so there was probably a lot of momentum leading to an overbought state, 
+
+and so let's see if those numbers rose, and if that's correct, right
+so you'll, look at that, so we have you'll see it was eighty seven fifty five, eight seven sixty nine, eight 789, and so it was rising until it's eighty eight hundred, 
+then kept rising into eighty eight hundreds, and then went all the way to eighty nine fifty, so there was a lot of momentum upward there leading to an overbought state
+
+and also let's see if we can validate that, let's try something like a trading view right, and then let's see what date and time that corresponds to 
+so that was May 25th which is today, and that was around 12:15 p.m. Pacific, so I'm going to pull up the cryptocurrency data for Bitcoin, right
+and let's see Bitcoin USDT, and I'm gonna go to the fully featured chart here, and let's try to pull up the RSI, and compare so what we got from TALib just to verify we're doing this
+correctly 
+
+        29.88529451 
+        Sun Feb 28 2021 15:00:00 GMT+0100 (Central European Standard Time)
+
+        https://fr.tradingview.com/chart/oTAPdW86/
+
+
+so I'm going to look at the 15-minute chart, and then I already have the RSI pulled up, and if you look here
+sure enough at 12:15 here, it looks like this is where that overbought condition occurred which was when Bitcoin was about eighty nine fifty,
+so you see this run here, this led to the overbought, and so you see this RSI at the bottom, and then it rose, and briefly went above seventy 
+
+okay, so I think I'm going to end the video here, this one's running a bit long, I'm trying to keep every video between ten and fifteen minutes or so
+this one's already over fifteen minutes, and I feel pretty good about what we covered so far, 
+
+we showed how to install the TALib library as a Python package
+we showed how to read in some data using an numpy arrays
+so we read in our Bitcoin historical price data into a numpy array, 
+and then we were able to run some TALib indicators against this numpy array, 
+so we were able to calculate a simple moving average using TALib and we're also able to calculate the RSI, and determine a point at which Bitcoin price was overbought today
+and we compared that against this graph this RSI indicator in trading view just to confirm our analysis was correct, and we were able to detect when this price rose here from 8702 to 8950 and confirm that the RSI went above 70 at that point in time
+
+so it looks like we have a pretty good idea of how to use TA lib indicators
+
+so I'm gonna stop it here and in the next video, we're gonna continue our discussion of TALib and try to combine it with backtrader for back testing and maybe we'll cover some more indicators and see what happens when we buy and sell Bitcoin based on these indicators, and see what our results would be when initializing an account with a certain balance of say $100,000 
+
+so stay tuned for the next video and thanks for watching!
 
 
 
