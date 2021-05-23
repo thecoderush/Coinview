@@ -581,9 +581,9 @@ https://www.youtube.com/watch?v=6PnCr14chcY
 
 
 all right that was great so now that i'm back inside, i wanted to continue where we left off,
-if you'll remember last time i mentioned that we're going to try to use this lightweight charts library to add a candlestick chart to our u, and just start sketching out the ui a little bit, uh i'm just going to start very simple in this video and then we'll add on to it over time, i don't want to spend too much time on ui yet, but i want to figure out how to add this chart library to our web page.
+if you'll remember last time i mentioned that we're going to try to use this lightweight charts library to add a candlestick chart to our u, and just start sketching out the ui a little bit, i'm just going to start very simple in this video and then we'll add on to it over time, i don't want to spend too much time on ui yet, but i want to figure out how to add this chart library to our web page.
 
-So you remember last time we had a file here, an index.html and all we're doing is uh connecting to websockets, and we're streaming out this price data, and then we're displaying and appending the bitcoin prices to our webpage 
+So you remember last time we had a file here, an index.html and all we're doing is connecting to websockets, and we're streaming out this price data, and then we're displaying and appending the bitcoin prices to our webpage 
 
 So in addition to that, let's see if we can go ahead and include some type of chart here
 So i am going to stop this stream for a bit, so i'm going to comment this out for a minute,
@@ -618,7 +618,7 @@ so what you can do is add a script tag, so script in your head, you just do scri
             <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
         </head>
 
-and then you'll have lightweight charts included and it's just hosted on another uh on another host it's already hosted here, and ready to go, right, and then we have this chart.js here which where we'll put our javascript that's custom, and you'll see uh they provided an example here, of
+and then you'll have lightweight charts included and it's just hosted on another on another host it's already hosted here, and ready to go, right, and then we have this chart.js here which where we'll put our javascript that's custom, and you'll see they provided an example here, of
 how to initialize this chart :
 
         const chart = LightweightCharts.createChart(document.body, { width: 400, height: 300 });
@@ -639,7 +639,7 @@ how to initialize this chart :
 so i'm going to take that, let's see, yeah let's take that, and let's just put it in our chart.js so i'm going to paste that in there, and so we have chart equals, so it looks like you create a new
 chart, and you give it a width and a height, and you choose where it's added on the page
 
-so it's using document.body here, uh which will erase our other stuff in the body,
+so it's using document.body here, which will erase our other stuff in the body,
 so what i want to do is create a new div just for the chart and i'll call it id equals chart 
 
         <div id="charts"></div>
@@ -870,11 +870,11 @@ and i can get that going again and then what we're going to want to do is start 
 and we're going to gradually hook that up, um i'm not quite ready to do that, i don't really feel like doing that yet so, i'm going to comment this back out, and i'm not as much in the ui mode at the moment so i just want to get this started so that we can move on to the python portion
 
 okay next let's put in some placeholders on the ui to accept some user input,
-let's say the user wants to configure some indicators they're interested in uh on their custom, on this uh custom trading platform, right
+let's say the user wants to configure some indicators they're interested in on their custom, on this custom trading platform, right
 
 and so under the trades div let's do an id for 'settings' and this will be a place to store all of our settings right, and so i'll do an h3, and just say 'settings' right and then here let's just put some options the user can configure, and let's say this thing it's going to hold some indicators that the user is interested in
 
-so i'm going to say input type equals text and let's say label and let's say you know we have a simple RSI indicator right, so that's RSI um and we can let's just add another div there just to give it a little bit of room right, so we have an rsi setting right, and so let's see what the settings look like in trading view for instance and we can just uh make this kind of work similarly, so i'm going to go to markets on trading view, i'm going to go to bitcoin, and then let's click this guy and then let's look at the full featured chart
+so i'm going to say input type equals text and let's say label and let's say you know we have a simple RSI indicator right, so that's RSI um and we can let's just add another div there just to give it a little bit of room right, so we have an rsi setting right, and so let's see what the settings look like in trading view for instance and we can just make this kind of work similarly, so i'm going to go to markets on trading view, i'm going to go to bitcoin, and then let's click this guy and then let's look at the full featured chart
 
 so you see, i have this RSI indicator already up so i'm going to close it real quick, and then i'm going to add it back so i'm going to click f of x here
 or this, yeah indicators and strategies button, and then if i do relative strength index right
@@ -2003,3 +2003,760 @@ so stay tuned for the next video and thanks for watching!
 
 
 
+Binance API Tutorial (Part  6) - Setting up a Flask Backend (15:38)
+
+https://www.youtube.com/watch?v=o95Rl1OEkBg
+
+
+
+
+
+hey everyone welcome back to another video 
+
+today i'm going to be continuing the series on cryptocurrency and binance 
+
+if you'll remember i started recording this series on binance around memorial day weekend, and i didn't post the videos because i wasn't finished
+i got a little bit bummed out after what happened after memorial day, and um everything that happened in the country for the past, a little over a month now
+so i got a little bit burns out and wasn't quite in the mood to continue the series, but now that i'm in a little bit in better spirits, i'm going to try and pick up where we left off here 
+since there's a lot of demand for crypto content, i'm going to post a little bit more of that on this particular channel
+
+um so if you'll remember, last time we had started making this ui, so the plan was to make kind of a tradingview like a system, where we have a user interface has a chart, and some indicators on this user
+interface, and then we also explored receiving candlestick data using the binance api, and also explored using websockets to stream, real-time data both from javascript and also from python
+
+and so then after that we explored using talib so we installed ta lib in order to try different indicators against the candlestick that we got, so that we can tell whether the price for bitcoin is overbought or oversold as just a simple example
+
+so now, what we want to do, now that we have this ui, and also we have you know some simple scripts to parse csv data with 15 minute candlesticks, and you know run a talib rsi indicator for instance on 
+this dataset, i want to start hooking up a back end to this web ui, so we have a web ui that's written in javascript, and we have the ability to stream bitcoin price data to the console, and i believe we showed
+that last time, so that's all inside of an index.html file, so we included lightweight charts, we included these simple text fields for our rsi settings, and then also we have this chart.js that we wrote which is a javascript file that configures our charts, and right now we just have hard-coded price data to demonstrate the chart, and we also know how to stream binance data over websockets using javascript so we showed how to do that, and so now let's start hooking up this front end to a back end that gets a real data, and kind of tie it all together
+
+so to do that i'm going to introduce a framework called flask, so a lot of people that program python are probably familiar with this
+
+        https://flask.palletsprojects.com/en/2.0.x/
+
+it's a web framework that makes it very easy to make a little web application, and so you can build a front end using these html templates, with some placeholders for variables, and then you can also define some api endpoints and routes, to run some logic, access a database, call other services and things like that
+
+and so we're going to use flask here, and hook that up
+
+so to do that let's go ahead and just dive in 
+
+so we have our requirements.txt here
+
+        requirements.txt
+
+and i've already installed python-binance, talib, numpy and backtrader??,
+
+        https://www.backtrader.com/
+
+        How to install Backtrader?
+        
+        https://algotrading101.com/learn/backtrader-for-backtesting/
+
+        The easiest way to install Backtrader is by command line. Simply type in pip install backtrader.
+                
+                
+        If you plan to use the charting functionality, you should have matplotlib installed. The minimum version requirement for matplotlib is 1.4.1.
+
+        You can confirm it is installed on your system by typing in pip list from the command line to show installed Python packages.
+
+        If you need to install it, you can do so either via pip install backtrader[plotting] or pip install matplotlib.
+
+
+        $ pip install backtrader
+
+and i'm going to add flask as a requirement here, and so we can just install flask into our virtual environment here 
+
+        $ pip install flask
+
+and then we'll have flask as a web application framework, and then let's just copy the quick start example to create a flask app
+
+        https://flask.palletsprojects.com/en/2.0.x/quickstart/
+
+and i'll demonstrate how that works, and then we'll start filling in the simple endpoints with more specific ones for our application
+
+so here's the minimal application in the quick start section of the flask documentation, and so if you just copy this in, let's create a new file and we're going to call it app.py
+and this will contain our web application
+
+if i paste that in, 
+
+        from flask import Flask
+
+        app = Flask(__name__)
+
+        @app.route("/")
+        def hello_world():
+            return "<p>Hello, World!</p>"
+
+you'll see we import flask from the flask package, and then the first thing you need to do is you create a new application, which is a new flask object
+and then all you need to do in flask really is to find some routes, and then some function, a function to call when that route is accessed in the browser
+
+and if you don't know what that means
+
+i'm going to show you real quick so
+
+let's run this flask application
+
+so it looks like you have to export a
+
+variable
+
+an environment variable so this export
+
+flask app equals hello.pi
+
+so we're going to export from our
+
+command line export flask
+
+app equals and then our app is called
+
+app.pi so we'll say app.pi
+
+and that creates the environment
+
+variable and then we just say flask run
+
+and what you'll see that happens is a
+
+small web server has a web server built
+
+in
+
+and it says the web server is running on
+
+localhost
+
+127.001 and port 5000 so if you copy
+
+that to your browser
+
+and you put that in you get hello world
+
+on the screen
+
+so you have a web address and at the
+
+base route which is just slash right
+
+it just returns hello world that's all
+
+it does so
+
+this is the route and the function
+
+it means when this route is accessed in
+
+the browser it calls this function hello
+
+world
+
+and whatever you return from the
+
+function is what's displayed
+
+rendered in the browser as a response so
+
+let's modify this a little bit
+
+with another example so instead of hello
+
+world let's just call this the index
+
+and then i'll just call this the index
+
+page
+
+right and so if i rerun it
+
+i'll rerun the app um and i reload
+
+you see it just returns index so that's
+
+how you change that right
+
+and then let's say we wanted to create
+
+another route that where the
+
+the url is slash buy
+
+so maybe it's a buy endpoint so let's
+
+call that function buy
+
+and we'll return the string by and let's
+
+create one called cell
+
+and we'll create that function and then
+
+return cell
+
+and let's create one more function
+
+called settings where we can just save
+
+our
+
+indicator settings to a database for
+
+instance so i'll call that one settings
+
+right and let's do that
+
+okay and then another thing we'll do
+
+you'll notice i had to restart the web
+
+server
+
+in order for the changes to take effect
+
+this web server actually
+
+can automatically reload if you set the
+
+debug mode on and so let's see how you
+
+do that
+
+so debug mode all you have to do is do
+
+another export
+
+and say you're in development mode so
+
+i'm going to do that so i'm going to
+
+stop this web server with control c
+
+and i'm going to export that flask
+
+environment equals filament
+
+and then do run and you'll see now it
+
+says debugger
+
+is active and so what that means is
+
+it will reload the application
+
+automatically so let me show you what
+
+that means so
+
+you see we defined a base route that's
+
+index but also now we have a slash buy
+
+so slash buy returns by slash cell
+
+returns cell
+
+and slash settings return settings right
+
+and so
+
+if i change this for instance is
+
+settings 2 now i don't have to reload
+
+the server you see how it reloaded
+
+automatically
+
+and so now i'll get a 404 not found
+
+when i hit settings because i changed
+
+the route to settings 2.
+
+but if i go to settings 2 i
+
+automatically see it so i'll change that
+
+back i just want to show you how that
+
+reloads automatically
+
+and also note in debug mode if i make a
+
+mistake
+
+so let's say my home page i leave that
+
+out like that
+
+and it tries to reload and then i try to
+
+hit my endpoint
+
+the base url here i see a syntax error
+
+so it shows me some debugging
+
+information
+
+in the browser to help me know when
+
+where the error is so it says
+
+end of line scanning string literal and
+
+it points to that exact point
+
+so i just took out the quote there so
+
+that's the error so now it reloads
+
+and now if i reload it everything's fine
+
+so that's good
+
+all right so we're not just going to be
+
+returning
+
+a simple string right what we really
+
+want it to do is we want it to look
+
+like this if we want to have a chart we
+
+want to have
+
+you know a user interface so we already
+
+have this index.html
+
+file created and so what we want to do
+
+is use that in our flask application
+
+so to do that we're going to want to use
+
+flask
+
+templates which are jinja 2 templates
+
+and so if you look in the documentation
+
+here
+
+for jinja right so all these are or
+
+basically
+
+basically some html like this but it has
+
+some nice syntax for like looping
+
+through
+
+a list some placeholders like if you
+
+want to change the title
+
+and so there's a bunch of different tags
+
+that you can embed in so it just
+
+basically is a templating
+
+language that we use but the baseline
+
+it's really just
+
+some html but with ways of looping
+
+through python lists and
+
+displaying variables dynamically and so
+
+forth so it's like some html with
+
+with an extra layer of programming on
+
+top of it so what we can do
+
+is this index.html that we had saved in
+
+the previous
+
+lesson right all that was is we had been
+
+opening this as a file but we don't want
+
+to
+
+actually open it as a file we want this
+
+to run as a web application right so
+
+that we can deploy this
+
+to some domain our own domain and then
+
+have this
+
+template load and display our ui so in
+
+flask what you want to do
+
+is you can create a folder called
+
+templates
+
+just like that and then we want all of
+
+our
+
+flask templates our jinja templates to
+
+go in this templates folder
+
+and so let's move so i'm going to move
+
+index.html
+
+to this templates folder
+
+so i move that there and then inside of
+
+templates now i have that index.html
+
+and then our chart.js we can
+
+also we're going to make another
+
+directory
+
+and i'm going to create a directory
+
+called the base
+
+called static and that'll just be our
+
+static javascript and css files
+
+and so i'll move chart.js to static and
+
+that's in there
+
+and so now we're getting the structure
+
+of an application we have our javascript
+
+and css and static
+
+we have our html templates in templates
+
+we'll probably make a data directory so
+
+let's make a data directory just
+
+in case we need the csv files later so
+
+we'll make a directory called data
+
+and let's just move our csv files into
+
+there
+
+and we're just going to gradually
+
+organize our application more and more
+
+right so data has some csv files that we
+
+downloaded
+
+we probably don't need these later we're
+
+going to obtain these dynamically but
+
+i'm just saving them for now
+
+so we have our app we have our
+
+backtrader
+
+ta lib so i i have this prepared for
+
+later
+
+but we're not going to go into this
+
+quite yet we're going to make some
+
+modifications to this
+
+and then we have rta.pi that we ran
+
+earlier
+
+and so any python code we have here
+
+we're going to gradually add that
+
+into two modules and then pull them into
+
+our web application here
+
+so import them in and then make it where
+
+these endpoints actually call
+
+the technical analysis functions from
+
+talib
+
+um and also called the binance api
+
+and let me see this dataset.text here
+
+i'll go ahead and move that
+
+also into data
+
+so do that and then yeah so we're going
+
+to clean this up
+
+more and more so that our project is
+
+well organized
+
+into a structure we just started with
+
+the basic html file
+
+and some simple python scripts where
+
+we're going to organize this into
+
+a full stack web application all right
+
+so here's our app and then we have an
+
+index now an index function
+
+that returns the string index but we
+
+what we want to do is actually
+
+display a template an html template
+
+so to do that flask has this render
+
+template function
+
+so i'm going to from flask import flask
+
+and render template and this is all in
+
+the documentation
+
+but i have enough familiarity where i
+
+know the names of these now so
+
+we're importing render template and
+
+we're going to say
+
+return render template index.html
+
+and i believe it'll automatically know
+
+to look in a folder called templates so
+
+let's see what happens
+
+so i'm going to reload this and i'm
+
+going to do flask
+
+run to run the server again
+
+and you'll see right it rendered the
+
+index.html template
+
+that we had so you'll notice we have the
+
+html part from
+
+our index template here but we don't
+
+have our chart anymore
+
+and any color or anything like that so
+
+what happened there right we did
+
+we have this template rendering but this
+
+chart.js is in a different location now
+
+and our application doesn't know where
+
+it's at so to fix that
+
+we're going to go back here to the flask
+
+quickstart here
+
+and i believe there's a static yeah so
+
+there's a static files
+
+function here and so we need this little
+
+url for
+
+to generate a url to a particular asset
+
+so a css or javascript file and so if we
+
+copy this where it says script source
+
+equals chart.js instead of
+
+putting just chart start chart js just
+
+like that what we need to do
+
+is do these little placeholders here and
+
+then we're calling this function url for
+
+and saying look in static
+
+for file name chart.js
+
+and then at that point no matter where
+
+we deploy it
+
+when we refresh it it will have
+
+a way to reference that static so it
+
+does slash static charge a s
+
+but if we had this in another folder and
+
+defined our static folder
+
+then it would know where that chart.js
+
+lives all right so now we have our
+
+javascript we have our ui
+
+it's being rendered as a template in
+
+inside of flask all right so the next
+
+step here
+
+is what were those little curly braces i
+
+just used so that's
+
+used to display a variable um in flask
+
+or in ginger two templates
+
+and so we can do is for instance let's
+
+say we want to change the title
+
+of this application we could do title
+
+equals coinview so we define a variable
+
+in our python function
+
+and then we just pass these variables
+
+so we can do title equals title and that
+
+will go to our template here instead of
+
+hard coding trades here
+
+we can do this place folder and just do
+
+title just like that
+
+and you'll see it says coin view and so
+
+if we want to save settings to a
+
+database for instance
+
+um like this 14 70 and 30
+
+then what we could do is when the page
+
+loads we retrieve those default settings
+
+from the database
+
+and then we send them over to the
+
+template and then display them in the
+
+template
+
+that way different users of this
+
+application could have different
+
+settings of their own
+
+alright so we're coming up at about 15
+
+minutes here on this video
+
+so i'm pretty happy with what we've
+
+accomplished we took our
+
+fixed html file that we created in the
+
+earlier lessons
+
+and we installed flask and used it in as
+
+a template
+
+for our flask application and we've also
+
+defined some simple routes even though
+
+they don't have much logic in them yet
+
+so i'm going to start the video here in
+
+the next video i'm going to continue on
+
+and add some logic to actually inter
+
+interact with cryptocurrency data and
+
+binance api
+
+from flask and so we'll gradually start
+
+hooking up our front and back end and
+
+bring it all together
+
+into a full stack application all right
+
+thanks a lot for watching and stay tuned
+
+for the next video
