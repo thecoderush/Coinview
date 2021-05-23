@@ -2118,105 +2118,62 @@ so you have a web address, and at the base route which is just slash right, it j
 
 and the function, it means when this route is accessed in the browser, it calls this function hello_world() and whatever you return from the function is what's displayed, rendered, in the browser as a response 
 
-so let's modify this a little bit
+so let's modify this a little bit, with another example
+so instead of hello_world() let's just call this the index() and then i'll just call this the 'index' page, right 
 
-with another example so instead of hello
+        def index():
+            return "<p>The index page</p>"
 
-world let's just call this the index
+and so if i rerun it, i'll rerun the app, and i reload
 
-and then i'll just call this the index
+        $ CTRL-C (to quit)
+        $ flask run 
 
-page
+you see it just returns index so that's how you change that, right, and then let's say we wanted to create another route, that where the the url is slash buy 
 
-right and so if i rerun it
+        @app.route("/buy")
 
-i'll rerun the app um and i reload
+so maybe it's a buy endpoint, so let's call that function 'buy' and we'll return the string by, 
 
-you see it just returns index so that's
+        @app.route("/buy")
+        def buy():
+            return "<p>buy</p>"
 
-how you change that right
+and let's create one called 'sell' and we'll create that function and then return 'sell'
 
-and then let's say we wanted to create
+        @app.route("/sell")
+        def sell():
+            return "<p>sell</p>"
 
-another route that where the
+and let's create one more function called settings, where we can just save our indicator settings to a database for instance 
+so i'll call that one settings, right, and let's do that
 
-the url is slash buy
+        @app.route("/settings")
+        def settings():
+            return "<p>settings</p>"
 
-so maybe it's a buy endpoint so let's
+okay and then another thing we'll do, you'll notice i had to restart the web server, in order for the changes to take effect, this web server actually can automatically reload if you set the debug mode on, and so let's see how you do that
 
-call that function buy
+        https://flask.palletsprojects.com/en/2.0.x/quickstart/
 
-and we'll return the string by and let's
+        Debug mode
+        $ export FLASK_ENV=development
+        $ flask run
 
-create one called cell
+so debug mode all you have to do is do another export, and say you're in development mode, so i'm going to do that, so i'm going to stop this web server with control c, and i'm going to export that flask environment equals development
 
-and we'll create that function and then
+        $ CTRL-C 
+        $ export FLASK_ENV=development
+        $ flask run
 
-return cell
+and then do run and you'll see now it says 'debugger is active!' and so what that means is it will reload the application automatically, so let me show you what that means 
 
-and let's create one more function
+so you see we defined a base route, that's 'index', but also now we have a slash 'buy', so slash 'buy' returns buy 
+slash 'sell' returns 'sell', and slash 'settings' return 'settings' right
 
-called settings where we can just save
-
-our
-
-indicator settings to a database for
-
-instance so i'll call that one settings
-
-right and let's do that
-
-okay and then another thing we'll do
-
-you'll notice i had to restart the web
-
-server
-
-in order for the changes to take effect
-
-this web server actually
-
-can automatically reload if you set the
-
-debug mode on and so let's see how you
-
-do that
-
-so debug mode all you have to do is do
-
-another export
-
-and say you're in development mode so
-
-i'm going to do that so i'm going to
-
-stop this web server with control c
-
-and i'm going to export that flask
-
-environment equals filament
-
-and then do run and you'll see now it
-
-says debugger
-
-is active and so what that means is
-
-it will reload the application
-
-automatically so let me show you what
-
-that means so
-
-you see we defined a base route that's
-
-index but also now we have a slash buy
-
-so slash buy returns by slash cell
-
-returns cell
-
-and slash settings return settings right
+        http://127.0.0.1:5000/buy
+        http://127.0.0.1:5000/sell
+        http://127.0.0.1:5000/settings
 
 and so
 
