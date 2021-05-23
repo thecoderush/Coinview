@@ -2065,7 +2065,11 @@ and i've already installed python-binance, talib, numpy and backtrader??,
 
 and i'm going to add flask as a requirement here, and so we can just install flask into our virtual environment here 
 
-        $ pip install flask
+        ($ pip install flask => gives me an error when using flask)
+
+        so use this instead :
+
+        $ sudo apt isntall python3-flask 
 
 and then we'll have flask as a web application framework, and then let's just copy the quick start example to create a flask app
 
@@ -2075,6 +2079,8 @@ and i'll demonstrate how that works, and then we'll start filling in the simple 
 
 so here's the minimal application in the quick start section of the flask documentation, and so if you just copy this in, let's create a new file and we're going to call it app.py
 and this will contain our web application
+
+        $ touch app.py
 
 if i paste that in, 
 
@@ -2089,73 +2095,30 @@ if i paste that in,
 you'll see we import flask from the flask package, and then the first thing you need to do is you create a new application, which is a new flask object
 and then all you need to do in flask really is to find some routes, and then some function, a function to call when that route is accessed in the browser
 
-and if you don't know what that means
+and if you don't know what that means, i'm going to show you real quick, so let's run this flask application
 
-i'm going to show you real quick so
+so it looks like you have to export a variable, an environment variable, so this export FLASK_APP equals hello.py ($ export FLASK_APP=hello)
 
-let's run this flask application
+so we're going to export from our command line, export flask app equals and then our app is called app.py, so we'll say app.python
 
-so it looks like you have to export a
+        $ export FLASK_APP=app.py
 
-variable
+and that creates the environment variable, and then we just say flask run
 
-an environment variable so this export
+        $ flask run
 
-flask app equals hello.pi
+and what you'll see that happens is a small web server has a web server built in
+and it says the web server is running on localhost 127.0.0.1 and port 5000, so if you copy that to your browser, and you put that in you get 'hello world' on the screen
 
-so we're going to export from our
+so you have a web address, and at the base route which is just slash right, it just returns 'hello world' that's all it does, so this is the route 
 
-command line export flask
+        @app.route("/")
+        def hello_world():
+            return "<p>Hello, World!</p>"
 
-app equals and then our app is called
+and the function, it means when this route is accessed in the browser, it calls this function hello_world() and whatever you return from the function is what's displayed, rendered, in the browser as a response 
 
-app.pi so we'll say app.pi
-
-and that creates the environment
-
-variable and then we just say flask run
-
-and what you'll see that happens is a
-
-small web server has a web server built
-
-in
-
-and it says the web server is running on
-
-localhost
-
-127.001 and port 5000 so if you copy
-
-that to your browser
-
-and you put that in you get hello world
-
-on the screen
-
-so you have a web address and at the
-
-base route which is just slash right
-
-it just returns hello world that's all
-
-it does so
-
-this is the route and the function
-
-it means when this route is accessed in
-
-the browser it calls this function hello
-
-world
-
-and whatever you return from the
-
-function is what's displayed
-
-rendered in the browser as a response so
-
-let's modify this a little bit
+so let's modify this a little bit
 
 with another example so instead of hello
 
