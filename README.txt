@@ -2307,192 +2307,107 @@ so we're importing 'render_template', and we're going to say return render templ
         def index():
             return render_template('index.html')
 
-and i believe it'll automatically know to look in a folder called 'templates', so let's see what happens
+and i believe it'll automatically know to look in a folder called 'templates', so let's see what happens 
+so i'm going to reload this, and i'm going to do flask run to run the server again
 
-so i'm going to reload this and i'm
+        $ CTRL-C
+        $ flask run 
 
-going to do flask
+and you'll see right it rendered the index.html template that we had, so you'll notice we have the html part from our index template here, but we don't have our chart anymore and any color or anything like that, so what happened there right, we have this template (index.html) rendering but this chart.js is in a different location now
 
-run to run the server again
+        [...] 
+                <script src="chart.js"></script>
+            </body> 
+        </html>
 
-and you'll see right it rendered the
+and our application doesn't know where it's at, so to fix that we're going to go back here to the flask quickstart here
 
-index.html template
+        https://flask.palletsprojects.com/en/2.0.x/quickstart/
 
-that we had so you'll notice we have the
+and i believe there's a 'static' yeah so there's a 'static files' function here
 
-html part from
+        https://flask.palletsprojects.com/en/2.0.x/quickstart/#static-files
 
-our index template here but we don't
+        To generate URLs for static files, use the special 'static' endpoint name:
 
-have our chart anymore
+        url_for('static', filename='style.css')
 
-and any color or anything like that so
+        The file has to be stored on the filesystem as static/style.css.
 
-what happened there right we did
+and so we need this little url for to generate a url to a particular asset, so a css or javascript file, and so if we copy this where it says script source equals chart.js, 
+instead of putting just chart.js just like that what we need to do is do these little placeholders here, and then we're calling this function url for and saying look in static for file name chart.js
 
-we have this template rendering but this
+        [...] 
+                <script src="{{ url_for('static', filename='chart.js') }}"></script>
+            </body> 
+        </html>
 
-chart.js is in a different location now
+and then, at that point no matter where we deploy it, when we refresh it it will have a way to reference that static, so it does slash static slash charge dot js
 
-and our application doesn't know where
+        http://127.0.0.1:5000/
 
-it's at so to fix that
+        CTRL + SHIFT + I (open the dev mode)
 
-we're going to go back here to the flask
+        [...]
 
-quickstart here
+                <script src="/static/chart.js"></script>
 
-and i believe there's a static yeah so
+        [...]
 
-there's a static files
+but if we had this in another folder and defined our static folder then it would know where that chart.js lives, all right, 
 
-function here and so we need this little
+so now we have our javascript, we have our ui, it's being rendered as a template inside of flask, all right 
 
-url for
+so the next step here is, what were those little curly braces i just used, 
 
-to generate a url to a particular asset
+        <script src="{{ url_for('static', filename='chart.js') }}"></script>
 
-so a css or javascript file and so if we
+so that's used to display a variable in flask or in Jinja2 templates, and so we can do is for instance, let's say we want to change the title of this application, we could do title
+equals coinview 
 
-copy this where it says script source
+        @app.route("/")
+        def index():
+            title = 'Coinview'                
 
-equals chart.js instead of
+            return render_template('index.html')
 
-putting just chart start chart js just
+so we define a variable in our python function, and then we just pass these variables, so we can do title equals title 
 
-like that what we need to do
+        @app.route("/")
+        def index():
+            title = 'CoinView'                
 
-is do these little placeholders here and
+            return render_template('index.html' title=title)
 
-then we're calling this function url for
+and that will go to our template here
 
-and saying look in static
+        templates/index.html
 
-for file name chart.js
+        [...]
+                <body>
+                    <h1>Trades</h1>
+        [...]
 
-and then at that point no matter where
+instead of hard coding 'Trades' here, we can do this place folder ( {{}} ) and just do 'title' just like that
 
-we deploy it
+        [...]
+                <body>
+                    <h1>{{ title }}</h1>
+        [...]
 
-when we refresh it it will have
+and you'll see it says 'CoinView' 
+and so if we want to save settings to a database for instance, like this 14 (RSI) 70 (Overbought) and 30 (Oversold), then what we could do is when the page loads we retrieve those default settings from the database, and then we send them over to the template, and then display them in the template
 
-a way to reference that static so it
+that way different users of this application could have different settings of their own
 
-does slash static charge a s
+alright so we're coming up at about 15 minutes here on this video
+so i'm pretty happy with what we've accomplished 
 
-but if we had this in another folder and
+we took our fixed html file that we created in the earlier lessons,
+and we installed flask and used it in as a template for our flask application, 
+and we've also defined some simple routes even though they don't have much logic in them yet 
 
-defined our static folder
+so i'm going to stop the video here in the next video 
+i'm going to continue on and add some logic to actually interact with cryptocurrency data and binance api from flask, and so we'll gradually start hooking up our front and back end, and bring it all together into a full stack application all right
 
-then it would know where that chart.js
-
-lives all right so now we have our
-
-javascript we have our ui
-
-it's being rendered as a template in
-
-inside of flask all right so the next
-
-step here
-
-is what were those little curly braces i
-
-just used so that's
-
-used to display a variable um in flask
-
-or in ginger two templates
-
-and so we can do is for instance let's
-
-say we want to change the title
-
-of this application we could do title
-
-equals coinview so we define a variable
-
-in our python function
-
-and then we just pass these variables
-
-so we can do title equals title and that
-
-will go to our template here instead of
-
-hard coding trades here
-
-we can do this place folder and just do
-
-title just like that
-
-and you'll see it says coin view and so
-
-if we want to save settings to a
-
-database for instance
-
-um like this 14 70 and 30
-
-then what we could do is when the page
-
-loads we retrieve those default settings
-
-from the database
-
-and then we send them over to the
-
-template and then display them in the
-
-template
-
-that way different users of this
-
-application could have different
-
-settings of their own
-
-alright so we're coming up at about 15
-
-minutes here on this video
-
-so i'm pretty happy with what we've
-
-accomplished we took our
-
-fixed html file that we created in the
-
-earlier lessons
-
-and we installed flask and used it in as
-
-a template
-
-for our flask application and we've also
-
-defined some simple routes even though
-
-they don't have much logic in them yet
-
-so i'm going to start the video here in
-
-the next video i'm going to continue on
-
-and add some logic to actually inter
-
-interact with cryptocurrency data and
-
-binance api
-
-from flask and so we'll gradually start
-
-hooking up our front and back end and
-
-bring it all together
-
-into a full stack application all right
-
-thanks a lot for watching and stay tuned
-
-for the next video
+thanks a lot for watching and stay tuned for the next video

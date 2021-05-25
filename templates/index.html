@@ -5,7 +5,7 @@
      </head>
 
     <body>
-        <h1>Trades</h1>
+        <h1>{{ title }}</h1>
     
         <div id="charts"></div>
     
@@ -38,7 +38,8 @@
                 });
             */
         </script>
-        <script src="chart.js"></script>
+        <!-- <script src="chart.js"></script> -->
+        <script src="{{ url_for('static', filename='chart.js') }}"></script>
     </body> 
 </html>
 
