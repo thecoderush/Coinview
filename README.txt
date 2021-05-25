@@ -2175,323 +2175,139 @@ slash 'sell' returns 'sell', and slash 'settings' return 'settings' right
         http://127.0.0.1:5000/sell
         http://127.0.0.1:5000/settings
 
-and so
+and so if i change this for instance is settings 2 now 
 
-if i change this for instance is
+        http://127.0.0.1:5000/settings2
 
-settings 2 now i don't have to reload
+i don't have to reload the server you see how it reloaded automatically
+and so now i'll get a 404 not found when i hit settings, because i changed the route to settings 2.
 
-the server you see how it reloaded
+but if i go to settings 2 i automatically see it, so i'll change that back, i just want to show you how that reloads automatically
 
-automatically
+and also note in debug mode if i make a mistake, so let's say my home page i leave that out like that, 
 
-and so now i'll get a 404 not found
+        @app.route("/")
+        def index():
+            return "<p>The index 
 
-when i hit settings because i changed
+and it tries to reload, and then i try to hit my endpoint, the base url, here i see a syntax error, so it shows me some debugging information in the browser to help me know where the error is 
+so it says 'end of line (EOL) scanning string literal' and it points to that exact point
+so i just took out the quote there so that's the error 
 
-the route to settings 2.
+        @app.route("/")
+        def index():
+            return "<p>The index page</p>"
 
-but if i go to settings 2 i
+so now it reloads, and now if i reload it everything's fine
 
-automatically see it so i'll change that
+so that's good, all right, so we're not just going to be returning a simple string right, what we really want it to do, is we want it to look like this 
 
-back i just want to show you how that
+        http://127.0.0.1:5500/Trading/Coinview/index.html
 
-reloads automatically
+if we want to have a chart, we want to have, you know a user interface so we already have this index.html file created, and so what we want to do is use that in our flask application
 
-and also note in debug mode if i make a
+so to do that, we're going to want to use flask templates, which are 'Jinja 2' templates, and so if you look in the documentation here
 
-mistake
+        https://flask.palletsprojects.com/en/2.0.x/
 
-so let's say my home page i leave that
+        https://jinja.palletsprojects.com/en/3.0.x/
 
-out like that
+for 'Jinja' right, so all these are basically some html like this, 
 
-and it tries to reload and then i try to
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <title>My Webpage</title>
+        </head>
+        <body>
+            <ul id="navigation">
+            {% for item in navigation %}
+                <li><a href="{{ item.href }}">{{ item.caption }}</a></li>
+            {% endfor %}
+            </ul>
+        
+            <h1>My Webpage</h1>
+            {{ a_variable }}
+        
+            {# a comment #}
+        </body>
+        </html>
 
-hit my endpoint
+but it has some nice syntax for like looping through a list,
 
-the base url here i see a syntax error
+        {% for item in navigation %}
 
-so it shows me some debugging
+some placeholders like if you  want to change the title
 
-information
+        <title>{% block title %}{% endblock %} - My Webpage</title>
 
-in the browser to help me know when
+and so there's a bunch of different tags that you can embed in, so it just basically is a templating language that we use, but the baseline it's really just some html, but with ways of looping through python lists, and displaying variables dynamically and so forth 
+so it's like some html with an extra layer of programming on top of it, so what we can do is this index.html that we had saved in the previous lesson right 
+all that was is we had been opening this as a file, but we don't want to actually open it as a file, we want this to run as a web application right 
+so that we can deploy this to some domain, our own domain, and then have this template load and display our ui 
 
-where the error is so it says
+so in flask what you want to do, is you can create a folder called 'templates'
 
-end of line scanning string literal and
+        $ mkdir templates
 
-it points to that exact point
+just like that, and then we want all of our flask templates, our jinja templates to go in this 'templates' folder, and so let's move, so i'm going to move index.html to this templates folder
 
-so i just took out the quote there so
+        $ mv index.html templates/
 
-that's the error so now it reloads
+so i move that there, and then inside of templates, now i have that index.html,
 
-and now if i reload it everything's fine
+and then our chart.js we can also, we're going to make another directory, and i'm going to create a directory called the base, called 'static', and that'll just be our static javascript and css files
 
-so that's good
+        $ mkdir static
 
-all right so we're not just going to be
+and so i'll move chart.js to static 
 
-returning
+        $ mv chart.js static/
 
-a simple string right what we really
+and that's in there, and so now we're getting the structure of an application
 
-want it to do is we want it to look
+we have our javascript and css and static, we have our html templates in templates, we'll probably make a 'data' directory, so let's make a 'data' directory just in case we need the csv files later, so we'll make a directory called 'data' and let's just move our csv files into there
 
-like this if we want to have a chart we
+        $ mkdir data
 
-want to have
+        $ mv 15minutes.csv 2012-2020.csv data/
 
-you know a user interface so we already
+and we're just going to gradually organize our application more and more right 
+so data has some csv files that we downloaded, we probably don't need these later we're going to obtain these dynamically, but i'm just saving them for now
 
-have this index.html
+so we have our app, we have our backtrader_talib.py 
+so i have this prepared for later but we're not going to go into this quite yet, we're going to make some modifications to this
 
-file created and so what we want to do
+        backtrader_talib.py
 
-is use that in our flask application
+and then we have ta.py that we ran earlier, and so any python code we have here, we're going to gradually add that into modules, and then pull them into our web application here
+so import them in, and then make it where these endpoints actually call the technical analysis functions from talib, and also called the binance api
 
-so to do that we're going to want to use
+and let me see this dataset.txt here, i'll go ahead and move that also into 'data'
 
-flask
+        $ mv dataset.txt data/
 
-templates which are jinja 2 templates
+so do that, and then, yeah so we're going to clean this up more and more so that our project is well organized into a structure 
 
-and so if you look in the documentation
+we just started with the basic html file, and some simple python scripts where we're going to organize this into a full stack web application all right
 
-here
+so here's our app, and then we have an index now, 
 
-for jinja right so all these are or
+        app.py
 
-basically
+an index() function that returns the string 'index', but we what we want to do is actually display a template, an html template
+so to do that flask has this render template function
 
-basically some html like this but it has
+        from flask import Flask, render_ template
 
-some nice syntax for like looping
+so i'm going to, from flask import flask and render_template, and this is all in the documentation, but i have enough familiarity where i know the names of these now 
+so we're importing 'render_template', and we're going to say return render template index.html
 
-through
+        @app.route("/")
+        def index():
+            return render_template('index.html')
 
-a list some placeholders like if you
-
-want to change the title
-
-and so there's a bunch of different tags
-
-that you can embed in so it just
-
-basically is a templating
-
-language that we use but the baseline
-
-it's really just
-
-some html but with ways of looping
-
-through python lists and
-
-displaying variables dynamically and so
-
-forth so it's like some html with
-
-with an extra layer of programming on
-
-top of it so what we can do
-
-is this index.html that we had saved in
-
-the previous
-
-lesson right all that was is we had been
-
-opening this as a file but we don't want
-
-to
-
-actually open it as a file we want this
-
-to run as a web application right so
-
-that we can deploy this
-
-to some domain our own domain and then
-
-have this
-
-template load and display our ui so in
-
-flask what you want to do
-
-is you can create a folder called
-
-templates
-
-just like that and then we want all of
-
-our
-
-flask templates our jinja templates to
-
-go in this templates folder
-
-and so let's move so i'm going to move
-
-index.html
-
-to this templates folder
-
-so i move that there and then inside of
-
-templates now i have that index.html
-
-and then our chart.js we can
-
-also we're going to make another
-
-directory
-
-and i'm going to create a directory
-
-called the base
-
-called static and that'll just be our
-
-static javascript and css files
-
-and so i'll move chart.js to static and
-
-that's in there
-
-and so now we're getting the structure
-
-of an application we have our javascript
-
-and css and static
-
-we have our html templates in templates
-
-we'll probably make a data directory so
-
-let's make a data directory just
-
-in case we need the csv files later so
-
-we'll make a directory called data
-
-and let's just move our csv files into
-
-there
-
-and we're just going to gradually
-
-organize our application more and more
-
-right so data has some csv files that we
-
-downloaded
-
-we probably don't need these later we're
-
-going to obtain these dynamically but
-
-i'm just saving them for now
-
-so we have our app we have our
-
-backtrader
-
-ta lib so i i have this prepared for
-
-later
-
-but we're not going to go into this
-
-quite yet we're going to make some
-
-modifications to this
-
-and then we have rta.pi that we ran
-
-earlier
-
-and so any python code we have here
-
-we're going to gradually add that
-
-into two modules and then pull them into
-
-our web application here
-
-so import them in and then make it where
-
-these endpoints actually call
-
-the technical analysis functions from
-
-talib
-
-um and also called the binance api
-
-and let me see this dataset.text here
-
-i'll go ahead and move that
-
-also into data
-
-so do that and then yeah so we're going
-
-to clean this up
-
-more and more so that our project is
-
-well organized
-
-into a structure we just started with
-
-the basic html file
-
-and some simple python scripts where
-
-we're going to organize this into
-
-a full stack web application all right
-
-so here's our app and then we have an
-
-index now an index function
-
-that returns the string index but we
-
-what we want to do is actually
-
-display a template an html template
-
-so to do that flask has this render
-
-template function
-
-so i'm going to from flask import flask
-
-and render template and this is all in
-
-the documentation
-
-but i have enough familiarity where i
-
-know the names of these now so
-
-we're importing render template and
-
-we're going to say
-
-return render template index.html
-
-and i believe it'll automatically know
-
-to look in a folder called templates so
-
-let's see what happens
+and i believe it'll automatically know to look in a folder called 'templates', so let's see what happens
 
 so i'm going to reload this and i'm
 
