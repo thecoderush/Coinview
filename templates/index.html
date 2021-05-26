@@ -2,6 +2,8 @@
     <head>
         <title>Coinview</title>
         <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+        <!-- Fixing bug error favicon.ico in testing and dev environment but remove if for any production environment -->
+        <link rel="shortcut icon" href="#">
      </head>
 
     <body>
@@ -10,6 +12,10 @@
         <div id="charts"></div>
     
         <div id="trades"></div>
+
+        <div id="my_balances">
+            {{ my_balances }}
+        </div>
 
         <h3>Settings</h3>
 

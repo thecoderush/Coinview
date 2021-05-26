@@ -2411,3 +2411,1378 @@ so i'm going to stop the video here in the next video
 i'm going to continue on and add some logic to actually interact with cryptocurrency data and binance api from flask, and so we'll gradually start hooking up our front and back end, and bring it all together into a full stack application all right
 
 thanks a lot for watching and stay tuned for the next video
+
+
+
+
+
+
+
+
+
+Binance API Tutorial (Part  7) - Account Balances, Exchange Info, and Buy Execution (37:15)
+
+https://www.youtube.com/watch?v=jbJuOQ8GskM
+
+
+
+
+
+hey welcome back good morning it's Sunday July 6, it's just before 8 a.m. and for some reason I keep waking up early, so might as well create some videos with all of this time,
+I am having my morning cup of coffee, California dreamin mug, so let's go ahead and get going 
+
+so in the last video I installed flask which is a Python micro framework that makes it easy for you to create a back-end for your application, 
+so we began sketching out a few routes, so we have an app.py here, and with some basic (stub)? functions which contain a decorator, so this decorator allows us to define a route, so when we go to '/by' in our browser it will actually run this function, and return the string 'by' 
+we have one four 'sell', and we have one for 'settings', 
+
+and the only one we've really filled out a little bit so far, is this 'index()' function,
+so when you first visit your application it sets a variable, it sends it to the template, so we use this render template function, and we poured it over our index.html which was just a
+plain file before we moved it to this templates directory, and now we're rendering a Python variables inside of these Jinja2 templates, and so now we can have a route, have that route mapped from our browser, have it mapped to a function in Python, so when that route is access, it calls the function, and it renders the template, and displays whatever variables we've sent to the template 
+
+so let's continue on that pattern in this video, let's go ahead and start filling out some of the other functions that we've created, like buy() and sell() and settings() 
+and have it actually access some information about our by Binance account 
+
+so yesterday, I was gonna make this video, but then I had to jump through a few hoops as far as, a verification and so forth 
+so what you want to do, is if you've never traded crypto on here before, you have, if you got to buy crypto, it'll actually make you run through all these verification steps, and so actually I had to configure my bank account at a utility bill and all this stuff to verify, I am who I say I am, and then I went ahead and deposited a little bit more money a couple hundred more bucks here, so we have a few hundred bucks here, and you see I have a $236 US Dollars, and then I have a couple of, I bought it a little bit of Bitcoin and etherium here just a small amount, so it looks like I have like point zero zero five, and like 0.1 Ethereum, I'm so like a fraction of a coin there, and we're gonna see if we can make some of these transactions programmatically, so I bought these from the UI here, so you can go to buy crypto, and do that, we're gonna try to do that from Python now, so we're gonna do that in this video, and we're going to also make a web UI that lets us manually buy crypto from our flask web application, and have it hit flask endpoints that execute these by orders, and then once we have it executing manually, what we'll do is hook up our WebSockets, and technical analysis code, and have that hit our endpoints so that it can do it in an automated fashion 
+
+so let's go ahead and get started with writing a little bit more code with the Python binance package 
+so earlier in our earlier videos we used this Python binance package which we already have installed, and then we also set up our API keys, so you need this API key, and API secret, in your config.py so that it knows how to authenticate against your account, make sure all the functions you're running are using your credentials, 
+
+alright and so make sure you've went through all the authorizations and hoops you got to jump through otherwise you can't run any trades at all 
+
+so I've done that and then also, let's see, we have this get data, and so you'll remember in the first video what we did was a create a client, so you want to import the client, so this is our command line script get_data.py, and we're gonna move this into our web application, 
+
+and so to do that, let's just import the client and config just like this, so let's move these imports into our app.py, and make sure we have that stuff available so our importing our
+
+        from get_data.py 
+
+        copy 
+
+        import config, csv
+        from binance.client import Client
+        
+        to app.py
+
+config and our config.py has our API_key and API_secret already defined and so my real one is in my config.py but I've provided a sample config.py for you to reference if you want to do that yourself, because I can't show you my API key, 
+
+and then we also import the client, so the by Binance client, so this is just a bunch of Python classes, or a Python class, that's all, that has all of our logic for connecting to by binance you don't have to worry about that, you just use the binance client that's been provided, and then, also in our client you see we create a new client, it has an API_key and API_secret 
+
+        from get_data.py 
+
+        copy
+
+        client = Client(config.API_KEY, config.API_SECRET)
+
+        to app.py
+
+so we'll do here let's just do this at the top, we'll initialize our client, so we'll say client equals client, and then we import our config API_key and our API_secret and we should have a client to that point, and so if we go in our index a function here, we should be able to print that client, and to see if we have an object, so I'm going to refresh this, and then we'll look in our console, (terminal, not the browser console)
+
+        <binance.client.Client object at 0x7faaf8f1be50>
+
+and you'll see we have this by binance client object, so that looks like it means we have a binance's client that's successfully authenticated, if something was wrong, then it would probably throw an exception there, so looks like we're configured correctly we have our API key and API secret, and so now let's see if we can actually get some information about our account, 
+
+so let's look at these account endpoints 
+
+        https://python-binance.readthedocs.io/en/latest/account.html
+
+so that I'm at Python binance read the docs here, if you look that up, and let's just look through and see what we can find here, so I believe there's a get account, yeah, client dot get account to get client info, and so let's do that let's see what happens, 
+
+        #Get account info
+        
+        info = client.get_account()
+
+so I'm gonna do info equals client get account, and I'm going to print the info here just to the console 
+
+        app.py
+
+        @app.route("/")
+        def index():
+            # return "<p>The index page</p>"
+            title = 'CoinView'
+
+            info = client.get_account()    
+
+            print(info)
+
+            return render_template('index.html', title=title)
+
+so when we load the page it'll execute that function, and let's see if we grab some information about our account, all right, so it says invalid API key IP or permissions for this action
+
+alright so I don't know what that means, so I just had to look it up real quick, and it looks like you have to, depending on how your account was registered, so since when I created my account, I went through binance dot us here, and so what you want to do is on this client when you're initializing it, there's actually another parameter here, that you can do, 
+
+that's tld equals, and you can actually say, 'us' here 
+
+        client = Client(config.API_KEY, config.API_SECRET, tld='us')
+
+so you need to specify for some reason that's binance US, and so when I do that, and if i refresh it again, you'll see it actually loads this time, and it looks like it dumped a whole
+bunch of information to the screen, including some commission fees, and some information about whether I can trade, can withdraw, some so there's some permission information about my account
+and it also it looks like there's some balances here, and so that seems useful to put on our trading UI, so for building some kind of trading software, it looks, I want to know what I actually own, 
+
+so let's go ahead and get this balance's key, so this is a big dictionary here, and has a whole bunch of attributes, but this balance's key here has a lot of information I'm interested in, and so let's just pull out the balances, so I'm going to do, balances equals info balances 
+
+        balances = info['balances']
+
+and let's see what that looks like on its own, make sure we can get it, and I'll refresh this again and look at my console, and look at that, so we have a list here, so you see that square bracket
+
+and so we have a list of a bunch of assets which is great, and so now that we have that in this function here, the way flask works right, we want all of our logic stuff that like accesses api's databases, and that sort sort of stuff performs calculations, we want that in the Python code here, on our back-end, and then all we want to happen in the templates here is just to display all of our calculations or information, and so whenever we want to display in our template, we want to pass it over in the template, this, using this render template function, 
+
+and so what we can do is assign a variable, so, I could do something like my_balances equals right, and then in the template that'll give me access to a variable called my balances, and so we set my balances equal to balances and
+
+you can call them the same name if as you want
+
+        return render_template('index.html', title=title, my_balances=balances)
+
+I just want to show you what the difference is, so this this first variable here this is what it's called in the template, and then you're just assigning it to whatever is in the function, but you could also just do, you know, balance is equals balances just like that 
+
+so I'm gonna do my_balances is just to make that clear, and then I'll remove this print statement, and then now that I'm in the template right, then that means I have a variable, called my_balances, and so I'm gonna put that let's put that in a div here 
+
+        index.html
+
+        <div id="my_balances">
+        </div>
+ 
+and so I'll have a div called my balances, and we'll just put all of our balances inside here
+
+        <div id="my_balances">
+            {{ my_balances }}
+        </div>
+ 
+so I'll just display it as is, so anytime you display a variable in a flask Jinja2 template, you put these little curly braces around it, if I just do this with no braces right, if I just type 'Balances' it just straight up says 'Balances', but if I put it in braces here, then you know that this is a variable, and that's that has values inside of it, so it'll display the value, so if I just do that right, it'll say my balances right, and so now if i refresh it, so you see when I just type my underscore balances, it just displays it like that, but what I have the curly braces around it it's actually displaying, you know, what we've already calculated 
+
+so I'm gonna delete my balance is right there, and then also, instead of just dumping this in an ugly fashion, like a Python list, I'm going to
+
+display it as nice-looking HTML so in
+
+Jinja - if you want to loop through a
+
+list you need to use a curly brace
+
+instead of double curly braces
+
+it's a curly brace then % and then they
+
+have these language constructs here so
+
+they're very similar to just regular
+
+Python so you can do when you loop
+
+they're a list in Jinja - you can do for
+
+balance in my balances for instance and
+
+just like that and then you need an end
+
+for and all of that is in the Jinja -
+
+documentation so if you look at flask
+
+Jinja - there's a whole bunch of
+
+documentation on how this works for like
+
+loops and ifs and conditions but I'm
+
+just using a for loop and this how you
+
+display a variable and then there's
+
+conditional statements and so forth so
+
+it's not actually that much syntax but
+
+it's a couple things to get used to if
+
+you're not already and it's similar to
+
+kind of similar to Django and other
+
+frameworks as well but little different
+
+so for bouncing my bounces and then we
+
+will just display balance and let's look
+
+at what the keys are called so we have
+
+balance we have a set s1 key and then
+
+free so I guess it's called free and
+
+locked so
+
+free as I guess how much I have
+
+available to trade or sell I think so
+
+yeah I'm just considering that are
+
+available are available balance so asset
+
+and free and so let's display balance
+
+asset and then balance free just like
+
+that and let's see how that looks
+
+alright
+
+so now they're all on one line we got
+
+rid of all the extra dictionary stuff
+
+and then I'll delete my balances and
+
+let's display this in like each thing on
+
+a line so we'll just do let's do a table
+
+here and then we can change this if we
+
+add like a UI library or something so
+
+I'm just gonna do that and then for each
+
+thing yeah we'll do a row for each
+
+cryptocurrency that's available and just
+
+display our balance so we'll do a table
+
+and then we'll do TR so we'll do a new
+
+row and then we'll choose some dividers
+
+some TDs
+
+whatever that stands for our TD dividers
+
+divisions and we'll do that so we just
+
+have new rows and new cells and there
+
+you go i refresh that right and so you
+
+see my balance of Bitcoin is point zero
+
+zero five and my theory imbalance and my
+
+US dollar balance and then that closely
+
+matches what I already have on my
+
+dashboard here if I click dashboard or
+
+wallet yeah there you go so our balance
+
+is shown here and you see we have 236
+
+total balance and then the point five
+
+one is what's available so yeah free is
+
+the same as available and then they'll
+
+be locked balanced and I guess if you
+
+add both of those together you'll get
+
+your total balance alright so now that
+
+we know our balance is you know we're
+
+sitting here with the balance so what do
+
+we do next
+
+obviously we're gonna want to play some
+
+trades you know we don't want to we
+
+don't want these US dollars anymore we
+
+want crypto right so let's let's figure
+
+out how to buy and sell cryptocurrency
+
+programmatically using Python so we have
+
+our Python buy Nance package right it's
+
+already set up we're getting information
+
+from our account we have our apt up high
+
+and let's look at the
+
+by endpoint it doesn't have anything in
+
+it so let's let's fill that out and make
+
+sure it works let's make sure we can buy
+
+something so what I'm going to do is
+
+let's find the order function so we have
+
+our by Nance package that nicely
+
+encapsulate all of the necessary logic
+
+to place a by so all we should have to
+
+do is call a function to make this
+
+happen and so under account endpoints
+
+here you see it has this place an order
+
+function and let's pull this guy in so
+
+placing an order looks like this and so
+
+I'm going to copy this into my route
+
+here and it looks like we have an import
+
+from Finance enums import star and that
+
+is probably to pull in these constants
+
+here so there's some some constants that
+
+are fine and we just import those from
+
+finance enums so we'll do that and then
+
+with that done let's make sure we're
+
+indented properly and let's see what we
+
+need here we want to create an order and
+
+what do we want to buy let's say we want
+
+to buy more Bitcoin do we want to buy
+
+more Bitcoin or let's buy something
+
+random
+
+yeah let's buy a LTC litecoin right so I
+
+don't have any litecoin so I'm gonna buy
+
+some light coins so let's see how that
+
+works so LTC let's see if we can just
+
+buy LTC which side are we on do we want
+
+to buy or sell so I'm going to buy so
+
+I'll leave that like that order type
+
+limit I don't know how much they're
+
+going for I'm just gonna buy light coin
+
+for whatever the market value is and
+
+let's see if we can find what that is so
+
+how much is a light coin worth these
+
+days I'm going to see let's see I'm
+
+gonna go to buy crypto from the UI and
+
+let's see how much a light coin would be
+
+so let's say if we want to buy where's
+
+it at lots of coins there you go LTC and
+
+then if I say I want one so if I say
+
+want to buy 20 US dollars worth
+
+apparently that's point four seven light
+
+coins let's see litecoin price alright
+
+so I looked up litecoin price looks like
+
+it's about 40 US dollars
+
+Wow so that fell quite a bit I remember
+
+when it was worth a few hundred bucks or
+
+something and then I also remember that
+
+spike there was like one hundred and
+
+thirty three bucks so yeah like coins
+
+down to forty bucks so we can afford
+
+some of those so let's go ahead and
+
+let's see how what's the minimum we
+
+could buy so I believe there's a minimum
+
+trade amount on here let's see how many
+
+what do we have to do they'll let me
+
+spend twenty bucks so it looks like and
+
+someone correct me if I'm wrong I'm just
+
+doing stuff for the first time on here
+
+so it looks like I have to spend $20 to
+
+buy these light coins so I'm gonna buy
+
+twenty dollars worth and we'll have
+
+nearly half of a light coin I'm not
+
+gonna buy it from here I'm gonna see if
+
+I can buy it from Python and so I'm
+
+gonna buy I won't need a price since I'm
+
+doing a market order and so let's just
+
+say let's see if I can buy 0.3 light
+
+coins and I'll say good till cancel and
+
+then we'll do a market order so that all
+
+sounds good so we're gonna try to buy
+
+0.3 light coins and we're gonna do it
+
+from a buy end point and I'm just going
+
+to return the word buy here let's see if
+
+it throws an exception or something so
+
+I'm gonna go directly and then and then
+
+we'll have a UI actually call this
+
+function once we know it works so I'm
+
+gonna do this and do slash buy let's see
+
+what happens exception so it said
+
+invalid symbol so I can't buy that for
+
+some reason apparently LTC isn't the
+
+right symbol even though it's called
+
+that on the interface so what we want to
+
+do now is let's see what the actual
+
+symbols are so it looks like on this
+
+example it was like a 6 character symbol
+
+so let's let's let's figure out what the
+
+available symbols are so when I looked
+
+around what I found is there's this
+
+function get exchange info and if you do
+
+client not get exchange info that gives
+
+you a lot of information about the
+
+exchange including a list of available
+
+symbols so I'm going to do this I'm
+
+going to copy that function let's put
+
+this back in the index and just
+
+dump out what's what the available
+
+exchange info is so we have our account
+
+info so I'm gonna define this as now as
+
+a count that get account and balances
+
+equals account balances account balances
+
+and then I'll do you exchange info just
+
+to make that a little more clear and
+
+let's print the exchange info to our
+
+console and will refresh the page let's
+
+see what that looks like
+
+all right so we have a giant dump of
+
+stuff here so that's too much for me to
+
+even read but let's see we have timezone
+
+server charm let's see if we can figure
+
+out where this where the symbols are
+
+and I'll output this to a file real
+
+quick so I'm just going to start
+
+outputting this to a file and I'll do it
+
+two symbols dot txt and we'll see if we
+
+can parse it out that way all right so I
+
+dumped that all to a file and I'm gonna
+
+stop doing that and let's check out
+
+symbols text and let's look up LTC
+
+litecoin all right so it looks like the
+
+symbol there is LTC USD with the base a
+
+set of LTC so when we actually execute
+
+the buy we need to use LTC USD and let's
+
+see if we can find how does this look so
+
+if I look down here let's search for
+
+symbols yeah so here it is so there's a
+
+key called symbols here and then just
+
+has a big list of available symbols so I
+
+think what we should do is rather than
+
+let us guess right and letting it be
+
+freeform from the web right let's build
+
+a drop-down of all the available symbols
+
+and start building the UI for for buying
+
+and so what we'll do is we'll do symbols
+
+equals exchange info symbols and then we
+
+should just have a list of all of the
+
+symbols and let's see if we can pass the
+
+symbols to our template symbols equals
+
+symbols and we'll do that and then in
+
+our template let's loop through all the
+
+symbols so we'll do symbol let's just do
+
+a select like a drop-down and then we'll
+
+do you well first of all let's just loop
+
+through it for symbol in symbols and
+
+we'll probably have to pull out a key
+
+here so I'll do this an for and then
+
+we'll display the symbol right let's see
+
+what that looks like
+
+I'm going to remove this select for now
+
+I'll put it back shortly so I'm gonna
+
+remove that and let's see if we can dump
+
+out all the symbols all right so we have
+
+that now and it looks like the key is
+
+called symbol there
+
+so we'll do a symbol symbol and now we
+
+have a nice list of symbols here and
+
+they're not in alphabetical order we
+
+could technically sort those if we want
+
+to I think I'll just leave it for now I
+
+think they're sorted by popularity
+
+hopefully yeah because it looks like
+
+Bitcoin and aetherium are on top so
+
+they're probably the most popular ones
+
+and so I think I think that's how we
+
+want our interface to look I said we'll
+
+do that and then let's put a select
+
+around those so let's do select and then
+
+each of those is going to be an option
+
+so we'll put an option tag around each
+
+one okay and we'll do that and now we
+
+have a nice option tag okay
+
+and you notice it's taking a little bit
+
+longer to load our page now that's
+
+because it's making multiple API
+
+requests and so that actually takes a
+
+little bit of time you know a few
+
+hundred milliseconds but if we keep
+
+adding new function new API calls over
+
+and over again to this index page then
+
+our page will eventually get eventually
+
+get slow so what we want to do over time
+
+is move some of these functions to these
+
+HTTP requests to JavaScript so what
+
+we'll want to do is have the entire page
+
+load first and then only fetch things
+
+after the initial page load and also
+
+only fetch a certain information upon
+
+request so we could have technically
+
+loaded the page and then made the
+
+request to load this drop-down or we
+
+could have a list of constants with all
+
+the available
+
+information here and cach cach these
+
+symbols because they're not going to
+
+change very much but for now I just want
+
+to try some of these finance API
+
+functions and make sure they work so we
+
+have this drop-down list of all of the
+
+various symbols and now we can use them
+
+so our by end point we started filling
+
+that out but it didn't work yet because
+
+we passed in an invalid symbol so let's
+
+see if we can make that work
+
+so what I'm going to do is we have an
+
+option here let's let's see if we can
+
+have JavaScript call that function and
+
+pass it a valid symbol so what I'll do
+
+is I'll create an input here and that'll
+
+be of type text and we'll say ID equals
+
+quantity and so we want to do is buy a
+
+certain quantity of a cryptocurrency so
+
+I'll give it a name as well quantity all
+
+right and then next to this all rights
+
+help I'll use a place holder and I'll
+
+just do an example point 0.001 and then
+
+we'll give our select an ID and name -
+
+so symbol and we'll give it a name of
+
+symbol and next to it we'll put a button
+
+so we'll do button and actually let's do
+
+input type equals button and for now
+
+we'll have it do a normal post request
+
+that actually refreshes the page later
+
+we can make it where it fetches it in
+
+the background but this will be the
+
+simplest way to demonstrate a post
+
+request in flask for now so I'll do
+
+input type equals button and then I'll
+
+say name equals by and value equals by
+
+and let's see what that looks like
+
+all right so we have a quantity field we
+
+have a drop-down for the symbols and
+
+then we have this buy button so none of
+
+this actually does anything yet so let's
+
+make it go a little bit further so I'm
+
+gonna put a form tag around this just
+
+when do form action equals and we're
+
+gonna post to the buy route so the
+
+action equals buy one do
+
+equals post so a there's a get request
+
+in a post request a get request is just
+
+you know I'm getting that I'm getting
+
+this from my browser so I enter in a URL
+
+but when you're using a forum and
+
+posting you're sending data to the
+
+server from a forum you use a post
+
+request and so when you do that in flask
+
+you actually have to change your method
+
+and I'll show that in a second so by
+
+default it's a get request but if it's a
+
+post request from a forum you need to
+
+add this methods this methods handler
+
+here so let me show you what the error
+
+looks like so this is gonna throw an
+
+error and then we're gonna fix it so
+
+form action equals by methods equals
+
+post and we'll put this form at the end
+
+here and then we'll say input type
+
+equals submit so it's going to submit
+
+the form to our server all right now
+
+let's try that okay so I'm gonna click
+
+the buy button and you see it posted to
+
+the buy end point but it says method not
+
+allowed because we haven't flat said we
+
+don't allow post endpoints to this URL
+
+and so to allow that we're gonna change
+
+our buy endpoint here our buy endpoint
+
+and we're gonna say comma methods equals
+
+post and it's just a list so this allows
+
+post requests alright so now I get
+
+requests isn't allowed if I just try to
+
+do it from my browser like that it
+
+doesn't work so it has to be a post from
+
+a forum now all right so now I'm gonna
+
+click buy and you see a posted to our
+
+endpoint and now we have our invalid
+
+simple message our exception right
+
+because we still have a hard-coded to by
+
+LTC here which we haven't fixed and so
+
+now what we want to do is get the valid
+
+symbol that we've selected in our form
+
+and the quantity we've selected in our
+
+form and actually use those instead of
+
+these hard-coded values so we'll use the
+
+symbol from the form and the quantity
+
+from the form put them here and then
+
+we're gonna want to redirect back to the
+
+home page and then display some kind of
+
+success message so let's do that so how
+
+do we access a form variables so if you
+
+look at flask form variables
+
+our values of request variables using
+
+Python you have this request dot form so
+
+you get a dictionary so in our post
+
+we'll have print so let's let's just
+
+print what it looks like so we'll do
+
+print request form and then we need to
+
+also import request so we get this
+
+request object that has a dictionary of
+
+foreign values so now if I repost this
+
+so I'm going to repost it I can refresh
+
+and repost the form and now let's look
+
+at our console you'll see above this
+
+exception we have quantity and so we
+
+didn't actually set quantity and then we
+
+have symbol and it was still on Bitcoin
+
+US dollars and we also have this buy
+
+variable so we know it's a buy so let's
+
+make sure we fill in a quantity and a
+
+symbol so we'll want litecoin so I'm
+
+gonna do 0.33 litecoins and so I'll
+
+select litecoin US dollar from the list
+
+click buy it still says invalid symbol
+
+right but also you'll note I scroll down
+
+you should see we actually got a symbol
+
+in our form and a quantity in our form
+
+and so let's just change this to request
+
+a form symbol like that and request that
+
+form quantity request form quantity
+
+alright and let's try to buy a little
+
+bit less first just to make sure this
+
+works so I'm gonna do 0.01 like coins
+
+and now I'm going to post it and it says
+
+time and force sent when not required so
+
+we don't need that because we're issuing
+
+a market order so now I'm going to try
+
+it one more time click buy and filter
+
+fail failure
+
+min notational so I believe that means
+
+we didn't buy the minimum amount so
+
+let's before we enter a larger amount
+
+let's let's go ahead and add a way to
+
+handle these errors these exceptions so
+
+instead of just dumping this you know
+
+we're not going to have debug mode on in
+
+production so what we'll do is so let's
+
+just add a simple try try catch around
+
+it so we'll do try accept and we can
+
+just do exception
+
+as E and then we can do flash so you can
+
+actually flash a message in flask so
+
+flask flash message right so message
+
+flashing lets you display some type of
+
+error to the user so I'm going to use
+
+this flash function to display that
+
+message on the user interface right so
+
+it has flash message in categories and
+
+then we need to use this get flashed
+
+messages and display it in the template
+
+so let's import flash so comma flash
+
+here so we give it a message in a
+
+category of error so we'll give it a
+
+category of error so we'll do will
+
+display the exception let's just display
+
+the exception as is and we can make that
+
+more user friendly in the future and
+
+we'll just say that's an error
+
+so we'll flash an error and we're going
+
+to return a redirect so we need to
+
+import redirect so if if the buyer sells
+
+that successful we're just going to
+
+redirect back to the index for now so
+
+we'll return redirect and then we just
+
+need to give it a redirect to slash I
+
+believe what will happen so let's see
+
+what happens now so I'm gonna refresh
+
+and I get and I get that the session is
+
+unavailable because no secret key was
+
+set so in flask you need to set a secret
+
+key so that's one thing I'll do real
+
+quick you can put that in a config file
+
+or for now we can just do app dot secret
+
+key let's see how we set the secret key
+
+in class so that they have I believe
+
+this is to prevent cross-site scripting
+
+so let's see flask secret key and let's
+
+set that real quick that's something we
+
+should have done already
+
+when using forms so you can do ab dot
+
+secret key and so let's just set this up
+
+here for now but we can set a config
+
+value as well so you just need to give
+
+it some long string that's unique to
+
+your application and so I'll just type
+
+something like that Aptos secret key and
+
+then now let's run it one more time and
+
+it says object of by Nance exception not
+
+jason serializable so let's do one more
+
+thing let's see so it looks like it's
+
+trying to throw it
+
+exception I can't just display it like
+
+that so let's do a dot message and let's
+
+see if that works so I just posted that
+
+it just displayed the page so we got our
+
+redirect but we didn't even display the
+
+message so that's not very useful to the
+
+user something went wrong but we don't
+
+know what happened so let's try to
+
+display the message right here next to
+
+our trade section here so listen let's
+
+clean up our UI a little bit so under
+
+under here let's create this as an
+
+actual section so I'm going to do div
+
+and let's go ahead and put this like
+
+that and so we have a new section here
+
+for our trades and then let's give it a
+
+heading so let's say buy crypto right so
+
+we have our little box here and I'm just
+
+going to throw an inline style here and
+
+then we'll clean that up shortly so I'm
+
+going to put a little border around it
+
+solid gray one pics and let's do it give
+
+it like a padding of 20 pixels right
+
+style equals border all right so I did
+
+that and we have this giant box here and
+
+then we'll see margin 20 pixels and then
+
+we'll do with 600 pixels all right and
+
+then we'll move this to a stylesheet
+
+shortly I'm just trying to separate this
+
+out into a little box so and then we'll
+
+make that margin pop all right cool so
+
+we have this little trade box here and
+
+then we have a place where we can
+
+display our error message and so what we
+
+need is this for Flast messages we need
+
+this with messages equals get flash
+
+message flashed messages and I'm gonna
+
+splay this in the template and so I'm
+
+going to go into the index dot HTML and
+
+then let's say under this by crypto if
+
+there's any messages we'll put this part
+
+in and display any messages that occur
+
+okay and so now that's done let's go
+
+back to our coin view here and so you
+
+see how our flash messages were
+
+displayed so we have that min notational
+
+message and we can highlight that in red
+
+and do whatever we want there so we
+
+could do is belie
+
+we can make this a div and just do like
+
+style equals padding:10px border:solid
+
+red one picks and color red right if we
+
+really want this to stick out and then
+
+we could put that around our messages we
+
+could give it a background color of like
+
+pink so we could do like that and now
+
+let's do the can so we have this ugly
+
+thing here now so let's put this div
+
+inside if messages and we'll do that so
+
+now we have nothing displayed and now I
+
+type point zero zero one and I want to
+
+buy that many light coins I click by
+
+failure amid notational so we have an
+
+error in there and then just for
+
+completeness let's do a margin bottom
+
+ten pixels right and so I'll do this
+
+again point 0.01 litecoins
+
+click buy right so now we have a way to
+
+display an error message when something
+
+goes wrong and so on the other hand we
+
+also want to be able to display a
+
+message whenever something goes correct
+
+so we probably don't want to display it
+
+in red like this but I also don't want
+
+to mess with this inline anymore that
+
+was just quick we'll fix this in a
+
+stylesheet later but let's try to make
+
+us an actual successful crypto bye
+
+happen so let's see about buying more
+
+than the minimum amount so I'm gonna buy
+
+half of a light coin here and actually
+
+spend twenty dollars because I didn't
+
+actually look to see how to do paper
+
+trading so I'm willing to own half a
+
+light coin here just for a lesson so I'm
+
+gonna do buy half of a light coin I'm
+
+gonna click Buy and we don't get a
+
+message so I didn't display success
+
+messages but since we didn't get an
+
+exception exception I assume that was
+
+successful and so now let's go to our
+
+finance dashboard and see what I got so
+
+I'm gonna refresh this and if I look
+
+under crypto here you'll see like coin
+
+and it looks like I own nearly half a
+
+light coin for somebody says 0.499 five
+
+not quite 0.5 and so that was like 20
+
+bucks I just spent and now I have some
+
+light coin which is great so yeah that's
+
+pretty good for this video I think in
+
+the future in the next video I want to
+
+actually show our trade history and like
+
+show what we own oh yeah and we already
+
+show what we own so you can already see
+
+after I clicked by you see the half a
+
+light coin sitting there already so we
+
+have a way to successfully by crypto
+
+from a web application that we created
+
+using the flask micro framework we use
+
+Python finance to use to execute methods
+
+to retrieve our account balances to
+
+retrieve a valid list of symbols
+
+populate a drop-down we built a little
+
+widget for buying crypto and we're able
+
+to successfully execute a crypto buy
+
+from the web so I think that's a lot to
+
+accomplish I'm not sure how long this
+
+video has been so far but it feels a
+
+little bit long at this points probably
+
+over 30 minutes so I think that's a good
+
+amount of time for this video so next
+
+video will want to display a transaction
+
+history want to add a sell button and
+
+then we also want to eventually get into
+
+triggering some indicators based on the
+
+technical analysis library that I use in
+
+video number five and then after we have
+
+these endpoints and we know they work
+
+for buying and selling from the web here
+
+manually
+
+we'll have our WebSockets feed some
+
+information into a data frame or numpy
+
+array technical analysis the ta lib
+
+apply an indicator and then have it
+
+requests the same buy and sell end
+
+points and have it all working and then
+
+display the history of our trades and
+
+their profit profitability here on the
+
+web alright so that's it for now thanks
+
+for watching and stay tuned for the next
+
+video
