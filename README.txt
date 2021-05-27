@@ -2549,165 +2549,84 @@ and so I'll have a div called my balances, and we'll just put all of our balance
  
 so I'll just display it as is, so anytime you display a variable in a flask Jinja2 template, you put these little curly braces around it, if I just do this with no braces right, if I just type 'Balances' it just straight up says 'Balances', but if I put it in braces here, then you know that this is a variable, and that's that has values inside of it, so it'll display the value, so if I just do that right, it'll say my balances right, and so now if i refresh it, so you see when I just type my underscore balances, it just displays it like that, but what I have the curly braces around it it's actually displaying, you know, what we've already calculated 
 
-so I'm gonna delete my balance is right there, and then also, instead of just dumping this in an ugly fashion, like a Python list, I'm going to
+so I'm gonna delete my balance is right there, and then also, instead of just dumping this in an ugly fashion, like a Python list, I'm going to display it as nice-looking HTML
 
-display it as nice-looking HTML so in
+so in Jinja2, if you want to loop through a list you need to use a curly brace, instead of double curly braces, it's a curly brace then %, and then they have these language constructs here 
 
-Jinja - if you want to loop through a
+        {% for %}
 
-list you need to use a curly brace
+so they're very similar to just regular Python, so you can do when you loop through a list in Jinja2, you can do, {% for balance in my_balances %} , for instance, and just like that, 
+and then you need an {% endfor %}
 
-instead of double curly braces
+        {% for balance in my_balances %} 
+            {{ my_balances}}
+        {% endfor %} 
+        
+and all of that is in the Jinja2 documentation, so if you look at flask Jinja2, there's a whole bunch of
 
-it's a curly brace then % and then they
+        https://flask.palletsprojects.com/en/2.0.x/quickstart/#static-files
+        https://jinja.palletsprojects.com/en/3.0.x/templates/
 
-have these language constructs here so
+documentation on how this works for like loops and ifs and conditions, but I'm just using a for loop, and this how you display a variable, and then there's conditional statements, and so forth 
 
-they're very similar to just regular
+        There are a few kinds of delimiters. The default Jinja delimiters are configured as follows:
 
-Python so you can do when you loop
+                {% ... %} for Statements
+                {{ ... }} for Expressions to print to the template output
+                {# ... #} for Comments not included in the template output
 
-they're a list in Jinja - you can do for
+so it's not actually that much syntax, but it's a couple things to get used to if you're not already, and it's similar to Django, another frameworks as well, but little different
+so {% for balance my_balances %} and then we will just display balance, and let's look at what the keys are called, so we have 'balance', we have 'asset' as one key, and then 'free', 
+so I guess it's called 'free' and 'locked', 
 
-balance in my balances for instance and
+so 'free' as I guess how much I have available, to trade or sell, I think 
+so yeah, I'm just considering that are available balance 
 
-just like that and then you need an end
+so 'asset' and 'free', and so let's display balance['asset'] and then balance['free'] just like that, and let's see how that looks
 
-for and all of that is in the Jinja -
+        <div id="my_balances">
+            <h2>Balances</h2>
+            my_balances
 
-documentation so if you look at flask
+            {% for balance in my_balances %}
+                {{ balance['asset'] }} {{ balance['free']}}
+            {% endfor %}
+        </div>
 
-Jinja - there's a whole bunch of
+alright, so now they're all on one line, we got rid of all the extra dictionary stuff, and then I'll delete 'my_balances', and let's display this in like, each thing on a line 
+so we'll just do, let's do a table here, 
 
-documentation on how this works for like
+        <div id="my_balances">
+            <h2>Balances</h2>
 
-loops and ifs and conditions but I'm
+            <table>
+                {% for balance in my_balances %}
+                <tr>
+                    <td>
+                        {{ balance['asset'] }}
+                    </td>
+                    <td>
+                        {{ balance['free']}}
+                    </td>
+                </tr>
 
-just using a for loop and this how you
+                {% endfor %}
+            </table>    
+            
+        </div>
 
-display a variable and then there's
+and then we can change this if we add like a UI library or something, so I'm just gonna do that, and then for each thing, yeah, we'll do a row for each cryptocurrency that's available, and just display our balance, so we'll do a table, and then we'll do <tr> so we'll do a new row, and then we'll do some dividers, some <td> s,  whatever that stands for our <td> dividers divisions, and we'll do that,
+so we just have new rows, and new cells, and there you go, i refresh that right,
 
-conditional statements and so forth so
+and so you see my balance of Bitcoin is point zero zero five, and my ethereum balance, and my US dollar balance, and then that closely matches what I already have on my dashboard here, 
+if I click dashboard or wallet, yeah there you go, so our balance is shown here and you see we have 236 total balance, and then the point five one is what's available 
 
-it's not actually that much syntax but
+so yeah 'free' is the same as available and then they'll be locked balanced and I guess if you add both of those together you'll get your total balance 
 
-it's a couple things to get used to if
+alright so now that we know our balances, you know, we're sitting here with the balance, so what do we do next?
+obviously we're gonna want to play some trades, you know, we don't want these US dollars anymore, we want crypto right so let's figure out how to buy and sell cryptocurrency programmatically using Python 
 
-you're not already and it's similar to
-
-kind of similar to Django and other
-
-frameworks as well but little different
-
-so for bouncing my bounces and then we
-
-will just display balance and let's look
-
-at what the keys are called so we have
-
-balance we have a set s1 key and then
-
-free so I guess it's called free and
-
-locked so
-
-free as I guess how much I have
-
-available to trade or sell I think so
-
-yeah I'm just considering that are
-
-available are available balance so asset
-
-and free and so let's display balance
-
-asset and then balance free just like
-
-that and let's see how that looks
-
-alright
-
-so now they're all on one line we got
-
-rid of all the extra dictionary stuff
-
-and then I'll delete my balances and
-
-let's display this in like each thing on
-
-a line so we'll just do let's do a table
-
-here and then we can change this if we
-
-add like a UI library or something so
-
-I'm just gonna do that and then for each
-
-thing yeah we'll do a row for each
-
-cryptocurrency that's available and just
-
-display our balance so we'll do a table
-
-and then we'll do TR so we'll do a new
-
-row and then we'll choose some dividers
-
-some TDs
-
-whatever that stands for our TD dividers
-
-divisions and we'll do that so we just
-
-have new rows and new cells and there
-
-you go i refresh that right and so you
-
-see my balance of Bitcoin is point zero
-
-zero five and my theory imbalance and my
-
-US dollar balance and then that closely
-
-matches what I already have on my
-
-dashboard here if I click dashboard or
-
-wallet yeah there you go so our balance
-
-is shown here and you see we have 236
-
-total balance and then the point five
-
-one is what's available so yeah free is
-
-the same as available and then they'll
-
-be locked balanced and I guess if you
-
-add both of those together you'll get
-
-your total balance alright so now that
-
-we know our balance is you know we're
-
-sitting here with the balance so what do
-
-we do next
-
-obviously we're gonna want to play some
-
-trades you know we don't want to we
-
-don't want these US dollars anymore we
-
-want crypto right so let's let's figure
-
-out how to buy and sell cryptocurrency
-
-programmatically using Python so we have
-
-our Python buy Nance package right it's
+so we have our Python buy Nance package right it's
 
 already set up we're getting information
 

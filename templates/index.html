@@ -14,7 +14,23 @@
         <div id="trades"></div>
 
         <div id="my_balances">
-            {{ my_balances }}
+            <h2>Balances</h2>
+            <!-- my_balances -->
+
+            <table>
+                {% for balance in my_balances %}
+                <tr>
+                    <td>
+                        {{ balance['asset'] }}
+                    </td>
+                    <td>
+                        {{ balance['free']}}
+                    </td>
+                </tr>
+
+                {% endfor %}
+            </table>    
+            
         </div>
 
         <h3>Settings</h3>
