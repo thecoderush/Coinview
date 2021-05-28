@@ -2624,309 +2624,183 @@ if I click dashboard or wallet, yeah there you go, so our balance is shown here 
 so yeah 'free' is the same as available and then they'll be locked balanced and I guess if you add both of those together you'll get your total balance 
 
 alright so now that we know our balances, you know, we're sitting here with the balance, so what do we do next?
-obviously we're gonna want to play some trades, you know, we don't want these US dollars anymore, we want crypto right so let's figure out how to buy and sell cryptocurrency programmatically using Python 
 
-so we have our Python buy Nance package right it's
+obviously we're gonna want to play some trades, you know, we don't want these US dollars anymore, we want crypto right, so let's figure out how to buy and sell cryptocurrency programmatically using Python 
 
-already set up we're getting information
+so we have our Python binance package right, it's already set up, we're getting information from our account, we have our app.py
 
-from our account we have our apt up high
+        app.py
 
-and let's look at the
+and let's look at this '/buy' endpoint it doesn't have anything in it 
+so let's fill that out and make sure it works 
 
-by endpoint it doesn't have anything in
+let's make sure we can buy something, 
 
-it so let's let's fill that out and make
+so what I'm going to do is, let's find the order function, so we have our binance package that nicely encapsulate all of the necessary logic to place a buy 
 
-sure it works let's make sure we can buy
+so all we should have to do is call a function to make this happen, and so under account endpoints 
 
-something so what I'm going to do is
+        https://python-binance.readthedocs.io/en/latest/account.html
 
-let's find the order function so we have
+here you see it has this place an order function 
 
-our by Nance package that nicely
+        https://python-binance.readthedocs.io/en/latest/account.html#id2
 
-encapsulate all of the necessary logic
+and let's pull this guy in
 
-to place a by so all we should have to
+        Use the create_order function to have full control over creating an order
 
-do is call a function to make this
+                from binance.enums import *
+                order = client.create_order(
+                    symbol='BNBBTC',
+                    side=SIDE_BUY,
+                    type=ORDER_TYPE_LIMIT,
+                    timeInForce=TIME_IN_FORCE_GTC,
+                    quantity=100,
+                    price='0.00001')
 
-happen and so under account endpoints
+so placing an order looks like this, and so I'm going to copy this into my route here 
+and it looks like we have an import from Binance enums import star, and that is probably to pull in these constants here, so there's some constants that (are define)? and we just import those from binance enums 
 
-here you see it has this place an order
+so we'll do that, and then with that done, let's make sure we're indented properly, 
 
-function and let's pull this guy in so
+        @app.route("/buy")
+        def buy():
+    
+            order = client.create_order(
+                symbol='BNBBTC',
+                side=SIDE_BUY,
+                type=ORDER_TYPE_LIMIT,
+                timeInForce=TIME_IN_FORCE_GTC,
+                quantity=100,
+                price='0.00001')
 
-placing an order looks like this and so
+            return "<p>buy</p>"
 
-I'm going to copy this into my route
+and let's see what we need here, we want to create an order, and what do we want to buy, let's say we want to buy more Bitcoin, do we want to buy more Bitcoin or let's buy something random
 
-here and it looks like we have an import
+yeah let's buy a LTC litecoin right 
 
-from Finance enums import star and that
+so I don't have any litecoin, so I'm gonna buy some lightcoins 
+so let's see how that works 
+so LTC let's see if we can just buy LTC which side are we want or do we want to buy or sell so I'm going to buy 
+so I'll leave that like that 
 
-is probably to pull in these constants
+        ...
+        symbol='LTC',
+        ...
 
-here so there's some some constants that
+order type limit, I don't know how much they're going for, I'm just gonna buy light coin for whatever the market value is 
+        
+        ...
+        type=ORDER_TYPE_MARKET,
+        ...
 
-are fine and we just import those from
+and let's see if we can find what that is, so how much is a lightcoin worth these days, I'm going to see, let's see, I'm gonna go to buy crypto from the UI, and let's see how much a lightcoin would be, so let's say if we want to buy, where's it at? lots of coins... there you go LTC, and then if I say I want one, so if I say want to buy 20 US dollars worth, 
+apparently that's point four seven lightcoins, let's see, 
 
-finance enums so we'll do that and then
+        'litecoin price' (google search) 
+        
+alright, so I looked up litecoin price looks like, it's about 40 US dollars (time of the video is 5 juil. 2020)
 
-with that done let's make sure we're
+Wow so that fell quite a bit I remember when it was worth a few hundred bucks or something, and then I also remember that spike there was like one hundred and thirty three bucks 
 
-indented properly and let's see what we
+so yeah likecoins down to forty bucks, so we can afford some of those 
+so let's go ahead and let's see what's the minimum we could buy 
+so I believe there's a minimum trade amount on here, let's see, how many? what do we have to do? 
 
-need here we want to create an order and
+they'll let me spend twenty bucks, so it looks like..., and someone correct me if I'm wrong I'm just doing stuff for the first time on here, so it looks like I have to spend $20 to buy these lightcoins, so I'm gonna buy twenty dollars worth, and we'll have nearly half of a light coin 
 
-what do we want to buy let's say we want
+I'm not gonna buy it from here, I'm gonna see if I can buy it from Python, and so I'm gonna buy..., I won't need a price since I'm doing a market order, and so let's just say... let's see if I can buy 0.3 lightcoins 
+        
+        ...
+        quantity=0.3,
+        #price='0.00001'
+        )
 
-to buy more Bitcoin do we want to buy
+and I'll say (good till cancel)? and then we'll do a market order, so that all sounds good so we're gonna try to buy 0.3 lightcoins, and we're gonna do it from a buy end point, 
+and I'm just going to return the word 'buy' here, let's see if it throws an exception or something, so I'm gonna go directly, and then we'll have a UI actually call this function once we know how it works 
 
-more Bitcoin or let's buy something
+so I'm gonna do this, and do '/buy' 
 
-random
+        http://127.0.0.1:5000/buy
 
-yeah let's buy a LTC litecoin right so I
+let's see what happens... exception! 
 
-don't have any litecoin so I'm gonna buy
+so it said invalid symbol, so I can't buy that for some reason, apparently LTC isn't the right symbol even though it's called that on the interface, so what we want to do now is let's see what the actual symbols are, so it looks like, on this example it was like a 6 character symbol, so let's figure out what the available symbols are 
 
-some light coins so let's see how that
+        ...
+        symbol='BNBBTC',
+        ...
 
-works so LTC let's see if we can just
+so when I looked around what I found is there's this function get exchange info 
 
-buy LTC which side are we on do we want
+        https://python-binance.readthedocs.io/en/latest/general.html
 
-to buy or sell so I'm going to buy so
+        # Get Exchange Info
 
-I'll leave that like that order type
+            info = client.get_exchange_info()
 
-limit I don't know how much they're
+and if you do client dot get exchange info, that gives you a lot of information about the
+exchange including a list of available symbols 
 
-going for I'm just gonna buy light coin
+so I'm going to do this, I'm going to copy that function, let's put this back in the index, and just dump out what's what the available exchange info is 
 
-for whatever the market value is and
+so we have our account info so I'm gonna define this as now as 'account' that get account and 'balances' equals account dot balances 
 
-let's see if we can find what that is so
+        @app.route("/")
+        def index():
+   
+            title = 'CoinView'
 
-how much is a light coin worth these
+            account = client.get_account()
 
-days I'm going to see let's see I'm
+            balances = account['balances']
 
-gonna go to buy crypto from the UI and
+            exchange_info = client.get_exchange_info()
+        ...
 
-let's see how much a light coin would be
+and then I'll do exchange_info just to make that a little more clear, and let's print the exchange_info to our console, and refresh the page, let's see what that looks like
 
-so let's say if we want to buy where's
+all right, so we have a giant dump of stuff here, so that's too much for me to even read, but let's see we have a 'timezone', 'serverTime', let's see if we can figure out where the symbols are, and I'll put this to a file real quick, so I'm just going to start outputting this to a file, and I'll do it to symbols dot txt 
 
-it at lots of coins there you go LTC and
+        $ CTRL-C
+        $ flask run > symbols.txt
 
-then if I say I want one so if I say
+        then reload page http://127.0.0.1:5000
 
-want to buy 20 US dollars worth
+        $ CTRL-C
 
-apparently that's point four seven light
+        symbols.txt
 
-coins let's see litecoin price alright
+and we'll see if we can parse it out that way
 
-so I looked up litecoin price looks like
+all right, so I dumped that all to a file, and I'm gonna stop doing that, 
+and let's check out symbols.text, and let's look up 'LTC' litecoin 
 
-it's about 40 US dollars
+all right, so it looks like the symbol there is 'LTCUSD' with the 'baseAsset' of 'LTC' 
+so when we actually execute the buy we need to use LTCUSD, and let's see if we can find how does this look, so if I look down here, let's search for 'symbols' yeah so here it is
 
-Wow so that fell quite a bit I remember
+so there's a key called 'symbols' here, and then just has a big list of available symbols
 
-when it was worth a few hundred bucks or
+so I think what we should do is rather than let us guess right, and letting it be freeform from the web right, let's build a drop-down of all the available symbols and start building the UI for buying
 
-something and then I also remember that
+and so what we'll do is, we'll do symbols equals exchange_info['symbols'] 
 
-spike there was like one hundred and
+        ...
+        symbols = exchange_info['symbols']
+        ...
 
-thirty three bucks so yeah like coins
+and then we should just have a list of all of the symbols, and let's see if we can pass the
+symbols to our template symbols equals symbols 
 
-down to forty bucks so we can afford
+        ...
+        return render_template('index.html', title=title, my_balances=balances, symbols=symbols)
+        ...
 
-some of those so let's go ahead and
+and we'll do that, and then, in our template let's loop through all the symbols 
 
-let's see how what's the minimum we
-
-could buy so I believe there's a minimum
-
-trade amount on here let's see how many
-
-what do we have to do they'll let me
-
-spend twenty bucks so it looks like and
-
-someone correct me if I'm wrong I'm just
-
-doing stuff for the first time on here
-
-so it looks like I have to spend $20 to
-
-buy these light coins so I'm gonna buy
-
-twenty dollars worth and we'll have
-
-nearly half of a light coin I'm not
-
-gonna buy it from here I'm gonna see if
-
-I can buy it from Python and so I'm
-
-gonna buy I won't need a price since I'm
-
-doing a market order and so let's just
-
-say let's see if I can buy 0.3 light
-
-coins and I'll say good till cancel and
-
-then we'll do a market order so that all
-
-sounds good so we're gonna try to buy
-
-0.3 light coins and we're gonna do it
-
-from a buy end point and I'm just going
-
-to return the word buy here let's see if
-
-it throws an exception or something so
-
-I'm gonna go directly and then and then
-
-we'll have a UI actually call this
-
-function once we know it works so I'm
-
-gonna do this and do slash buy let's see
-
-what happens exception so it said
-
-invalid symbol so I can't buy that for
-
-some reason apparently LTC isn't the
-
-right symbol even though it's called
-
-that on the interface so what we want to
-
-do now is let's see what the actual
-
-symbols are so it looks like on this
-
-example it was like a 6 character symbol
-
-so let's let's let's figure out what the
-
-available symbols are so when I looked
-
-around what I found is there's this
-
-function get exchange info and if you do
-
-client not get exchange info that gives
-
-you a lot of information about the
-
-exchange including a list of available
-
-symbols so I'm going to do this I'm
-
-going to copy that function let's put
-
-this back in the index and just
-
-dump out what's what the available
-
-exchange info is so we have our account
-
-info so I'm gonna define this as now as
-
-a count that get account and balances
-
-equals account balances account balances
-
-and then I'll do you exchange info just
-
-to make that a little more clear and
-
-let's print the exchange info to our
-
-console and will refresh the page let's
-
-see what that looks like
-
-all right so we have a giant dump of
-
-stuff here so that's too much for me to
-
-even read but let's see we have timezone
-
-server charm let's see if we can figure
-
-out where this where the symbols are
-
-and I'll output this to a file real
-
-quick so I'm just going to start
-
-outputting this to a file and I'll do it
-
-two symbols dot txt and we'll see if we
-
-can parse it out that way all right so I
-
-dumped that all to a file and I'm gonna
-
-stop doing that and let's check out
-
-symbols text and let's look up LTC
-
-litecoin all right so it looks like the
-
-symbol there is LTC USD with the base a
-
-set of LTC so when we actually execute
-
-the buy we need to use LTC USD and let's
-
-see if we can find how does this look so
-
-if I look down here let's search for
-
-symbols yeah so here it is so there's a
-
-key called symbols here and then just
-
-has a big list of available symbols so I
-
-think what we should do is rather than
-
-let us guess right and letting it be
-
-freeform from the web right let's build
-
-a drop-down of all the available symbols
-
-and start building the UI for for buying
-
-and so what we'll do is we'll do symbols
-
-equals exchange info symbols and then we
-
-should just have a list of all of the
-
-symbols and let's see if we can pass the
-
-symbols to our template symbols equals
-
-symbols and we'll do that and then in
-
-our template let's loop through all the
-
-symbols so we'll do symbol let's just do
+so we'll do symbol let's just do
 
 a select like a drop-down and then we'll
 

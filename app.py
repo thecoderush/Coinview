@@ -1,6 +1,7 @@
 from flask import Flask, render_template
 import config, csv
 from binance.client import Client
+from binance.enums import *
 
 app = Flask(__name__)
 
@@ -8,21 +9,36 @@ client = Client(config.API_KEY, config.API_SECRET)
 
 @app.route("/")
 def index():
-    # return "<p>The index page</p>"
+
     title = 'CoinView'
 
-    info = client.get_account()
+    account = client.get_account()
 
-    balances = info['balances']
+    balances = account['balances']
+
+    exchange_info = client.get_exchange_info()
+
+    symbols = exchange_info['symbols']
 
     # print(client)
-    print(info)
-    print(balances)
+    # print(account)
+    # print(balances)
+    print(exchange_info)
 
-    return render_template('index.html', title=title, my_balances=balances)
+    return render_template('index.html', title=title, my_balances=balances, symbols=symbols)
 
 @app.route("/buy")
 def buy():
+
+    order = client.create_order(
+        symbol='LTC',
+        side=SIDE_BUY,
+        type=ORDER_TYPE_LIMIT,
+        timeInForce=TIME_IN_FORCE_GTC,
+        quantity=0.3,
+        #price='0.00001'
+        )
+
     return "<p>buy</p>"
 
 @app.route("/sell")
