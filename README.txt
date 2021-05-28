@@ -2843,167 +2843,97 @@ to try some of these binance API functions, and make sure they work
 
 so we have this drop-down list of all of the various symbols, and now we can use them 
 
-so our '/buy' end point we started filling
+so our '/buy' end point we started filling that out, but it didn't work yet because we passed in an invalid symbol, so let's see if we can make that work
 
-that out but it didn't work yet because
+so what I'm going to do is, we have an <option> here, let's let's see if we can have JavaScript call that function, and pass it a valid symbol,
 
-we passed in an invalid symbol so let's
+so what I'll do is, I'll create an <input> here, and that'll be of type='text' and we'll say id equals quantity, 
 
-see if we can make that work
+        <input type="text" id="quantity" name="quantity" placeholder="eg. 0.001"/>
+        
+and so we want to do is buy a certain quantity of a cryptocurrency, so I'll give it a name as well 'quantity' all right, and then, next to this all right, I'll use a place holder, and I'll just do an example 0.001, and then, we'll give our <select> an ID and name too
+so 'symbol' and we'll give it a name of 'symbol', 
 
-so what I'm going to do is we have an
+        <select id="symbol" name="symbol">
+            {% for symbol in symbols %}
+                <option>
+                    {{ symbol['symbol'] }}
+                </option>
+            {% endfor %}
+        </select>
 
-option here let's let's see if we can
+and next to it we'll put a <button> 
+so we'll do <button> and... actually let's do 
 
-have JavaScript call that function and
+        <input type="button" /> ...
+        
+and for now, we'll have it do a normal post request that actually refreshes the page 
+later we can make it where it fetches it in the background, but this will be the simplest way to demonstrate a post request in flask for now
 
-pass it a valid symbol so what I'll do
+so I'll do input type equals button, and then I'll say name equals 'buy', and value equals 'buy'
 
-is I'll create an input here and that'll
+        <input type="button" name="buy" value="buy" />
 
-be of type text and we'll say ID equals
+and let's see what that looks like all right 
+so we have a quantity field, we have a drop-down for the symbols, and then we have this buy button 
 
-quantity and so we want to do is buy a
+so none of this actually does anything yet, so let's make it go a little bit further 
+so I'm gonna put a <form> tag around this, so let's do <form> action equals and we're gonna POST to the '/buy' route, so the action equals '/buy', and I want to do method equals 'post' 
 
-certain quantity of a cryptocurrency so
+        <form action="/buy" method="post">
+        ...
+        ...
+        ...
+        </form>
 
-I'll give it a name as well quantity all
+so a there's a GET request, in a POST request, 
+a get request is just you know, I'm getting this from my browser, so I enter in a URL, but when you're using a <form> and posting, you're sending data to the server from a <form> you use a POST request, and so when you do that in flask you actually have to change your method,
+and I'll show that in a second 
 
-right and then next to this all rights
+so by default it's a GET request 
 
-help I'll use a place holder and I'll
+        app.py
 
-just do an example point 0.001 and then
+        @app.route("/buy")
+        ...
 
-we'll give our select an ID and name -
+but if it's a POST request from a <form> you need to add this methods handler here 
 
-so symbol and we'll give it a name of
+so let me show you what the error looks like, so this is gonna throw an error, and then we're gonna fix it, so <form> action equals '/buy' methods equals 'post', and we'll put this </form> at the end here, and then we'll say <input> type equals 'submit', 
 
-symbol and next to it we'll put a button
+        ...
+            <input type="submit" name="buy" value="buy" />
+        </form>
 
-so we'll do button and actually let's do
+so it's going to submit the form to our server all right 
 
-input type equals button and for now
+now let's try that okay, 
 
-we'll have it do a normal post request
+        before reload page http://127.0.0.1:5000/ after changes
 
-that actually refreshes the page later
+so I'm gonna click the buy button and you see it posted to the "/buy" end point, 
 
-we can make it where it fetches it in
+        http://127.0.0.1:5000/buy
 
-the background but this will be the
+but it says '405 method not allowed', because we don't allow post endpoints to this URL
 
-simplest way to demonstrate a post
+and so to allow that we're gonna change our "/buy" endpoint here 
+and we're gonna say comma methods equals post, and it's just a list 
+ 
+        app.py
 
-request in flask for now so I'll do
+        @app.route("/buy", methods=['post'])
+        ...
 
-input type equals button and then I'll
+so this allows POST requests alright 
 
-say name equals by and value equals by
+so now our GET requests is allowed, if I just try to do it from my browser like that, 
 
-and let's see what that looks like
+        http://127.0.0.1:5000/buy
 
-all right so we have a quantity field we
+it doesn't work so, it has to be a POST from a <form> now all right 
 
-have a drop-down for the symbols and
-
-then we have this buy button so none of
-
-this actually does anything yet so let's
-
-make it go a little bit further so I'm
-
-gonna put a form tag around this just
-
-when do form action equals and we're
-
-gonna post to the buy route so the
-
-action equals buy one do
-
-equals post so a there's a get request
-
-in a post request a get request is just
-
-you know I'm getting that I'm getting
-
-this from my browser so I enter in a URL
-
-but when you're using a forum and
-
-posting you're sending data to the
-
-server from a forum you use a post
-
-request and so when you do that in flask
-
-you actually have to change your method
-
-and I'll show that in a second so by
-
-default it's a get request but if it's a
-
-post request from a forum you need to
-
-add this methods this methods handler
-
-here so let me show you what the error
-
-looks like so this is gonna throw an
-
-error and then we're gonna fix it so
-
-form action equals by methods equals
-
-post and we'll put this form at the end
-
-here and then we'll say input type
-
-equals submit so it's going to submit
-
-the form to our server all right now
-
-let's try that okay so I'm gonna click
-
-the buy button and you see it posted to
-
-the buy end point but it says method not
-
-allowed because we haven't flat said we
-
-don't allow post endpoints to this URL
-
-and so to allow that we're gonna change
-
-our buy endpoint here our buy endpoint
-
-and we're gonna say comma methods equals
-
-post and it's just a list so this allows
-
-post requests alright so now I get
-
-requests isn't allowed if I just try to
-
-do it from my browser like that it
-
-doesn't work so it has to be a post from
-
-a forum now all right so now I'm gonna
-
-click buy and you see a posted to our
-
-endpoint and now we have our invalid
-
-simple message our exception right
-
-because we still have a hard-coded to by
-
-LTC here which we haven't fixed and so
-
-now what we want to do is get the valid
-
-symbol that we've selected in our form
+so now I'm gonna click buy, and you see (it)? posted to our endpoint, and now we have our 'Invalid symbol.' message, our exception right, because we still have a hard-coded to buy LTC here, which we haven't fixed, and so now what we want to do is get the valid symbol that we've selected in our <form>
 
 and the quantity we've selected in our
 

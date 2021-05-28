@@ -27,9 +27,8 @@ def index():
 
     return render_template('index.html', title=title, my_balances=balances, symbols=symbols)
 
-@app.route("/buy")
+@app.route("/buy", methods=['post'])
 def buy():
-
     order = client.create_order(
         symbol='LTC',
         side=SIDE_BUY,
