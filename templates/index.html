@@ -13,6 +13,14 @@
     
         <div id="trades"></div>
 
+        <select>
+            {% for symbol in symbols %}
+                <option>
+                    {{ symbol['symbol'] }}
+                </option>
+            {% endfor %}
+        </select>
+
         <div id="my_balances">
             <h2>Balances</h2>
             <!-- my_balances -->

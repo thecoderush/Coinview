@@ -2799,126 +2799,51 @@ symbols to our template symbols equals symbols
         ...
 
 and we'll do that, and then, in our template let's loop through all the symbols 
+so we'll do symbol, let's just do a <select> like a drop-down, and then we'll do... well first of all let's just loop through it, {% for symbol in symbols %} and we'll probably have to pull out a key here, so I'll do this, {% endfor %} and then we'll display the {{symbol}} right, 
 
-so we'll do symbol let's just do
+        templates/index.html
 
-a select like a drop-down and then we'll
+        <select>
+            {% for symbol in symbols %}
+            {{symbol}}
+            {% endfor %}
+        </select>
 
-do you well first of all let's just loop
+let's see what that looks like
 
-through it for symbol in symbols and
+I'm going to remove this <select> for now, I'll put it back shortly, so I'm gonna remove that and let's see if we can dump out all the symbols, all right, so we have that now, and it looks like the key is called 'symbol' there
 
-we'll probably have to pull out a key
+so we'll do a symbol['symbol'] 
 
-here so I'll do this an for and then
+        {% for symbol in symbols %}
+        {{ symbol['symbol'] }}
+        {% endfor %}
 
-we'll display the symbol right let's see
+and now we have a nice list of symbols here, and they're not in alphabetical order, we could technically sort those if we want to
 
-what that looks like
+I think I'll just leave it for now, I think they're sorted by popularity hopefully yeah because it looks like Bitcoin and etherium are on top, so they're probably the most popular ones, and so I think I think that's how we want our interface to look
 
-I'm going to remove this select for now
+so we'll do that, and then let's put a <select> around those, so let's do <select> and then
+each of those is going to be an <option> so we'll put an <option> tag around each one okay and we'll do that 
 
-I'll put it back shortly so I'm gonna
+        <select>
+            {% for symbol in symbols %}
+                <option>
+                    {{ symbol['symbol'] }}
+                </option>
+            {% endfor %}
+        </select>
 
-remove that and let's see if we can dump
+and now we have a nice <option> tag okay, and you notice it's taking a little bit longer to load our page now, that's because it's making multiple API requests, and so that actually takes a little bit of time you know, a few hundred milliseconds, but if we keep adding new API calls over and over again to this index page, then our page will eventually get slow, so what we want to do over time is move some of these functions to these HTTP requests to JavaScript 
 
-out all the symbols all right so we have
+so what we'll want to do is have the entire page load first, and then only fetch things after the initial page load, and also only fetch a certain information upon request 
 
-that now and it looks like the key is
+so we could have technically loaded the page, and then made the request to load this drop-down, or we could have a list of constants with all the available information here, and cache these symbols, because they're not going to change very much, but for now I just want
+to try some of these binance API functions, and make sure they work
 
-called symbol there
+so we have this drop-down list of all of the various symbols, and now we can use them 
 
-so we'll do a symbol symbol and now we
-
-have a nice list of symbols here and
-
-they're not in alphabetical order we
-
-could technically sort those if we want
-
-to I think I'll just leave it for now I
-
-think they're sorted by popularity
-
-hopefully yeah because it looks like
-
-Bitcoin and aetherium are on top so
-
-they're probably the most popular ones
-
-and so I think I think that's how we
-
-want our interface to look I said we'll
-
-do that and then let's put a select
-
-around those so let's do select and then
-
-each of those is going to be an option
-
-so we'll put an option tag around each
-
-one okay and we'll do that and now we
-
-have a nice option tag okay
-
-and you notice it's taking a little bit
-
-longer to load our page now that's
-
-because it's making multiple API
-
-requests and so that actually takes a
-
-little bit of time you know a few
-
-hundred milliseconds but if we keep
-
-adding new function new API calls over
-
-and over again to this index page then
-
-our page will eventually get eventually
-
-get slow so what we want to do over time
-
-is move some of these functions to these
-
-HTTP requests to JavaScript so what
-
-we'll want to do is have the entire page
-
-load first and then only fetch things
-
-after the initial page load and also
-
-only fetch a certain information upon
-
-request so we could have technically
-
-loaded the page and then made the
-
-request to load this drop-down or we
-
-could have a list of constants with all
-
-the available
-
-information here and cach cach these
-
-symbols because they're not going to
-
-change very much but for now I just want
-
-to try some of these finance API
-
-functions and make sure they work so we
-
-have this drop-down list of all of the
-
-various symbols and now we can use them
-
-so our by end point we started filling
+so our '/buy' end point we started filling
 
 that out but it didn't work yet because
 
