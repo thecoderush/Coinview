@@ -2933,187 +2933,184 @@ so now our GET requests is allowed, if I just try to do it from my browser like 
 
 it doesn't work so, it has to be a POST from a <form> now all right 
 
-so now I'm gonna click buy, and you see (it)? posted to our endpoint, and now we have our 'Invalid symbol.' message, our exception right, because we still have a hard-coded to buy LTC here, which we haven't fixed, and so now what we want to do is get the valid symbol that we've selected in our <form>
+so now I'm gonna click buy, and you see (it)? posted to our endpoint, and now we have our 'Invalid symbol.' message, our exception right, because we still have a hard-coded to buy LTC here, which we haven't fixed, 
 
-and the quantity we've selected in our
+        @app.route("/buy", methods=['post'])
+        def buy():
+            order = client.create_order(
+                symbol='LTC',
+        ...
+        ...
 
-form and actually use those instead of
+and so now what we want to do is get the valid symbol that we've selected in our <form>, and the quantity we've selected in our <form>, and actually use those instead of these hard-coded values 
 
-these hard-coded values so we'll use the
+so we'll use the symbol from the <form> and the quantity from the <form>, 
 
-symbol from the form and the quantity
+        ...
+         quantity=0.3,
+        ...
 
-from the form put them here and then
+put them here, and then we're gonna want to redirect back to the home page, and then display some kind of success message 
 
-we're gonna want to redirect back to the
+so let's do that, 
 
-home page and then display some kind of
+so how do we access a form variables? 
 
-success message so let's do that so how
+        'flask form variables' (google search) 
+        https://www.google.com/search?channel=fs&client=ubuntu&q=flask+form+variables
 
-do we access a form variables so if you
+        https://stackoverflow.com/questions/13279399/how-to-obtain-values-of-request-variables-using-python-and-flask
 
-look at flask form variables
+so if you look at our values of request variables using Python, 
+you have this request dot form 
 
-our values of request variables using
+        myvar =  request.form["fieldname"]
 
-Python you have this request dot form so
+so you get a dictionary, so in our post we'll have print() 
+so let's just print() what it looks like 
 
-you get a dictionary so in our post
+        @app.route("/buy", methods=['post'])
+        def buy():
+            print(request.form)
+            order = client.create_order(
+                ...
+                ...
 
-we'll have print so let's let's just
+so we'll do print request dot form, and then, we need to also import request 
 
-print what it looks like so we'll do
+        from flask import Flask, render_template, request
+        ...
 
-print request form and then we need to
+so we get this request object that has a dictionary of form values 
 
-also import request so we get this
+so now if I repost this, so I'm going to repost it, I can refresh and repost the form, and now let's look at our console, you'll see above this exception we have quantity,
 
-request object that has a dictionary of
+        (console)
 
-foreign values so now if I repost this
+        ImmutableMultiDict([('quantity', ''), ('symbol', 'ETHBTC'), ('buy', 'buy')])
 
-so I'm going to repost it I can refresh
+and so we didn't actually set 'quantity', and then we have 'symbol' and it was still on Bitcoin US dollars (for us ETHBTC)! and we also have this 'buy' variable, so we know it's a buy 
 
-and repost the form and now let's look
+so let's make sure we fill in a quantity, and a symbol, so we'll want litecoin
+so I'm gonna do 0.33 litecoins, 
 
-at our console you'll see above this
+        (UI)
 
-exception we have quantity and so we
+        (for us 0.0000001 of BTCUSDT because i didn't find LTCUSDT)!
 
-didn't actually set quantity and then we
-
-have symbol and it was still on Bitcoin
-
-US dollars and we also have this buy
-
-variable so we know it's a buy so let's
-
-make sure we fill in a quantity and a
-
-symbol so we'll want litecoin so I'm
-
-gonna do 0.33 litecoins and so I'll
-
-select litecoin US dollar from the list
-
-click buy it still says invalid symbol
-
-right but also you'll note I scroll down
-
-you should see we actually got a symbol
+and so I'll select litecoin US dollar from the list, click 'buy' it still says invalid symbol
+right, but also you'll note, I scroll down you should see we actually got a symbol
 
 in our form and a quantity in our form
 
-and so let's just change this to request
+        (console)
 
-a form symbol like that and request that
+        ImmutableMultiDict([('quantity', '0.0000001'), ('symbol', 'BTCUSDT'), ('buy', 'buy')])
 
-form quantity request form quantity
+and so let's just change this to request dot form 'symbol' like that 
 
-alright and let's try to buy a little
+        ...
+        order = client.create_order(
+            symbol=request.form['symbol'],
+            ...
+            quantity=request.form['quantity'],
+            ...
 
-bit less first just to make sure this
+and request dot form 'quantity', alright and let's try to buy a little bit less first, just to make sure this works so I'm gonna do 0.01 litecoins
 
-works so I'm gonna do 0.01 like coins
+and now I'm going to post it, and it says 'timeInForce sent when not required'
+so we don't need 
 
-and now I'm going to post it and it says
+        ...  
+        # timeInForce=TIME_IN_FORCE_GTC,
+        ...
 
-time and force sent when not required so
+that because we're issuing a market order
 
-we don't need that because we're issuing
+so now I'm going to try it one more time, click buy, and filter fail, 
 
-a market order so now I'm going to try
+        failure: MIN_NOTATIONAL 
+        
+so I believe that means we didn't buy the minimum amount 
 
-it one more time click buy and filter
+so let's, before we enter a larger amount, let's go ahead and add a way to handle these errors, these exceptions 
 
-fail failure
+so instead of just dumping this, you know, we're not going to have debug mode on in 
+production, so what we'll do is, so let's just add a simple try catch around it 
 
-min notational so I believe that means
+        try:
+            order = client.create_order(
+                symbol=request.form['symbol'],
+                side=SIDE_BUY,
+                type=ORDER_TYPE_LIMIT,
+                # timeInForce=TIME_IN_FORCE_GTC,
+                quantity=request.form['quantity'],
+                #price='0.00001'
+            )
+        except Exception as e:
 
-we didn't buy the minimum amount so
+so we'll do try except, and we can just do exception as e 
+and then we can do flash, so you can actually 'flash' a message in flask 
 
-let's before we enter a larger amount
+so 
 
-let's let's go ahead and add a way to
+        'flask flash message' (google search) 
+        https://www.google.com/search?channel=fs&client=ubuntu&q=flask+flash+message
 
-handle these errors these exceptions so
+        https://www.tutorialspoint.com/flask/flask_message_flashing.htm
 
-instead of just dumping this you know
+right, so message flashing lets you display some type of error to the user 
 
-we're not going to have debug mode on in
+so I'm going to use this flash function, to display that message on the user interface right so it has flash message and categories, 
 
-production so what we'll do is so let's
+        A Flask module contains flash() method. It passes a message to the next request, which generally is a template.
 
-just add a simple try try catch around
+                flash(message, category)
 
-it so we'll do try accept and we can
 
-just do exception
+and then, we need to use this get_flashed_messages and display it in the template 
 
-as E and then we can do flash so you can
+        The following flashes received messages in a template.
 
-actually flash a message in flask so
+                {% with messages = get_flashed_messages() %}
+                   {% if messages %}
+                      {% for message in messages %}
+                         {{ message }}
+                      {% endfor %}
+                   {% endif %}
+                {% endwith %}
 
-flask flash message right so message
+so let's import flash, so comma flash here 
 
-flashing lets you display some type of
+        from flask import Flask, render_template, request, flash
+        ...
 
-error to the user so I'm going to use
+so we give it a message and a category of error 
+so we'll give it a category of error, so we'll do, we'll display the exception 
+let's just display the exception as is, and we can make that more user friendly in the future, and we'll just say that's an 'error'
 
-this flash function to display that
+        ...
+        except Exception as e:
+            flash(e, "error")
 
-message on the user interface right so
+so we'll flash an error, and we're going to return a redirect 
+so we need to import 'redirect' 
 
-it has flash message in categories and
+        from flask import Flask, render_template, request, flash, redirect
+        ...
 
-then we need to use this get flashed
+so if if the buyer sells that successful, we're just going to redirect back to the index for now, so we'll return redirect, and then we just need to give it a redirect to slash, I believe what will happen 
 
-messages and display it in the template
+        ...
+        ...
+        return redirect('/')
 
-so let's import flash so comma flash
 
-here so we give it a message in a
+so let's see what happens now, so I'm gonna refresh, and I get that 'the session is unavailable because no secret_key was set'
 
-category of error so we'll give it a
+so in flask you need to set a secret key 
 
-category of error so we'll do will
-
-display the exception let's just display
-
-the exception as is and we can make that
-
-more user friendly in the future and
-
-we'll just say that's an error
-
-so we'll flash an error and we're going
-
-to return a redirect so we need to
-
-import redirect so if if the buyer sells
-
-that successful we're just going to
-
-redirect back to the index for now so
-
-we'll return redirect and then we just
-
-need to give it a redirect to slash I
-
-believe what will happen so let's see
-
-what happens now so I'm gonna refresh
-
-and I get and I get that the session is
-
-unavailable because no secret key was
-
-set so in flask you need to set a secret
-
-key so that's one thing I'll do real
-
-quick you can put that in a config file
+so that's one thing I'll do real quick you can put that in a config file
 
 or for now we can just do app dot secret
 
