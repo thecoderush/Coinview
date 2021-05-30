@@ -3108,117 +3108,90 @@ so if if the buyer sells that successful, we're just going to redirect back to t
 
 so let's see what happens now, so I'm gonna refresh, and I get that 'the session is unavailable because no secret_key was set'
 
-so in flask you need to set a secret key 
+so in flask you need to set a secret key, 
 
-so that's one thing I'll do real quick you can put that in a config file
+so that's one thing I'll do real quick, you can put that in a config file, or for now we can just do app dot secret key
 
-or for now we can just do app dot secret
+        app = Flask(__name__)
 
-key let's see how we set the secret key
+        app.secret_key
+        ...
 
-in class so that they have I believe
+let's see how we set the secret key in flask, so that they have I believe this is to prevent cross-site scripting 
 
-this is to prevent cross-site scripting
+so let's see 
 
-so let's see flask secret key and let's
+        'flask secret key' (google search) 
+        https://www.google.com/search?channel=fs&client=ubuntu&q=flask+secret+key
 
-set that real quick that's something we
+        https://flask.palletsprojects.com/en/1.1.x/quickstart/
 
-should have done already
+and let's set that real quick, that's something we should have done already when using forms so you can do app dot secret key, and so let's just set this up here for now, but we can set a config value as well 
 
-when using forms so you can do ab dot
+so you just need to give it some long string that's unique to your application, and so I'll just type something like that app dot secret key 
 
-secret key and so let's just set this up
+        # Set the secret key to some random bytes. Keep this really secret!
+        app.secret_key = b'_5#y2L"F4Q8zn/.xec]/9fH*5@q8X'
 
-here for now but we can set a config
+and then now let's run it one more time, 
+and it says "object of binance exception not json serializable" 
 
-value as well so you just need to give
+so let's do one more thing, let's see, so it looks like it's trying to throw it exception 
+I can't just display it like that, so let's do a dot message 
 
-it some long string that's unique to
+        ...
+            )
+    except Exception as e:
+        flash(e.message, "error")
 
-your application and so I'll just type
+and let's see if that works
 
-something like that Aptos secret key and
+so I just posted that, it just displayed the page, so we got our redirect, but we didn't even display the message, so that's not very useful to the user, something went wrong but we don't know what happened 
 
-then now let's run it one more time and
+so let's try to display the message right here next to our trade section here 
+so let's clean up our UI a little bit
 
-it says object of by Nance exception not
+so under here let's create this as an actual section 
+so I'm going to do <div> and let's go ahead and put this like that, 
 
-jason serializable so let's do one more
+        index.html
 
-thing let's see so it looks like it's
+                <div>
+                    <form action="/buy" method="post">
+                        <input type="text" id="quantity" name="quantity" placeholder="eg. 0.001" />
+                        <select id="symbol" name="symbol">
+                            {% for symbol in symbols %}
+                                <option>
+                                    {{ symbol['symbol'] }}
+                                </option>
+                            {% endfor %}s
+                        </select>
+                        <input type="submit" name="buy" value="buy" />
+                    </form>
+                </div>
 
-trying to throw it
+and so we have a new section here for our trades, and then let's give it a heading
+so let's say 'Buy Crypto' right 
 
-exception I can't just display it like
+        <div>
+            <h3>Buy Crypto</h3>
+            <form action="/buy" method="post">
+        ...
 
-that so let's do a dot message and let's
+so we have our little box here, (UI) and I'm just going to throw an inline style here,
+and then we'll clean that up shortly, so I'm going to put a little border around it, solid gray one pix, and let's do it give it like a padding of 20 pixels right
 
-see if that works so I just posted that
+        <div style="border: solid gray 1px; padding: 20px; width: 600px; margin: 20px;">
+            <h3>Buy Crypto</h3>
+            <form action="/buy" method="post">
+        ...
 
-it just displayed the page so we got our
+style equals border all right, so I did that and we have this giant box here, and then we'll see margin 20 pixels, and then we'll do width 600 pixels all right 
 
-redirect but we didn't even display the
+and then we'll move this to a stylesheet shortly, I'm just trying to separate this out into a little box, so and then we'll make that margin top, all right cool, so we have this little trade box here, and then we have a place where we can display our error message, 
 
-message so that's not very useful to the
 
-user something went wrong but we don't
-
-know what happened so let's try to
-
-display the message right here next to
-
-our trade section here so listen let's
-
-clean up our UI a little bit so under
-
-under here let's create this as an
-
-actual section so I'm going to do div
-
-and let's go ahead and put this like
-
-that and so we have a new section here
-
-for our trades and then let's give it a
-
-heading so let's say buy crypto right so
-
-we have our little box here and I'm just
-
-going to throw an inline style here and
-
-then we'll clean that up shortly so I'm
-
-going to put a little border around it
-
-solid gray one pics and let's do it give
-
-it like a padding of 20 pixels right
-
-style equals border all right so I did
-
-that and we have this giant box here and
-
-then we'll see margin 20 pixels and then
-
-we'll do with 600 pixels all right and
-
-then we'll move this to a stylesheet
-
-shortly I'm just trying to separate this
-
-out into a little box so and then we'll
-
-make that margin pop all right cool so
-
-we have this little trade box here and
-
-then we have a place where we can
-
-display our error message and so what we
-
-need is this for Flast messages we need
+and so what we need is this for Flast messages we need
 
 this with messages equals get flash
 

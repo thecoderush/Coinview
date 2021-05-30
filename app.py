@@ -5,6 +5,8 @@ from binance.enums import *
 
 app = Flask(__name__)
 
+app.secret_key = b'_5#y2L"F4Q8zn/.xec]/9fH*5@q8X'
+
 client = Client(config.API_KEY, config.API_SECRET)
 
 @app.route("/")
@@ -40,9 +42,9 @@ def buy():
             #price='0.00001'
         )
     except Exception as e:
-        flash(e, "error")
+        flash(e.message, "error")
 
-    return "<p>buy</p>"
+    return redirect('/')
 
 @app.route("/sell")
 def sell():

@@ -13,17 +13,20 @@
     
         <div id="trades"></div>
 
-        <form action="/buy" method="post">
-            <input type="text" id="quantity" name="quantity" placeholder="eg. 0.001" />
-            <select id="symbol" name="symbol">
-                {% for symbol in symbols %}
-                    <option>
-                        {{ symbol['symbol'] }}
-                    </option>
-                {% endfor %}s
-            </select>
-            <input type="submit" name="buy" value="buy" />
-        </form>
+        <div style="border: solid gray 1px; padding: 20px; width: 600px; margin-top: 20px;">
+            <h3>Buy Crypto</h3>
+            <form action="/buy" method="post">
+                <input type="text" id="quantity" name="quantity" placeholder="eg. 0.001" />
+                <select id="symbol" name="symbol">
+                    {% for symbol in symbols %}
+                        <option>
+                            {{ symbol['symbol'] }}
+                        </option>
+                    {% endfor %}s
+                </select>
+                <input type="submit" name="buy" value="buy" />
+            </form>
+        </div>
         
         <div id="my_balances">
             <h2>Balances</h2>
