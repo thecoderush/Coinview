@@ -3181,226 +3181,131 @@ so let's say 'Buy Crypto' right
 so we have our little box here, (UI) and I'm just going to throw an inline style here,
 and then we'll clean that up shortly, so I'm going to put a little border around it, solid gray one pix, and let's do it give it like a padding of 20 pixels right
 
-        <div style="border: solid gray 1px; padding: 20px; width: 600px; margin: 20px;">
+        <div style="border: solid gray 1px; padding: 20px; width: 600px; margin-top: 20px;">
             <h3>Buy Crypto</h3>
             <form action="/buy" method="post">
         ...
 
 style equals border all right, so I did that and we have this giant box here, and then we'll see margin 20 pixels, and then we'll do width 600 pixels all right 
 
-and then we'll move this to a stylesheet shortly, I'm just trying to separate this out into a little box, so and then we'll make that margin top, all right cool, so we have this little trade box here, and then we have a place where we can display our error message, 
+and then we'll move this to a stylesheet shortly, I'm just trying to separate this out into a little box, so and then we'll make that margin-top, all right cool, 
 
+so we have this little trade box here, and then we have a place where we can display our error message, 
 
-and so what we need is this for Flast messages we need
+and so what we need is this for Flask messages, 
+we need this {% with messages equals get_flashed_message() %}, 
 
-this with messages equals get flash
+        # The following flashes received messages in a template.
 
-message flashed messages and I'm gonna
+        {% with messages = get_flashed_messages() %}
+           {% if messages %}
+              {% for message in messages %}
+                 {{ message }}
+              {% endfor %}
+           {% endif %}
+        {% endwith %}
 
-splay this in the template and so I'm
+and I'm gonna display this in the template, and so I'm going to go into the index dot HTML 
 
-going to go into the index dot HTML and
+        index.html
 
-then let's say under this by crypto if
+and then let's say under this 'Buy Crypto' if there's any messages, we'll put this part in and display any messages that occur okay 
 
-there's any messages we'll put this part
+        <div style="border: solid gray 1px; padding: 20px; width: 600px; margin-top: 20px;">
+            <h3>Buy Crypto</h3>
 
-in and display any messages that occur
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        {{ message }}
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
 
-okay and so now that's done let's go
+            <form action="/buy" method="post">
+            ...
+            ...
 
-back to our coin view here and so you
+and so now that's done, let's go back to our CoinView here, and so you see how our flask messages were displayed
 
-see how our flash messages were
+so we have that "MIN_NOTATIONAL" message, and we can highlight that in red and do whatever we want there 
 
-displayed so we have that min notational
+so we could do, (let's be like)?, we can make this a <div> 
+and just do like style equals padding:10px border:solid red one pix and color red, right, if we really want this to stick out
 
-message and we can highlight that in red
+        <div style="padding: 10px; background-color: pink; border: solid red 1px; color:red;">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        </div>
 
-and do whatever we want there so we
+and then we could put that around our messages, we could give it a background color of like
+pink, so we could do like that, and now let's do it again, so we have this ugly thing here now 
 
-could do is belie
+so let's put this <div> inside {% if messages %} and we'll do that, 
 
-we can make this a div and just do like
+        
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            
+            <div style="padding: 10px; background-color: pink; border: solid red 1px; color:red;">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
 
-style equals padding:10px border:solid
+            {% endif %}
+        {% endwith %}
+        
 
-red one picks and color red right if we
+so now we have nothing displayed, and now I type point zero zero one and I want to buy that many lightcoins, I click buy, failure, a MID_NOTATIONAL, so we have an error in there, and then just for completeness let's do a margin bottom ten pixels right 
 
-really want this to stick out and then
+        <div style="padding: 10px; margin-bottom: 10px; background-color: pink; border: solid red 1px; color:red;"> 
 
-we could put that around our messages we
+and so I'll do this again point 0.01 litecoins click buy right 
+so now we have a way to display an error message when something goes wrong 
+and so on the other hand we also want to be able to display a message whenever something goes correct 
 
-could give it a background color of like
+so we probably don't want to display it in red like this but I also don't want to mess with this inline anymore, that was just quick we'll fix this in a stylesheet, later but let's try to make us an actual successful crypto buy happen 
 
-pink so we could do like that and now
+so let's see about buying more than the minimum amount 
+so I'm gonna buy half of a lightcoin here, and actually spend twenty dollars because I didn't
+actually look to see how to do paper trading 
 
-let's do the can so we have this ugly
+so I'm willing to own half a light coin here just for a lesson, so I'm gonna do buy half of a lightcoin, I'm gonna click Buy, and we don't get a message, so I didn't display success
+messages, but since we didn't get an exception I assume that was successful, and so now let's go to our Binance dashboard and see what I got 
 
-thing here now so let's put this div
+so I'm gonna refresh this, and if I look under crypto here you'll see likecoin
+and it looks like I own nearly half a lightcoin for some reason says 0.499 five not quite 0.5 and so that was like 20 bucks I just spent, and now I have some lightcoin which is great 
 
-inside if messages and we'll do that so
+so yeah that's pretty good for this video, 
 
-now we have nothing displayed and now I
+I think in the future in the next video I want to actually show our trade history, and like
+show what we own, oh yeah, and we already show what we own, so you can already see after I clicked buy you see the half a lightcoin sitting there already 
 
-type point zero zero one and I want to
+so we have a way to successfully buy crypto from a web application that we created using the flask micro framework, we use Python binance to : 
 
-buy that many light coins I click by
-
-failure amid notational so we have an
-
-error in there and then just for
-
-completeness let's do a margin bottom
-
-ten pixels right and so I'll do this
-
-again point 0.01 litecoins
-
-click buy right so now we have a way to
-
-display an error message when something
-
-goes wrong and so on the other hand we
-
-also want to be able to display a
-
-message whenever something goes correct
-
-so we probably don't want to display it
-
-in red like this but I also don't want
-
-to mess with this inline anymore that
-
-was just quick we'll fix this in a
-
-stylesheet later but let's try to make
-
-us an actual successful crypto bye
-
-happen so let's see about buying more
-
-than the minimum amount so I'm gonna buy
-
-half of a light coin here and actually
-
-spend twenty dollars because I didn't
-
-actually look to see how to do paper
-
-trading so I'm willing to own half a
-
-light coin here just for a lesson so I'm
-
-gonna do buy half of a light coin I'm
-
-gonna click Buy and we don't get a
-
-message so I didn't display success
-
-messages but since we didn't get an
-
-exception exception I assume that was
-
-successful and so now let's go to our
-
-finance dashboard and see what I got so
-
-I'm gonna refresh this and if I look
-
-under crypto here you'll see like coin
-
-and it looks like I own nearly half a
-
-light coin for somebody says 0.499 five
-
-not quite 0.5 and so that was like 20
-
-bucks I just spent and now I have some
-
-light coin which is great so yeah that's
-
-pretty good for this video I think in
-
-the future in the next video I want to
-
-actually show our trade history and like
-
-show what we own oh yeah and we already
-
-show what we own so you can already see
-
-after I clicked by you see the half a
-
-light coin sitting there already so we
-
-have a way to successfully by crypto
-
-from a web application that we created
-
-using the flask micro framework we use
-
-Python finance to use to execute methods
-
-to retrieve our account balances to
-
-retrieve a valid list of symbols
-
-populate a drop-down we built a little
-
-widget for buying crypto and we're able
-
-to successfully execute a crypto buy
-
-from the web so I think that's a lot to
-
-accomplish I'm not sure how long this
-
-video has been so far but it feels a
-
-little bit long at this points probably
-
-over 30 minutes so I think that's a good
-
-amount of time for this video so next
-
-video will want to display a transaction
-
-history want to add a sell button and
-
-then we also want to eventually get into
-
-triggering some indicators based on the
-
-technical analysis library that I use in
-
-video number five and then after we have
-
-these endpoints and we know they work
-
-for buying and selling from the web here
-
-manually
-
-we'll have our WebSockets feed some
-
-information into a data frame or numpy
-
-array technical analysis the ta lib
-
-apply an indicator and then have it
-
-requests the same buy and sell end
-
-points and have it all working and then
-
-display the history of our trades and
-
-their profit profitability here on the
-
-web alright so that's it for now thanks
-
-for watching and stay tuned for the next
-
-video
+        - execute methods 
+        - retrieve our account balances, 
+        - retrieve a valid list of symbols 
+        - populate a drop-down, 
+        - we built a little widget for buying crypto, 
+        - and we're able to successfully execute a crypto buy from the web 
+
+so I think that's a lot to accomplish, I'm not sure how long this video has been so far, but it feels a little bit long at this points, probably over 30 minutes, so I think that's a good
+amount of time for this video 
+
+so next video will want to : 
+        
+        - display a transaction history, 
+        - add a sell button, and then we also want to eventually 
+        - get into triggering some indicators based on the technical analysis library that I use in video number five, and then after we have these endpoints and we know they work for buying and selling from the web here manually, 
+        - we'll have our WebSockets feed some information into a data frame or numpy array 
+        - have technical analysis the TALib apply an indicator and then have it requests the same buy and sell end points and have it all working and then display the history of our trades, 
+        - and their profit profitability here on the web 
+        
+alright so that's it for now thanks for watching, and stay tuned for the next video
