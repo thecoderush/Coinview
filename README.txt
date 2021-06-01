@@ -3309,3 +3309,965 @@ so next video will want to :
         - and their profit profitability here on the web 
         
 alright so that's it for now thanks for watching, and stay tuned for the next video
+
+
+
+
+
+
+
+
+
+
+Binance API Tutorial (Part  7) - Real-Time Candlestick Charts using Websockets and JavaScript (24:26)
+
+https://www.youtube.com/watch?v=EeT3Ore4Sao
+
+
+
+
+
+hey everyone welcome back, it is the morning of Sunday July 12th, today I'm going to be continuing the creation of CoinView, our crypto currency trading platform, that uses the Binance API 
+
+In the previous sections of the video, I created this chart here using 'lightweight charts' right now, it has some hard-coded values just to show you that we can display a candlestick chart using an array of JSON data with open high/low close candlestick data, combined with
+timestamps 
+
+so we're able to render this using an open-source JavaScript library
+and we also hooked up some user interface components, to a Python back-end we created this little 'buy' crypto widget that lets us buy cryptocurrency from the web 
+
+so we're able to:
+        
+        - buy some lightcoin using this a section of our webpage, we were able to
+        - retrieve our account balances from the binance API, so you can see we own a fraction of a fraction of Bitcoin etherium, we have our US dollar fiat, and we also have some 1/2 of a lightcoin that we bought last time using our widget from the web - and we also still have these settings here that let us configure some overbought and oversold conditions, which we're going to hook up to a Python script that reads
+        price data and then pipes it through a technical analysis library and then executes buys and sells based on these conditions 
+        
+so the next step we're going to:
+
+        - create now is to fix up our user interface a little bit more, we just hooked up this chart to the UI that displays candlesticks, but we just hard-coded some data in there, but what we want to do is actually stream the data from Binance, and start updating these candlesticks in real time 
+        
+so let's get that out of the way first, 
+
+so if we look in the JavaScript code I can created this chart dot js here 
+
+        statis/chart.js
+
+it has our JavaScript and we're in the static directory and then our flask index template here 
+
+        template/index.html
+
+pulls that in, so it pulls in the 'lightweight Charts' library and at the bottom of the script here we have this chart.js 
+
+        ....
+                /script>
+                <!-- <script src="chart.js"></script> -->
+                <script src="{{ url_for('static', filename='chart.js') }}"></script>
+            </Sbody> 
+        </html>
+
+so it executes the JavaScript here, and you see you we took some of the sample code from lightweight charts, and we're able to display a chart, we configure the colors, time scale and candlesticks series, and then we just call this setData() with a bunch of dates, open high low and close data right, 
+
+and so the first thing we want to do before we get started streaming right 
+
+let's initialize the candlestick chart with some data, and then we stream and add additional
+candlesticks as they come in 
+
+so we don't want to just start an empty chart and then start streaming, we want to populate
+it with some historical data first, to display what's happened in the past, and then at the end here, we're going to start a pending additional candlestick updates 
+
+so let's get some history first 
+
+so to get our candlestick history right, in the one of the earliest videos of this series I showed you how to use the Python binance package to retrieve candlestick data and save it to a CSV file, 
+but what we want is JSON data in this format,
+
+        candleSeries.setData([
+	    { time: '2018-10-19', open: 180.34, high: 180.99, low: 178.57, close: 179.85 },
+	    { time: '2018-10-22', open: 180.82, high: 181.40, low: 177.56, close: 178.75 },
+	    { time: '2018-10-23', open: 175.77, high: 179.49, low: 175.44, close: 178.53 },
+            ....
+            ....
+        ])
+so it's a list, or an array, that's right, with this bracket, and then we have a list of objects here with time open high low and close, 
+and so since we have Python code that can retrieve this information, and we're able to output it to CSV there's no reason why we can't write a Python function that outputs this as JSON, wrap it up in a flask
+endpoint that our web UI can make a fetch request to, (confetch)? that data, and then build this dynamically, and populate it on the web
+
+so let's create the flask and point first and test it out
+
+so if you look in our directory, we have this get_data dot py 
+
+        get_data.py
+
+that we had worked on right, and it has this get historical candlestick data, and we tried some different time frames, I think I'm gonna try the five-minute time frame here, 
+and let's see if we can retrieve that, and let's go to our app dot py 
+
+        app.py
+
+and let's create a new endpoint, and we're gonna call it history, so I'm gonna do app dot route,
+
+        @app.route('/history')
+
+and we want, when you go to the route, so when you go to localhost 5000 class history 
+
+        127.0.0.1:5000/history
+
+we want that, to pump out some JSON data in a list, and give us a list of open high low close data for Bitcoin for instance right 
+so let's do slash history it's the route, we'll call the function history, so that sounds good
+
+        @app.route('/history')
+        def history():
+            candlesticks = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_5MINUTE, "1 May, 2021", "1 Jun, 2021")
+
+and then, let's just get our candlesticks right here, so candlesticks equals client dot get historical K lines, and we already initialized a client if you remember, at the top of our application,
+so we should already have an authenticated client, we should be able to get our historical data, and we'll just leave this as Bitcoin, we say we want the interval 5 minute, and we're able to pass a
+particular date range, 
+
+and so let's, for the date range, let's just do July, so I'm gonna do July 1st through July, what's today the 12th, (actually I put a different date interval)! 
+and let's see if we can just get all of that data, and display it
+
+so for all five-minute candlesticks that we have historically, let's get that, and let's see if we can return that to the browser, 
+
+and so what I want to do here, and it looks like I already had that in, but if you don't have that imported, import this function a jsonify from flask 
+
+        from flask import Flask, render_template, request, flash, redirect, jsonify
+        ....
+
+and that lets us take some data, and return it as JSON, so when this comes back this is gonna be like a Python list right, and so what we want to do is return jsonify candlesticks, 
+
+        ....
+        def history():
+            candlesticks = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_5MINUTE, "1 May, 2021", "1 Jun, 2021")
+
+            return jsonify(candledsticks)
+
+and what that will do is convert that Python list, and make it in a format in JSON format that can be sent to the browser, 
+
+so I'm gonna do that, and so we should have this history route, our server it's already running, so it's reloads and let's run that, and see what happens, 
+ 
+hit that, this endpoint 
+
+        127.0.0.1:5000/history
+
+let's see how long it takes, 
+
+that was fast enough, so we should be able to just call that in real time there, and you see now we have a list of lists, 
+
+        [
+          [
+            1621900800000, 
+            "38810.99000000", 
+            "39139.00000000", 
+            "38502.73000000", 
+            "38955.26000000", 
+            "889.19595600", 
+            1621901099999, 
+            "34520637.93852363", 
+            21707, 
+            "449.05726700", 
+            "17442116.27935296", 
+            "0"
+          ], 
+          [
+            ²1621901100000, 
+            "38956.83000000", 
+            "39100.00000000", 
+            "38862.47000000", 
+            "38984.28000000", 
+            "745.56061400", 
+            1621901399999, 
+            "29046979.01488475", 
+            17617, 
+            "269.77872100", 
+            "10511651.09935977", 
+            "0"
+          ],
+
+        ....
+        ....
+
+        ]
+
+so this returns a list bracket there, and then we have a list of candlesticks, but each index is like 0 1 2 3 4 so this is like a list of lists, or an array, 
+and so what we want is actually to map these, we want them to have keys similar to this format we saw in chart.js 
+
+        chart.js
+
+                [
+	          { time: '2018-10-19', open: 180.34, high: 180.99, low: 178.57, close: 179.85 },
+	          { time: '2018-10-22', open: 180.82, high: 181.40, low: 177.56, close: 178.75 },
+                  
+                  ...
+                ]
+
+so we want it to look more like that, so let's loop through this, and like, transform our data to look more like we want, in a format that 'lightweight charts' wants 
+so instead of doing a list of lists, let's go ahead and process this, so I'm gonna go to app dot py 
+
+        app.py
+
+so in app dot py, I'm gonna create a new list that has a different format, and so you can do this in a 'list comprehension', 
+but I'm going to do it a little more explicitly just because we have different levels of Python programmers that are viewing the channel, so I'm just going to create a new list, 
+so I'm going to call it 'processed_candlesticks' right, 
+
+        @app.route('/history')
+        def history():
+            candlesticks = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_5MINUTE, "25 May, 2021", "1 Jun, 2021")
+
+            processed_candlesticks = []
+
+            for candlestick in candlesticks:
+                processed_candlesticks.append()
+
+            return jsonify(candlesticks)
+
+and then this will just be a new list, so start empty, and then we'll just loop, there are existing candlesticks, so I'll do "for candlestick in candlesticks" 
+and that'll be our loop, and then processed_candlesticks, we're gonna end up appending a new candlestick right
+
+so we'll just say, I'm gonna do for data in candlesticks, then we'll say candlestick equals a dictionary, 
+
+        ....
+
+        processed_candlesticks = []
+
+            for data in candlesticks:
+            candledsticks = {}
+
+                processed_candlesticks.append()        
+        ...
+
+and so we saw in our format earlier in charts.js we want it to look like an object, like this, 
+
+        { time: '2018-10-19', open: 180.34, high: 180.99, low: 178.57, close: 179.85 }
+
+and so in Python we'll want it end up making is a dictionary, and what's convenient is, I can just take this JavaScript actually format, and just kind of put this in, and we'll just create a new dictionary here 
+        ...
+
+        candledsticks = {
+            "time": '2018-10-19', 
+            "open": 180.34, 
+            "high": 180.99, 
+            "low": 178.57, 
+            "close": 179.85
+        }
+
+        ...
+
+so we just need time with open high low close, right, and so since this is actually a Python dictionary and not actually a JavaScript object here, we're gonna want to put quotes around these, so we'll want time
+open high low close is our keys in our dictionary for this candlestick, so we're creating a new candlestick with keys, and then we're gonna replace this, so data is actually this list here 
+
+        [
+          1621900800000, 
+          "38810.99000000", 
+          "39139.00000000", 
+          "38502.73000000", 
+          "38955.26000000", 
+          "889.19595600", 
+          1621901099999, 
+          "34520637.93852363", 
+          21707, 
+          "449.05726700", 
+          "17442116.27935296", 
+          "0"
+        ]
+
+
+and so we want data 0 1 2 3 & 4 
+
+so I'm going to do data 0, and we want data 1, data 2, data 3, and data 4 
+
+        ...
+
+        candledsticks = {
+            "time": data[0], 
+            "open": data[1], 
+            "high": data[2], 
+            "low": data[3], 
+            "close": data[4]
+        }
+
+        ...
+
+and you can do this in a variety of ways if you wanted to like assign these to actual named variables first, and like unpack this data and then assign it to this dictionary, there's (a right of ways)? to
+process this data structure here, but I'm just going to do it like that, 
+
+so 'candledstick' is a dictionary with time open high low and close, and then we can just do process_candlesticks, we're gonna append this new candlestick, and then we're gonna jsonify() this process_candlesticks, 
+
+        @app.route('/history')
+        def history():
+            candlesticks = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_5MINUTE, "25 May, 2021", "1 Jun, 2021")
+
+            processed_candlesticks = []
+
+            for data in candlesticks:
+                candledsticks = {
+                    "time": data[0], 
+                    "open": data[1], 
+                    "high": data[2], 
+                    "low": data[3], 
+                    "close": data[4]
+                }
+
+                processed_candlesticks.append(candlestick)
+
+            return jsonify(processed_candlesticks)
+
+and that should give us a different structure here, so if i refresh this, see what I got, 
+
+        [
+          {
+            "close": "38955.26000000", 
+            "high": "39139.00000000", 
+            "low": "38502.73000000", 
+            "open": "38810.99000000", 
+            "time": 1621900800000
+          }, 
+          {
+            "close": "38984.28000000", 
+            "high": "39100.00000000", 
+            "low": "38862.47000000", 
+            "open": "38956.83000000", 
+            "time": 1621901100000
+          }, 
+
+          ....
+        ]
+
+we'll have a list here, and there you go, we have open high low and close as objects, and it looks like there's still a list wrapper here, which I don't really want, and okay you can see and this is a very subtle error, that I barely cut, but there's a comma at the end here 
+
+
+            for data in candlesticks:
+                candledsticks = {
+                    "time": data[0], 
+                    "open": data[1], 
+                    "high": data[2], 
+                    "low": data[3], 
+                    "close": data[4]
+                },
+
+and that's in Python that actually makes it like a tupple, and so we don't want that, so I'm gonna take that off, and so instead of this extra list wrapped around, we want this to just be a list of objects okay, so now we have a list of objects open high/low close, we have, and then we have a timestamp here, 
+
+and one thing i learned about the 'lightweight charts' library already, is it wants a unix timestamp, we can use a unix timestamp to format our time 
+so we're dealing with 5-minute candlesticks, and this from binance we actually get milliseconds too, so we want to divide this by a thousand 
+
+so i'm just going to do that, so that we don't have to worry about it later, that's something you would figure out, but it might take you of it, so I just want to say that step, so that we don't wonder why our chart didn't work quite right 
+
+so I'm gonna divide that by a thousand and then we'll get this 
+
+if we want to verify the timestamps formatted to see that we return the correct date range, let's just take this first timestamp here, and let's just run it through our date function here on the command line
+
+        $ date -r 1621900800      (doesn't work in my command line)! it say date: invalid date '1621900800'
+
+and you see this gives me in June 30th even though we specified a July 1st and that's because I'm in Pacific time, so if you subtract 7 hours and this would actually be July 1st at midnight, and if you
+subtract 7 hours you get 5:00 p.m. 5:00 p.m. Pacific time, and so if I went to the next timestamp right, and then I did that again right, you see we get the next 5-minute candlestick, and we have to open
+high low and close, so it looks like we correctly got the candlesticks for a particular date range all right 
+
+so we have some historical data here it's in
+
+the format we want so what's next let's
+
+see if we can place this on our chart
+
+here on the web and so I'm gonna do that
+
+so I'm gonna go to chart j s here
+
+instead of this whole set data here we
+
+want to set that data with the data that
+
+comes back from our API endpoint so I'm
+
+going to delete this entire thing so
+
+let's just highlight this whole guy and
+
+we want Candlestick series set data and
+
+then we want a list to come in but the
+
+list needs to come from our back-end and
+
+so let's use the JavaScript a fetch
+
+function and see if we can just fetch
+
+the data so I'm just gonna do you fetch
+
+and then I am going to do HTTP localhost
+
+and since I'm just running this locally
+
+obviously if we deploy this later and
+
+have a domain will have some
+
+configuration value that where we set
+
+the hostname so I'm fetching it for my
+
+local machines web server and so this
+
+does we do fetch and then we can do then
+
+and you'll need to look at how html5
+
+fetch works if you don't know I'm not
+
+going to go over that here but I'm gonna
+
+do are and I'll do our JSON and then
+
+I'll do then again so do then and then
+
+this will give me a response okay and
+
+then I can put this then on its own line
+
+just so it's easier to read so I want
+
+we're gonna fetch we get a response
+
+that's in JSON format and then then we
+
+have our final response and then let's
+
+just log it to the console just to make
+
+sure this actually fetches from our
+
+back-end without any errors so let's do
+
+that so I'm gonna run that and you might
+
+have to shift refresh if to make sure it
+
+refreshes the latest version of this
+
+JavaScript alright so let's go into
+
+Network here and where it says history
+
+you can see I did successfully fetch we
+
+did fetch the data so we got the
+
+response and we have it coming in in the
+
+format we want and you see our charts
+
+messed up right now because we're not
+
+setting any data yet so let's see if we
+
+can set data to the day that was
+
+returned right here and so I'm just
+
+going to do candle series set
+
+data I'm going to put it inside of this
+
+then so can little series set data to
+
+our response and let's try it so I'm
+
+gonna shift refresh here and yep so we
+
+set it and look at that we have a bunch
+
+of candlestick data here and it looks
+
+like it's set and let's let's try a
+
+different time frame real quick I'm
+
+gonna do the 15-minute that candlestick
+
+for now so I'm gonna do 15-minute
+
+because I just don't want that level of
+
+granularity yet alright so let's see
+
+what that looks like
+
+all right so that's our 15-minute chart
+
+for Bitcoin and you see the prices are
+
+between ninety one sixty and ninety
+
+three twenty there and that sounds about
+
+right
+
+and so let's just go to a trading view
+
+for instance here and see if we can find
+
+our Bitcoin so we'll do markets
+
+cryptocurrency Bitcoin here and then
+
+let's click this top one and yeah that's
+
+like right so 9221 there it's there
+
+finance ninety two twenty two so there's
+
+different slightly different prices
+
+depending on where the data come from if
+
+I go to full feature chart here and
+
+we're on the we're doing five minute or
+
+15-minute candlesticks here for now and
+
+so let's see what that looks like I'm
+
+gonna click this time frame click
+
+fifteen minutes and then we have the
+
+range of let's see let's go back so
+
+there's the ninth the tenth and so forth
+
+so we see this drop let's see if we can
+
+find this pattern in the chart so I'm
+
+going to detach this from trading view
+
+and let's just compare it to what we
+
+have here on our screen so if I go back
+
+into from the ninth ninth through the
+
+present-day
+
+and let's just compare notes real quick
+
+right so we have this drop here which
+
+looks familiar right so you have this
+
+spike got the spike and then you got a
+
+drop right and then yeah so the pattern
+
+looks the same so it looks like our data
+
+is pretty good right and then we have
+
+this
+
+bike here that's bike drop drop right so
+
+that looks good
+
+I think our scale is a little bit
+
+different so this this looks a little
+
+bit different here but yeah the the
+
+shape looks correct so it looks like
+
+we're getting good 15-minute candlestick
+
+data from finance and we're displaying
+
+it on our own custom a light weight
+
+chart which is awesome and so mission
+
+accomplished there and so let's see if
+
+we can stream and add additional
+
+candlesticks in real time to this chart
+
+now that we have it so I am going to do
+
+that so we have the 15 minute interval
+
+we pull in our history we initialize our
+
+chart with this data and now that we've
+
+initialized it what we're gonna do
+
+earlier we commented out our web socket
+
+that we created in a previous video
+
+where we connect to the finance
+
+WebSocket stream and stream 15-minute
+
+data and you see on message will receive
+
+a new message from this WebSocket stream
+
+we're logging it to the console so look
+
+at our console here if I go to developer
+
+tools right if I look in the console
+
+you'll see I log the response but also
+
+you see how we're getting this
+
+additional real-time data so we're
+
+logging this from Finance in this
+
+WebSocket stream and let's try to add
+
+this WebSocket stream to our chart as
+
+well so we have olc in this format and
+
+then we have a key that I believe is K
+
+here so K is a key and this object and
+
+then it has a timestamp and then open
+
+high/low close so we want to append
+
+these to our candlestick data series and
+
+update this chart and so let's do that
+
+so we want candlesticks new candlesticks
+
+to start appearing here on the right
+
+right so to do that instead of just
+
+logging the event data we're going to
+
+retrieve our message object so I'm just
+
+going to do a VAR message and those so
+
+this is a message object coming back
+
+and we're gonna do json dot parse it's
+
+going to parse the JSON string coming in
+
+and we're gonna do event dot data just
+
+want to parse that JSON and then we have
+
+this message object now okay and so now
+
+if we console.log
+
+dot k let's do that and let's remove
+
+this cancel this log here for the event
+
+as a whole and now we look at our
+
+console and this is just the candlestick
+
+right each candlestick and so we have
+
+the open which is oh the hi the L and
+
+the C and then we have this timestamp
+
+which is also in millisecond format and
+
+so let's process this and then update
+
+our candlestick series so all we have to
+
+do now is do candle series right dot
+
+update so this is an update function
+
+that's part of lightweight charts and so
+
+if you do this just to show you where
+
+that's at and I and I saved you a lot of
+
+time by have I fighting how all this
+
+works so you're welcome so I want to go
+
+to the documentation so let's see get
+
+library so we go to the github page
+
+there's a bunch of information on how
+
+all the time series works and then let's
+
+see the documentation here you'll see
+
+create your first charts and if you dig
+
+through the documentation you'll
+
+eventually find how you update the
+
+series so there's an update method here
+
+where you can add a new candlestick or
+
+if the timestamp is the same as an
+
+existing one it'll update the the
+
+candlestick that's already there and so
+
+you'll see how we use that shortly
+
+so I'm gonna do candle series dot update
+
+and so I'll make a new variable called
+
+var candlestick equals message K and
+
+then we just update and that's we need
+
+to give it the new object and then our
+
+object is going to have that same format
+
+time open high low and close right and
+
+then you can just take the the
+
+candlestick T and we want to divide by a
+
+thousand and then we'll do you
+
+candlestick not oh oh and we want to do
+
+candlestick H we want to Candlestick dot
+
+L and we're just taking these from our
+
+console
+
+I just mapping them to the format that
+
+that lightweight charge expects so
+
+Candlestick dot see right and we're
+
+gonna update that last candlestick as
+
+new data streams in and so let's see if
+
+that works so I'm going to refresh again
+
+it's going to initialize with the first
+
+bit of data here from our history and
+
+then you see at the very end there you
+
+see that candlesticks moving actually so
+
+it's actually rear end during that
+
+candle with new data as it comes in so
+
+you see that price at the end is
+
+actually changing and so it's just
+
+updating this first candlestick over and
+
+over again and so if I were if you want
+
+to actually see this more frequently
+
+what we can do is just to show you this
+
+in action a little bit more since I have
+
+15-minute candlesticks it's not going to
+
+draw a new one for a while
+
+we can do date dot now for instance and
+
+just update this over and over again
+
+with new like new data so if I do date
+
+now it's just gonna update it by the
+
+second so you see new candlesticks are
+
+being added right but this is actually
+
+part of the same 15-minute candlestick
+
+because we're just streaming the
+
+15-minute candlestick but I what I
+
+wanted to do is have real-time updates
+
+to one candlestick and so these will all
+
+be collapsed into one single 15-minute
+
+candlestick and then after fifteen
+
+minutes past this then there'll be a new
+
+candlestick but you see how there's data
+
+streaming in so what I did was just set
+
+a new timestamp every single time but
+
+that's not actually what's happening so
+
+we can we can display each tick as new
+
+data comes in but where we're
+
+aggregating this into 15-minute
+
+candlesticks so we want all the times to
+
+actually be the same so I'm gonna take
+
+that out right and so when i refresh
+
+you'll see it renders to the chart and
+
+we have real-time data coming in here
+
+but it's just going to update that that
+
+same candlestick and so if I were to log
+
+for instance that candlestick
+
+and I'm just kind of drilling how my
+
+points of how this data data looks so if
+
+I log the candlestick you see the
+
+timestamp there that's the current
+
+candlestick so this timestamp is
+
+actually the same and it's just updating
+
+the open huh it's updating the open high
+
+low and close for that same timestamp as
+
+new data comes in
+
+so maybe the low changes the high
+
+changes and so forth and eventually we
+
+get the final closing price of that
+
+15-minute candlestick
+
+yeah and that's pretty much it for this
+
+video we're able to get historical data
+
+from a Python back-end display it on
+
+lightweight charts and we're able to
+
+stream data over WebSockets with finance
+
+and display real time on a chart and
+
+I'll actually finalize this by just
+
+moving this settings up just to tweak
+
+this a little bit more the settings I
+
+find is kind of ugly down there so I'm
+
+going to move this up by our bye widget
+
+so we'll do that okay and then the other
+
+thing I'll do is instead of having these
+
+candlesticks be orange let's make them
+
+red and green it's a little bit easier
+
+for me to read and so if we look in our
+
+candlestick settings here we have update
+
+color and down color and I'm just say up
+
+color is pound and see RGB so we want
+
+green is 0 FF 0 0 and then we can do
+
+down is ff0000 right and now if I do
+
+that refresh it historical data comes in
+
+we have green candlesticks on the up
+
+candles and red candlesticks on the way
+
+down we can tweak the border colors and
+
+all kinds of other stuff here and the
+
+time scale but you know we we got a
+
+pretty good concept here and we're not
+
+going to keep tweaking it forever we're
+
+just we're just building this thing out
+
+in a quick fashion
+
+and so chemists ich red green candles
+
+real-time data historical data feelin
+
+pretty good about this and so that's it
+
+for this video in the next video I'm
+
+going to go back to the back trader at
+
+ta.lim part of this which probably most
+
+of you are more interested in and so
+
+we'll hook up this RSI overbought
+
+oversold stuff and show where buy and
+
+sell points
+
+occur based on the technical analysis
+
+library so that's it for now and stay
+
+tuned for the next video thanks

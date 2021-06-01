@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, flash, redirect
+from flask import Flask, render_template, request, flash, redirect, jsonify
 import config, csv
 from binance.client import Client
 from binance.enums import *
@@ -53,3 +53,23 @@ def sell():
 @app.route("/settings")
 def settings():
     return "<p>settings</p>"
+
+
+@app.route('/history')
+def history():
+    candlesticks = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_5MINUTE, "25 May, 2021", "1 Jun, 2021")
+
+    processed_candlesticks = []
+
+    for data in candlesticks:
+        candlestick = {
+            "time": data[0], 
+            "open": data[1], 
+            "high": data[2], 
+            "low": data[3], 
+            "close": data[4]
+        }
+
+        processed_candlesticks.append(candlestick)
+
+    return jsonify(processed_candlesticks)
