@@ -3349,7 +3349,7 @@ so let's get that out of the way first,
 
 so if we look in the JavaScript code I can created this chart dot js here 
 
-        statis/chart.js
+        static/chart.js
 
 it has our JavaScript and we're in the static directory and then our flask index template here 
 
@@ -3650,179 +3650,122 @@ so i'm just going to do that, so that we don't have to worry about it later, tha
 
 so I'm gonna divide that by a thousand and then we'll get this 
 
+        ....
+        "time": data[0] / 1000, 
+        ....
+
 if we want to verify the timestamps formatted to see that we return the correct date range, let's just take this first timestamp here, and let's just run it through our date function here on the command line
 
         $ date -r 1621900800      (doesn't work in my command line)! it say date: invalid date '1621900800'
 
-and you see this gives me in June 30th even though we specified a July 1st and that's because I'm in Pacific time, so if you subtract 7 hours and this would actually be July 1st at midnight, and if you
-subtract 7 hours you get 5:00 p.m. 5:00 p.m. Pacific time, and so if I went to the next timestamp right, and then I did that again right, you see we get the next 5-minute candlestick, and we have to open
-high low and close, so it looks like we correctly got the candlesticks for a particular date range all right 
+and you see this gives me in June 30th even though we specified a July 1st, and that's because I'm in Pacific time, so if you subtract 7 hours, this would actually be July 1st at midnight, and if you
+subtract 7 hours you get 5:00 p.m. Pacific time, and so if I went to the next timestamp right, and then I did that again, right, you see we get the next 5-minute candlestick, and we have the open
+high low and close, so it looks like we correctly got the candlesticks for a particular date range, 
 
-so we have some historical data here it's in
+all right, so we have some historical data here, it's in the format we want, so what's next ?
+let's see if we can place this on our chart here on the web, and so I'm gonna do that 
 
-the format we want so what's next let's
+so I'm gonna go to chart.js here
 
-see if we can place this on our chart
+        chart.js
 
-here on the web and so I'm gonna do that
+instead of this whole set data here, we want to set that data with the data that comes back from our API endpoint 
 
-so I'm gonna go to chart j s here
+so I'm going to delete this entire thing, so let's just highlight this whole guy, and we want candlestick series set data, 
 
-instead of this whole set data here we
+        candleSeries.setData();
 
-want to set that data with the data that
+and then we want a list to come in, but the list needs to come from our back-end, and so let's use the JavaScript fetch() function, and see if we can just fetch the data 
+so I'm just gonna do fetch, and then I am going to do HTTP localhost
 
-comes back from our API endpoint so I'm
+        ....
 
-going to delete this entire thing so
+        fetch('http://localhost:5000/history')
+        candleSeries.setData();
 
-let's just highlight this whole guy and
+and since I'm just running this locally, obviously if we deploy this later and have a domain, we'll have some configuration value that where we set the hostname 
 
-we want Candlestick series set data and
+so I'm fetching it for my local machines web server, and so, this does... we do fetch(), and then we can do then(), and you'll need to look at how html5 fetch works, if you don't know I'm not going to go over that here, but I'm gonna do r and I'll do r dot JSON, and then I'll do then() again, so do then(), and then this will give me a response okay, and then I can put this then() on its own line just so it's easier to read 
 
-then we want a list to come in but the
+        ....
 
-list needs to come from our back-end and
+        fetch('http://localhost:5000/history')
+            .then((r) => r.json())
+            .then((response) => {
+                console.log(response)
+            })
+        candleSeries.setData();
 
-so let's use the JavaScript a fetch
+so I want... we're gonna fetch, we get a response, that's in JSON format, and then we have our final response, and then let's just log it to the console, just to make sure this actually fetches from our
+back-end without any errors 
 
-function and see if we can just fetch
+so let's do that 
 
-the data so I'm just gonna do you fetch
+so I'm gonna run that, and you might have to shift refresh if... to make sure it refreshes the latest version of this JavaScript alright 
 
-and then I am going to do HTTP localhost
+        http://127.0.0.1:5000/
 
-and since I'm just running this locally
+so let's go into Network here, and where it says history (i.e in the File column), (and then in Response tab, and choose Raw with the toogle switch button) you can see I did successfully fetch, 
 
-obviously if we deploy this later and
+        [
+          {
+            "close": "38955.26000000", 
+            "high": "39139.00000000", 
+            "low": "38502.73000000", 
+            "open": "38810.99000000", 
+            "time": 1621900800.0
+          }, 
+          {
+            "close": "38984.28000000", 
+            "high": "39100.00000000", 
+            "low": "38862.47000000", 
+            "open": "38956.83000000", 
+            "time": 1621901100.0
+          }, 
+          ....
 
-have a domain will have some
+we did fetch the data, so we got the response, and we have it coming in the format we want, and you see our charts messed up right now because we're not setting any data yet 
 
-configuration value that where we set
+so let's see if we can set data to the day that was returned right here, and so I'm just going to do candle series set data, I'm going to put it inside of this, then so candle series set data to our response, 
 
-the hostname so I'm fetching it for my
+        ....
 
-local machines web server and so this
+        fetch('http://localhost:5000/history')
+            .then((r) => r.json())
+            .then((response) => {
+                console.log(response)
+                
+                candleSeries.setData(response);
+            })
 
-does we do fetch and then we can do then
+and let's try it, so I'm gonna shift refresh here, and yep so we set it, and look at that, we have a bunch of candlestick data here, and it looks like it's set, and let's try a different time frame real quick 
 
-and you'll need to look at how html5
+        ############################# Doesn't work for me here #################################
+        2 errors 
 
-fetch works if you don't know I'm not
+        first: 
 
-going to go over that here but I'm gonna
+        Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://localhost:5000/history. (Reason: CORS header ‘Access-Control-Allow-Origin’ missing).
 
-do are and I'll do our JSON and then
+        and second:
 
-I'll do then again so do then and then
+        Uncaught (in promise) TypeError: NetworkError when attempting to fetch resource.
 
-this will give me a response okay and
+        ########################################################################################
+        
+I'm gonna do the 15-minute that candlestick for now, so I'm gonna do 15-minute because I just don't want that level of granularity yet 
 
-then I can put this then on its own line
+        app.py
 
-just so it's easier to read so I want
+        # candlesticks = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_5MINUTE, "25 May, 2021", "1 Jun, 2021")
+        andlesticks = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_15MINUTE, "25 May, 2021", "1 Jun, 2021")
 
-we're gonna fetch we get a response
+alright so let's see what that looks like, all right so that's our 15-minute chart for Bitcoin, and you see the prices are between ninety one sixty and ninety three twenty there,
+and that sounds about right, and so let's just go to a trading view for instance here, and see if we can find our Bitcoin, so we'll do 'markets' 'cryptocurrency' 'Bitcoin' here, and then let's click this top one, and yeah that's like right so 9221 there, it's there binance ninety two twenty two, so there's different slightly different prices depending on where the data come from
 
-that's in JSON format and then then we
+if I go to full feature chart here, and we're on the five minute, or 15-minute candlesticks here for now, and so let's see what that looks like, 
 
-have our final response and then let's
-
-just log it to the console just to make
-
-sure this actually fetches from our
-
-back-end without any errors so let's do
-
-that so I'm gonna run that and you might
-
-have to shift refresh if to make sure it
-
-refreshes the latest version of this
-
-JavaScript alright so let's go into
-
-Network here and where it says history
-
-you can see I did successfully fetch we
-
-did fetch the data so we got the
-
-response and we have it coming in in the
-
-format we want and you see our charts
-
-messed up right now because we're not
-
-setting any data yet so let's see if we
-
-can set data to the day that was
-
-returned right here and so I'm just
-
-going to do candle series set
-
-data I'm going to put it inside of this
-
-then so can little series set data to
-
-our response and let's try it so I'm
-
-gonna shift refresh here and yep so we
-
-set it and look at that we have a bunch
-
-of candlestick data here and it looks
-
-like it's set and let's let's try a
-
-different time frame real quick I'm
-
-gonna do the 15-minute that candlestick
-
-for now so I'm gonna do 15-minute
-
-because I just don't want that level of
-
-granularity yet alright so let's see
-
-what that looks like
-
-all right so that's our 15-minute chart
-
-for Bitcoin and you see the prices are
-
-between ninety one sixty and ninety
-
-three twenty there and that sounds about
-
-right
-
-and so let's just go to a trading view
-
-for instance here and see if we can find
-
-our Bitcoin so we'll do markets
-
-cryptocurrency Bitcoin here and then
-
-let's click this top one and yeah that's
-
-like right so 9221 there it's there
-
-finance ninety two twenty two so there's
-
-different slightly different prices
-
-depending on where the data come from if
-
-I go to full feature chart here and
-
-we're on the we're doing five minute or
-
-15-minute candlesticks here for now and
-
-so let's see what that looks like I'm
+I'm
 
 gonna click this time frame click
 

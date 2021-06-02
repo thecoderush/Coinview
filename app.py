@@ -63,7 +63,7 @@ def history():
 
     for data in candlesticks:
         candlestick = {
-            "time": data[0], 
+            "time": data[0] / 1000, 
             "open": data[1], 
             "high": data[2], 
             "low": data[3], 
