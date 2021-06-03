@@ -3765,187 +3765,155 @@ and that sounds about right, and so let's just go to a trading view for instance
 
 if I go to full feature chart here, and we're on the five minute, or 15-minute candlesticks here for now, and so let's see what that looks like, 
 
-I'm
+I'm gonna click this time frame, click fifteen minutes and then we have the range of... let's see, let's go back so there's the ninth, the tenth, and so forth
 
-gonna click this time frame click
+so we see this drop, let's see if we can find this pattern in the chart, so I'm going to detach this from trading view, and let's just compare it to what we have here on our screen 
 
-fifteen minutes and then we have the
+so if I go back into... from the ninth, ninth through the present-day, and let's just compare notes real quick right, so we have this drop here which looks familiar right, so you have this spike, got the spike, and then you got a drop right, 
 
-range of let's see let's go back so
+and then yeah, so the pattern looks the same, so it looks like our data is pretty good right, and then we have this spike here, that spike drop, drop, right, so that looks good
 
-there's the ninth the tenth and so forth
+I think our scale is a little bit different, so this, this looks a little bit different here but yeah the shape looks correct, so it looks like we're getting good 15-minute candlestick
+data from binance, and we're displaying it on our own custom a 'lightweight chart' which is awesome, 
 
-so we see this drop let's see if we can
+and so mission accomplished there, and so let's see if we can stream and add additional candlesticks in real time to this chart now that we have it, 
 
-find this pattern in the chart so I'm
+so I am going to do that, so we have the 15 minute interval, we pull in our history,
 
-going to detach this from trading view
+        (app.py) 
 
-and let's just compare it to what we
+        ....
+        
+        @app.route('/history')
+        def history():
+            candlesticks = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_15MINUTE, "25 May, 2021", "1 Jun, 2021")
 
-have here on our screen so if I go back
+        ....
+ 
+we initialize our chart with this data, 
 
-into from the ninth ninth through the
+        (chart.js)
 
-present-day
+        ...
+        fetch('http://localhost:5000/history')
+            .then((r) => r.json())
+            .then((response) => {
+                console.log(response)
+		
+		candleSeries.setData(response);
+        })
 
-and let's just compare notes real quick
+and now that we've initialized it, what we're gonna do earlier, we commented out our web socket that we created in a previous video (??) (didn't find the following code in the file, did i miss the video?? or did this been removed from previous git remove head manipulation? the last one may be the right answer because there's autocomplete from vscode for these variable, but not 100% sur about that... so let's put the code back into the chart.js file) 
 
-right so we have this drop here which
+        (chart.js)
 
-looks familiar right so you have this
+        var binanceSocket = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@kline_15m")
 
-spike got the spike and then you got a
+        binanceSocket.onmessage = function (event) {
+            console.log(event.data);
+        }
 
-drop right and then yeah so the pattern
+where we connect to the binance WebSocket stream, and stream 15-minute data, and you see on message will receive a new message from this WebSocket stream, we're logging it to the console, 
 
-looks the same so it looks like our data
+so look at our console here, 
 
-is pretty good right and then we have
+        http://127.0.0.1:5000/
 
-this
+if I go to developer tools right, if I look in the console you'll see I log the response, but also you see how we're getting this additional real-time data 
 
-bike here that's bike drop drop right so
+        {"e":"kline","E":1622753814807,"s":"BTCUSDT","k":{"t":1622753100000,"T":1622753999999,"s":"BTCUSDT","i":"15m","f":889633499,"L":889640230,"o":"38588.23000000","c":"38683.84000000","h":"38691.17000000","l":"38538.26000000","v":"186.42008200","n":6732,"x":false,"q":"7197892.80879598","V":"111.04103300","Q":"4287995.80886817","B":"0"}}
 
-that looks good
+        .....
+        .....
 
-I think our scale is a little bit
+so we're logging this from binance in this WebSocket stream, and let's try to add this WebSocket stream to our chart as well,
 
-different so this this looks a little
+so we have "o" "h" "l" "c" in this format, and then we have a key that I believe is "k" here so "k" is a key in this object, and then it has a timestamp, and then open high/low close 
 
-bit different here but yeah the the
+so we want to append these to our candlestick data series, and update this chart,
 
-shape looks correct so it looks like
+and so let's do that
 
-we're getting good 15-minute candlestick
+so we want candlesticks, new candlesticks to start appearing here on the right, 
+right so to do that, instead of just logging the event data, we're going to retrieve our message object, so I'm just going to do a VAR message, 
 
-data from finance and we're displaying
+        (chart.js)
 
-it on our own custom a light weight
+        var binanceSocket = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@kline_15m")
 
-chart which is awesome and so mission
+        binanceSocket.onmessage = function (event) {
+            console.log(event.data);
 
-accomplished there and so let's see if
+            var message = JSON.parse(event.data)
+        }
 
-we can stream and add additional
+and those... so this is a message object coming back, and we're gonna do json dot parse, it's going to parse the JSON string coming in, and we're gonna do event dot data 
 
-candlesticks in real time to this chart
+just want to parse that JSON, and then we have this message object now, okay,
+                                
+        binanceSocket.onmessage = function (event) {
+            console.log(event.data);
 
-now that we have it so I am going to do
+            var message = JSON.parse(event.data)
 
-that so we have the 15 minute interval
+            console.log(message.k)
+        }
 
-we pull in our history we initialize our
+and so now if we console.log dot k 
 
-chart with this data and now that we've
+let's do that, and let's remove this console.. this log here, 
 
-initialized it what we're gonna do
-
-earlier we commented out our web socket
-
-that we created in a previous video
-
-where we connect to the finance
-
-WebSocket stream and stream 15-minute
-
-data and you see on message will receive
-
-a new message from this WebSocket stream
-
-we're logging it to the console so look
-
-at our console here if I go to developer
-
-tools right if I look in the console
-
-you'll see I log the response but also
-
-you see how we're getting this
-
-additional real-time data so we're
-
-logging this from Finance in this
-
-WebSocket stream and let's try to add
-
-this WebSocket stream to our chart as
-
-well so we have olc in this format and
-
-then we have a key that I believe is K
-
-here so K is a key and this object and
-
-then it has a timestamp and then open
-
-high/low close so we want to append
-
-these to our candlestick data series and
-
-update this chart and so let's do that
-
-so we want candlesticks new candlesticks
-
-to start appearing here on the right
-
-right so to do that instead of just
-
-logging the event data we're going to
-
-retrieve our message object so I'm just
-
-going to do a VAR message and those so
-
-this is a message object coming back
-
-and we're gonna do json dot parse it's
-
-going to parse the JSON string coming in
-
-and we're gonna do event dot data just
-
-want to parse that JSON and then we have
-
-this message object now okay and so now
-
-if we console.log
-
-dot k let's do that and let's remove
-
-this cancel this log here for the event
-
-as a whole and now we look at our
-
-console and this is just the candlestick
-
-right each candlestick and so we have
-
-the open which is oh the hi the L and
-
-the C and then we have this timestamp
-
-which is also in millisecond format and
-
-so let's process this and then update
-
-our candlestick series so all we have to
-
-do now is do candle series right dot
-
-update so this is an update function
-
-that's part of lightweight charts and so
-
-if you do this just to show you where
-
-that's at and I and I saved you a lot of
-
-time by have I fighting how all this
-
-works so you're welcome so I want to go
-
-to the documentation so let's see get
+        binanceSocket.onmessage = function (event) {
+         
+            var message = JSON.parse(event.data)
+
+            console.log(message.k)
+        }
+
+for the event as a whole, and now we look at our console, and this is just the candlestick 
+right
+
+        Object { t: 1622754000000, T: 1622754899999, s: "BTCUSDT", i: "15m", f: 889642199, L: 889652860, o: "38708.08000000", c: "38934.67000000", h: "38987.61000000", l: "38640.22000000", … }
+​
+        B: "0"
+        L: 889652860
+        Q: "9386074.29749470"
+        T: 1622754899999
+        V: "241.72558400"
+        c: "38934.67000000"
+        f: 889642199
+        h: "38987.61000000"
+        i: "15m"
+        l: "38640.22000000"
+        n: 10662
+        o: "38708.08000000"
+        q: "18535270.40465170"
+        s: "BTCUSDT"
+        t: 1622754000000
+        v: "477.45197000"
+        x: false
+
+        .....
+        .....
+
+each candlestick, and so we have the open, which is "o", the "i", the "l", and the "c", and then we have this timestamp "t" which is also in millisecond format, and so let's process this and then update our candlestick series 
+
+so all we have to do now is do candle series right, dot update, so this is an update() function that's part of lightweight charts
+
+        binanceSocket.onmessage = function (event) {
+         
+            var message = JSON.parse(event.data)
+
+            console.log(message.k)
+
+            candleSeries.update()
+        }
+
+and so if you do this just to show you where that's at, and I and I saved you a lot of time by have I finding how all this works, 
+
+        https://www.tradingview.com/lightweight-charts/
+
+so you're welcome, so I want to go to the documentation, so let's see get
 
 library so we go to the github page
 
