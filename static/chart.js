@@ -25,8 +25,8 @@ var chart = LightweightCharts.createChart(document.getElementById('charts'), {
 });
 
 var candleSeries = chart.addCandlestickSeries({
-    upColor: 'rgba(255, 144, 0, 1)',
-    downColor: '#000',
+    upColor: '#00FF00',
+    downColor: '#FF0000',
     borderDownColor: 'rgba(255, 144, 0, 1)',
     borderUpColor: 'rgba(255, 144, 0, 1)',
     wickDownColor: 'rgba(255, 144, 0, 1)',
@@ -190,7 +190,7 @@ fetch('http://localhost:5000/history')
     .then((response) => {
         console.log(response)
 		
-		candleSeries.setData(response);
+		// candleSeries.setData(response);
     })
 
 
@@ -201,5 +201,16 @@ binanceSocket.onmessage = function (event) {
 
 	var message = JSON.parse(event.data)
 
-	console.log(message.k)
+	var candledstick = message.k;
+    //console.log(message.k)
+
+	console.log(candledstick)
+
+    candleSeries.update({
+		time: candledstick.t / 1000,
+		open: candledstick.o,
+		high: candledstick.h,
+		low: candledstick.l,
+		close: candledstick.c
+	})
 }

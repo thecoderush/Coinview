@@ -3752,7 +3752,11 @@ and let's try it, so I'm gonna shift refresh here, and yep so we set it, and loo
         Uncaught (in promise) TypeError: NetworkError when attempting to fetch resource.
 
         ########################################################################################
-        
+
+        ~~~~~~~~~~~~~~~~~~~~~~~~~ Maybe the history is not visible due to the interval we choose because at the end of this tutorial part we can see the real time candlestick when using lightweight charts updating candlestick function !! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+
+
+
 I'm gonna do the 15-minute that candlestick for now, so I'm gonna do 15-minute because I just don't want that level of granularity yet 
 
         app.py
@@ -3911,274 +3915,245 @@ so all we have to do now is do candle series right, dot update, so this is an up
 
 and so if you do this just to show you where that's at, and I and I saved you a lot of time by have I finding how all this works, 
 
+so you're welcome, so I want to go to the documentation, 
+
         https://www.tradingview.com/lightweight-charts/
 
-so you're welcome, so I want to go to the documentation, so let's see get
+so let's see, get library, so we go to the github page
 
-library so we go to the github page
+        https://github.com/tradingview/lightweight-charts
 
-there's a bunch of information on how
+there's a bunch of information on how all the time series works, and then let's see the documentation here, 
 
-all the time series works and then let's
+        https://github.com/tradingview/lightweight-charts/blob/master/docs/README.md
 
-see the documentation here you'll see
+you'll see, create your first charts, and if you dig through the documentation you'll eventually find how you update the series, so there's an update method here, 
 
-create your first charts and if you dig
+        https://github.com/tradingview/lightweight-charts/blob/master/docs/series-basics.md
 
-through the documentation you'll
+where you can add a new candlestick, or if the timestamp is the same as an existing one it'll update the candlestick that's already there, and so you'll see how we use that shortly
 
-eventually find how you update the
+        Examples:
 
-series so there's an update method here
+        barSeries.update({
+            time: '2018-12-19',
+            open: 141.77,
+            high: 170.39,
+            low: 120.25,
+            close: 145.72,
+        });
 
-where you can add a new candlestick or
+so I'm gonna do candle series dot update(), and so I'll make a new variable called var candlestick 
 
-if the timestamp is the same as an
+        charts.js
 
-existing one it'll update the the
+        binanceSocket.onmessage = function (event) {
+         
+            var message = JSON.parse(event.data)
 
-candlestick that's already there and so
+            var candledstick = message.k;
+            //console.log(message.k)
 
-you'll see how we use that shortly
+            candleSeries.update()
+        }
 
-so I'm gonna do candle series dot update
+equals message dot k, and then we just update and that's we need to give it the new object
 
-and so I'll make a new variable called
+        ....
 
-var candlestick equals message K and
+            var candledstick = message.k;
+            //console.log(message.k)
 
-then we just update and that's we need
+            candleSeries.update({
+                time: candledstick.t / 1000,
+                open: candledstick.o,
+                high: candledstick.h,
+                low: candledstick.l,
+                close: candledstick.c
+            })
+        }
 
-to give it the new object and then our
+and then our object is going to have that same format time open high low and close right,
+and then you can just take the candlestick dot t, and we want to divide by a thousand, and then we'll do you candlestick dot o, and we want to do candlestick dot h, we want to candlestick dot l, 
 
-object is going to have that same format
+and we're just taking these from our console right 
 
-time open high low and close right and
+        Object { t: 1622754000000, T: 1622754899999, s: "BTCUSDT", i: "15m", f: 889642199, L: 889652860, o: "38708.08000000", c: "38934.67000000", h: "38987.61000000", l: "38640.22000000", … }
+​
+        B: "0"
+        L: 889652860
+        Q: "9386074.29749470"
+        T: 1622754899999
+        V: "241.72558400"
+        c: "38934.67000000"
+        f: 889642199
+        h: "38987.61000000"
+        i: "15m"
+        l: "38640.22000000"
+        n: 10662
+        o: "38708.08000000"
+        q: "18535270.40465170"
+        s: "BTCUSDT"
+        t: 1622754000000
+        v: "477.45197000"
+        x: false
 
-then you can just take the the
+        ....
 
-candlestick T and we want to divide by a
+I just mapping them to the format that that 'lightweight charts' expects, 
+so candlestick dot c, right, and we're gonna update that last candlestick as new data streams in, 
 
-thousand and then we'll do you
+and so let's see if that works so I'm going to refresh again
 
-candlestick not oh oh and we want to do
+it's going to initialize with the first bit of data here from our history, and then you see at the very end there you see that candlesticks moving actually, so it's actually rerendering that candle with new data as it comes in,
 
-candlestick H we want to Candlestick dot
+so you see that price at the end is actually changing, and so it's just updating this first candlestick over and over again, and so if I were... if you want to actually see this more frequently, what we can do is just to show you this in action a little bit more since I have
+15-minute candlesticks it's not going to draw a new one for a while
 
-L and we're just taking these from our
+we can do Date dot now for instance, and just update this over and over again with new data
 
-console
+        ....
 
-I just mapping them to the format that
+            var candledstick = message.k;
+            //console.log(message.k)
 
-that lightweight charge expects so
+            candleSeries.update({
+                time: Date.now(),
+                //time: candledstick.t / 1000,
+                open: candledstick.o,
+                high: candledstick.h,
+                low: candledstick.l,
+                close: candledstick.c
+            })
+        }
+
+so if I do Date dot now it's just gonna update it by the second, so you see new candlesticks are being added, right, but this is actually part of the same 15-minute candlestick because we're just streaming the 15-minute candlestick, but what I wanted to do is have real-time updates to one candlestick, and so these will all be collapsed into one single 15-minute 
+candlestick, and then after fifteen minutes past this then there'll be a new candlestick, 
+
+but you see how there's data streaming in, so what I did was just set a new timestamp every single time but that's not actually, what's happening, so we can we can display each tick as new data comes in, but where we're aggregating this into 15-minute candlesticks 
 
-Candlestick dot see right and we're
+so we want all the times to actually be the same, so I'm gonna take that out right, 
 
-gonna update that last candlestick as
+        ....
 
-new data streams in and so let's see if
+            var candledstick = message.k;
+            //console.log(message.k)
+
+            candleSeries.update({
+                time: candledstick.t / 1000,
+                open: candledstick.o,
+                high: candledstick.h,
+                low: candledstick.l,
+                close: candledstick.c
+            })
+        }
 
-that works so I'm going to refresh again
 
-it's going to initialize with the first
+and so when i refresh you'll see it renders to the chart, and we have real-time data coming in here, but it's just going to update that same candlestick, and so if I were to log for instance that candlestick, 
 
-bit of data here from our history and
+        ....
 
-then you see at the very end there you
+            var candledstick = message.k;
+            //console.log(message.k)
 
-see that candlesticks moving actually so
+            console.log(candledstick)
 
-it's actually rear end during that
+            candleSeries.update({
+                time: candledstick.t / 1000,
+                open: candledstick.o,
+                high: candledstick.h,
+                low: candledstick.l,
+                close: candledstick.c
+            })
+        }
 
-candle with new data as it comes in so
 
-you see that price at the end is
+and I'm just kind of drilling how my points of how this data data looks, so if I log the candlestick you see the timestamp there 
 
-actually changing and so it's just
+        Object { t: 1622838600000, T: 1622839499999, s: "BTCUSDT", i: "15m", f: 891609131, L: 891616815, o: "37065.35000000", c: "37018.18000000", h: "37117.52000000", l: "36982.19000000", … }
+​
+        B: "0"
+        L: 891616815
+        Q: "8956527.02504614"
+        T: 1622839499999
+        V: "241.58802300"
+        c: "37018.18000000"
+        f: 891609131
+        h: "37117.52000000"
+        i: "15m"
+        l: "36982.19000000"
+        n: 7685
+        o: "37065.35000000"
+        q: "16037372.68266705"
+        s: "BTCUSDT"
+        t: 1622838600000
+        v: "432.71150300"
+        x: false
 
-updating this first candlestick over and
+that's the current candlestick, so this timestamp is actually the same, and it's just updating the open high low and close for that same timestamp as new data comes in
 
-over again and so if I were if you want
+so maybe the low changes, the high changes, and so forth, and eventually we get the final closing price of that 15-minute candlestick yeah 
 
-to actually see this more frequently
+and that's pretty much it for this video, we're able to:
 
-what we can do is just to show you this
+    - get historical data from a Python back-end 
+    - display it on lightweight charts, and we're able to
+    - stream data over WebSockets with binance and 
+    - display real time on a chart, and
+    - I'll actually finalize this by just moving this settings up, just to tweak this a little bit more, 
+    
+the settings I find is kind of ugly down there, 
 
-in action a little bit more since I have
+        ....
 
-15-minute candlesticks it's not going to
+        <h3>Settings</h3>
 
-draw a new one for a while
+        <div id="settings">
+            <input type="checkbox" /><label>RSI</label>
+            <input type="text" id="rsi_length" name="rsi_length" placeholder="14"/><label>Overbought</label>
+            <input type="text" id="rsi_overbought" name="rsi_overbought" placeholder="70" /><label>Oversold</label>
+            <input type="text" id="rsi_oversold" name="resi_oversold" placeholder="38"/>
+        </div>
 
-we can do date dot now for instance and
+        <script>
+            // Create WebSocket connection.
+            //const binanceSocket = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@trade');
+            //console.log(binanceSocket);
+      
+            const tradeDiv = document.getElementById('trades');
 
-just update this over and over again
+        ....
 
-with new like new data so if I do date
+so I'm going to move this up by our 'buy' widget, so we'll do that okay, and then the other
+thing I'll do is instead of having these candlesticks be orange, let's make them red and green it's a little bit easier for me to read, 
 
-now it's just gonna update it by the
+and so if we look in our candlestick settings here, 
 
-second so you see new candlesticks are
+        charts.js
 
-being added right but this is actually
+        ...
 
-part of the same 15-minute candlestick
+        var candleSeries = chart.addCandlestickSeries({
+            upColor: 'rgba(255, 144, 0, 1)',
+            downColor: '#000',
+            borderDownColor: 'rgba(255, 144, 0, 1)',
+            borderUpColor: 'rgba(255, 144, 0, 1)',
+            wickDownColor: 'rgba(255, 144, 0, 1)',
+            wickUpColor: 'rgba(255, 144, 0, 1)',
+        });
 
-because we're just streaming the
+        ...
 
-15-minute candlestick but I what I
+we have update color and down color, and I'm just say up color is pound, and so RGB, so we want green is 0 FF 0 0, and then we can do down is ff0000 right, 
 
-wanted to do is have real-time updates
+and now if I do that refresh it historical data comes in, we have green candlesticks on the up candles, and red candlesticks on the way down, 
 
-to one candlestick and so these will all
+we can tweak the border colors and all kinds of other stuff here, and the time scale but you know, we we got a pretty good concept here, and we're not going to keep tweaking it forever, we're just we're just building this thing out, in a quick fashion, and so candledstick
+red green candles, real-time data, historical data, feelin pretty good about this, 
 
-be collapsed into one single 15-minute
+and so that's it for this video 
 
-candlestick and then after fifteen
+in the next video I'm going to go back to the backtrader at TALib part of this which probably most of you are more interested in, and so we'll hook up this RSI overbought/oversold stuff, and show where buy and sell points occur based on the technical analysis
+library 
 
-minutes past this then there'll be a new
-
-candlestick but you see how there's data
-
-streaming in so what I did was just set
-
-a new timestamp every single time but
-
-that's not actually what's happening so
-
-we can we can display each tick as new
-
-data comes in but where we're
-
-aggregating this into 15-minute
-
-candlesticks so we want all the times to
-
-actually be the same so I'm gonna take
-
-that out right and so when i refresh
-
-you'll see it renders to the chart and
-
-we have real-time data coming in here
-
-but it's just going to update that that
-
-same candlestick and so if I were to log
-
-for instance that candlestick
-
-and I'm just kind of drilling how my
-
-points of how this data data looks so if
-
-I log the candlestick you see the
-
-timestamp there that's the current
-
-candlestick so this timestamp is
-
-actually the same and it's just updating
-
-the open huh it's updating the open high
-
-low and close for that same timestamp as
-
-new data comes in
-
-so maybe the low changes the high
-
-changes and so forth and eventually we
-
-get the final closing price of that
-
-15-minute candlestick
-
-yeah and that's pretty much it for this
-
-video we're able to get historical data
-
-from a Python back-end display it on
-
-lightweight charts and we're able to
-
-stream data over WebSockets with finance
-
-and display real time on a chart and
-
-I'll actually finalize this by just
-
-moving this settings up just to tweak
-
-this a little bit more the settings I
-
-find is kind of ugly down there so I'm
-
-going to move this up by our bye widget
-
-so we'll do that okay and then the other
-
-thing I'll do is instead of having these
-
-candlesticks be orange let's make them
-
-red and green it's a little bit easier
-
-for me to read and so if we look in our
-
-candlestick settings here we have update
-
-color and down color and I'm just say up
-
-color is pound and see RGB so we want
-
-green is 0 FF 0 0 and then we can do
-
-down is ff0000 right and now if I do
-
-that refresh it historical data comes in
-
-we have green candlesticks on the up
-
-candles and red candlesticks on the way
-
-down we can tweak the border colors and
-
-all kinds of other stuff here and the
-
-time scale but you know we we got a
-
-pretty good concept here and we're not
-
-going to keep tweaking it forever we're
-
-just we're just building this thing out
-
-in a quick fashion
-
-and so chemists ich red green candles
-
-real-time data historical data feelin
-
-pretty good about this and so that's it
-
-for this video in the next video I'm
-
-going to go back to the back trader at
-
-ta.lim part of this which probably most
-
-of you are more interested in and so
-
-we'll hook up this RSI overbought
-
-oversold stuff and show where buy and
-
-sell points
-
-occur based on the technical analysis
-
-library so that's it for now and stay
-
-tuned for the next video thanks
+so that's it for now and stay tuned for the next video thanks
