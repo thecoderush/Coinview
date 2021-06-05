@@ -4201,7 +4201,7 @@ so we already have this get_data.py file,
 
         import config, csv
 
-        from binance.client import Client, ThreadedWebsocketManager, ThreadedDepthCacheManager
+        from binance.client import Client
 
         client = Client(config.API_KEY, config.API_SECRET)
  
@@ -4246,127 +4246,78 @@ so I'm gonna do get_data and write it to a daily.csv, so if I write that out you
 so now let's quickly build a backtrador strategy that uses RSI to run through all of this
 candlestick data 
 
-so I'm gonna create a new file, I'm gonna call it back test Py and how
+so I'm gonna create a new file, I'm gonna call it backtest.py 
 
-do we create a strategy so the first
+        $ touch backtest.py
 
-thing we need to do is import back
+and how do we create a strategy? 
 
-trader and go through other videos I'm
+so the first thing we need to do is import backtrader 
 
-going to kind of go through this a quick
+        (backtest.py)
 
-quick since I've already done multiple
+        import backtrader as bt
 
-series on back trader but we're gonna
+        cerebro = bt.Cerebro()
 
-import back trader as BT and then we
+        data = bt.feeds.GenericCSVData(dataname='daily.csv')
 
-need to create this cerebro object so
+        cerebro.adddata(data)
 
-we're gonna do a straight row equals B T
+        cerebro.run()
+        cerebro.plot()
 
-dot cerebro right and then we will do BT
+and go through other videos I'm going to kind of go through this real quick since I've already done multiple series on backtrader, but we're gonna import backtrader as bt, and then we need to create this cerebro object 
 
-so we're gonna do data equals BT feeds
+so we're gonna do a cerebro equals bt dot Cerebro() right 
 
-dot generic CSV data and we have a CSV
+and then we will do bt, so we're gonna do data equals bt dot feeds dot GenericCSVData, and we have a CSV called daily dot CSV, so we just give it the name of our CSV file 
 
-called daily dot CSV so we just give it
+so we do dataname equals, and this is all in the documentation, daily dot CSV 
 
-the name of our CSV file so we do data
+and that's all we really need I believe, so we have a data feed, and then we just add the
+data feed to cerebro so adddata data 
 
-name equals and this is all in
+so our data feed will add it, and let's just run it and plot it, so I'm gonna do cerebro dot run(), and cerebro dot plot() right we'll add it to the feed and plot it, and if I run this 
 
-documentation daily dot CSV and that's
+        $ python3 backtest.py  
+        
+i run it and it says time data does not match the format 
 
-all we really need I believe so we have
+        "ValueError: time data '1503014400.0' does not match format '%Y-%m-%d %H:%M:%S'"
 
-a data feed and then we just add the
+so it's actually looking for this year, month, day format with Hour, Minutes, Seconds, and we have a unix timestamp, so how do we handle it?
 
-data feed to cerebral cerebro so add
+so this generic CSV 
 
-data data so our data feed will edit and
+        data = bt.feeds.GenericCSVData(dataname='daily.csv')
 
-let's just run it and plot it so I'm
+actually has a few parameters we can set, and I went to the documentation, I figured it out so what you need to do is actually do a dtformat equals two
 
-gonna do cerebro dot run and cerebro dot
+        data = bt.feeds.GenericCSVData(dataname='daily.csv', dtformat=2)
 
-plot right we'll add it to the feed and
+and so look for this dtformat in the docs, so by default you do the year, month, date, similar to like a (yahoo)? feed but if you do timestamp one I believe it's an integer UNIX timestamp and number two is a float
 
-plot it and if I run this python 3 back
+and so we have a float with a dot 0 there 
 
-test i run it and it says time data does
+        daily.csv
 
-not match the format so it's actually
+        1502928000.0,4261.48000000,4485.39000000,4200.74000000,4285.08000000,795.15037700,1503014399999,3454770.05073206,3427,616.24854100,2678216.40060401,8733.91139481
 
-looking for this year month day format
+        ....
+        ....
 
-with our minutes seconds and we have a
+so I'm doing date-time format is format 2, and so let's run that and see what happens 
 
-unix timestamp so how do we handle it
+        $ python3 backtest.py
 
-so this generic CSV actually has a few
+alright so it actually runs, and then we get our Bitcoin price data that comes from January first so if I go over
 
-parameters we can set and I went to the
+here this is January first if you look on the bottom right hand corner you'll see it says January 2020 starts about 6800, and then goes all the way across to ninety two hundred which is good, and you see our broker here has ten thousand dollars in cash, and it finished with ten thousand dollars in cash, because we didn't tell to buy anything, so we didn't make any trades, all we did is plot the price data 
 
-documentation I figured it out so what
+        (I got different values as I change the dates time range for my own purpose)
 
-you need to do is actually do a DT
-
-format equals two and so look for this D
-
-D DT format in the docs so by default
-
-you do the year month date similar to
-
-like a yahoo feed but if you do
-
-timestamp one I believe it's an integer
-
-UNIX timestamp and number two is a float
-
-and so we have a float with a dot 0
-
-there so I'm doing date-time format is
-
-format 2 and so let's run that and see
-
-heavens alright so it actually runs and
-
-then we get our Bitcoin price data that
-
-comes from January first so if I go over
-
-here this is January first if you look
-
-on the bottom right hand corner you'll
-
-see it says January 2020 starts about
-
-6800 and then goes all the way across to
-
-ninety two hundred which is good and you
-
-see our broker here has ten thousand
-
-dollars in cash and it finished with ten
-
-thousand dollars in cash because we
-
-didn't tell us it by anything so we
-
-didn't make any trades all we did is
-
-plot the price data so to make trades
-
-right we need to add a strategy as we've
-
-covered in the past and so let's add a
-
-strategy to this real quick and our
-
-strategy is going to be an RSI strategy
+so to make trades right, we need to add a strategy, as we've covered in the past, and so let's add a strategy to this real quick, and our strategy is going to be an RSI strategy
 
 so what we need to do is create a new
 
