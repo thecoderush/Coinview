@@ -4319,179 +4319,120 @@ here this is January first if you look on the bottom right hand corner you'll se
 
 so to make trades right, we need to add a strategy, as we've covered in the past, and so let's add a strategy to this real quick, and our strategy is going to be an RSI strategy
 
-so what we need to do is create a new
+so what we need to do is create a new class, and so I'm just gonna put it in line here, you can edit in a new file if you want and import it, but I'm gonna do class RSIStrategy so you just
+give your strategy a nam,e I'm going to call it class RSIStrategy and it needs to extend bt dot Strategy, so I'm gonna extend that, and we're gonna initialize, so our init function, our
+constructor, we'll do 'self', 
 
-class and so I'm just gonna put it in
+        (backtest.py)
 
-line here you can edit in a new file if
+        class RSIStrategy(bt.Strategy):
 
-you want and import it but I'm gonna do
+            def __init__(self):
+                
 
-class are a size strategy so you just
 
-give your strategy a name I'm going to
+and then we need to let's use the indicator, so in backtrader documentation, if you look up backtrader TALib 
 
-call it class par sized strategy and it
+        "backtrader talib" (Google search)
 
-needs to extend B TDOT strategy so I'm
+        https://www.google.com/search?q=backtrader+talib&oq=backtrader+talib&aqs=chrome..69i57.7599j0j1&sourceid=chrome&ie=UTF-8
 
-gonna extend that and we're gonna
+        https://www.backtrader.com/docu/talib/talib/
 
-initialize so our init function our
+what you'll see in my previous video, I showed you how to use ta libs stand alone, and how to install it, but now that we have it installed, how do you use it within back trader? 
 
-constructor will do yourself and then we
+so back trader actually has this... these namespaces, 
 
-need to let's use the indicator so in
+        'bt.indicators.SMA'
 
-back trigger documentation if you look
+so there's a if you see BT indicators backtrader actually has its own indicator library, so backtrader indicators SMA for instance, for simple moving average, but for ta Lib you can actually do BT.TALib SMA and have it actually used a ta Lib
 
-up back Twitter ta lip what you'll see
+                def __init__(self):
+                    self.sma = bt.talib.SMA(self.data, timeperiod=self.p.period)
+                ...
 
-in my previous video I showed you how to
+        ...
 
-use ta libs stand alone and how to
+and so since we have ta lib installed, and if we want to use ta Lib, we can use Talib version,
+but yeah you can just use the backtrader's version, so what he's done here is in the documentation go through and compare the SMA, and all the different indicators, and plotted them side-by-side both the back trader version and the TALib versions,
 
-install it but now that we haven't
+and you see they're very similar, I think he's customized a few of these, and we went over the backtrader specific technical analysis library in a seperate video, and use that,
 
-installed how do you use it within back
+so you can see they're all pretty similar but I think he fixed a few issues that he found in TALib
 
-trader so back trader actually has this
+so since we've been talking about ta Lib, I'm just gonna use ta Lib, so what we're gonna do is do self dot RSI equals BT dot, 
 
-these namespaces so there's a if you see
+        (backtest.py)
 
-BT indicators back trader actually has
+        class RSIStrategy(bt.Strategy):
 
-its own indicator library so back trader
+            def __init__(self):
+                self.rsi = bt.talib.RSI(self.data, period=14)
 
-indicators SMA for instance for simple
+            ...
+        ...
 
-moving average but for ta Lib you can
+so we can either use BT down indicators when we use BT ta Lib dot RSI, and we're gonna do self dot data and period equals fourteen, so we're going to pass you know our data feed, 
 
-actually do B TTA Lib SMA and have it
+        self.data
 
-actually used a ta Lib and so since we
+and the default period is 14, and calculate the RSI, 
 
-have ta live installed and if we want to
+and in our next method, so back to our strategies, they need this next method, and it just tells
+it to do what to do, as it comes across each data point, and so I'm gonna say if self dot RSI is greater than 70, 
 
-use ta Lib we can use T a live version
+        class RSIStrategy(bt.Strategy):
 
-but yeah you can just use the back
+            def __init__(self):
+                self.rsi = bt.talib.RSI(self.data, period=14)
 
-trader if version so what he's done here
+            def next(self):
+                if self.rsi > 70 and self.position:
+            ...
+        ...
 
-is in the documentation go through and
+and we are in the position, so if it's okay ,so let's start on with oversold conditions
 
-compare the SMA and all the different
+so we're gonna buy when it's oversold right, so we're gonna do if self dot RSI is less than 30, 
 
-indicators and plotted them side-by-side
+        ...
 
-both the back trader version and the TA
+            ...
 
-Lib versions and you see they're very
+            def next(self):
+                if self.rsi < 30 and not self.position:
+                    self.buy(size=1)
 
-similar
+                if self.rsi > 70 and self.position:
+                    self.close()
+        ...
 
-I think he's customized a few of these
+and we're not in the position, and not self dot position right, 
 
-and we went over the back trader
+let's just buy one bitcoin, so we'll do self dot buy, and we'll do size equals, and we can say go all-in, or buy one, or however how many we want, 
 
-specific technical analysis library in a
+let's say we're just going to buy one Bitcoin, and then we'll also add, so our exit, our entry
+will be if it's oversold, are size less than 30, and then our exit will be if it's overbought RSI is greater than 70, and we're already in the position then let's just close it, so we can sell part of it or we can see stuff that close to just sell it all, or we could go all in
 
-sec
+so I'm just gonna buy one Bitcoin and then when it's over oversold, and then if it's overbought then close the position altogether right, so we have our strategy here, 
 
-which video and use that so you can see
+so now all we have to do is add it to cerebra 
 
-they're all they're all pretty similar
+        ...
+        erebro.adddata(data)
 
-but I think he fixed a few issues that
+        cerebro.addstrategy(RSIStrategy)
 
-he found in t8 live so since we've been
+        cerebro.run()
+        cerebro.plot()
 
-talking about ta Lib I'm just gonna use
+so we add our data, so you add our strategy, and so we're gonna add our RSI strategy here, 
 
-ta Lib so what we're gonna do is do self
+and let's run it again 
 
-dot RSI equals BT dot
+        $ python3 backtest.py
 
-so we can either use BT down indicators
-
-when we use BT ta Lib dot RSI and we're
-
-gonna do self dot data and period equals
-
-fourteen so we're going to pass you know
-
-our data feed and the default period of
-
-14 and calculate the RSI and in our next
-
-method so back to our strategies they
-
-need this next method and it just tells
-
-it to do what to do as it comes across
-
-each data point and so I'm gonna say if
-
-self dot RSI is greater than 70 and we
-
-are in the position so if it's okay so
-
-let's start on with oversold conditions
-
-so we're gonna buy when it's oversold
-
-right so we're gonna do if self dot RSI
-
-it's less than 30 and we're not in the
-
-position and not self dot position right
-
-let's just buy one bitcoin so we'll do
-
-self dot by and we'll do size equals and
-
-we can say go all-in or buy one or
-
-however many we want let's say we're
-
-just going to buy one Bitcoin and then
-
-we'll also add so our exit our entry
-
-will be if it's oversold are size less
-
-than 30 and then our exit will be if
-
-it's overbought RSI is greater than 70
-
-and we're already in the position then
-
-let's just close it so we can sell part
-
-of it or we can see stuff that close to
-
-just sell it all or we could go all in
-
-so I'm just gonna buy one Bitcoin and
-
-then when it's over oversold and then if
-
-it's overbought then close the position
-
-altogether right so we have our strategy
-
-here so now all we have to do is add it
-
-to cerebra so we add our data so you add
-
-our strategy and so we're gonna add our
-
-RSI strategy here and let's run it again
-
-alright just like that very easy we have
-
-the data on the daily time frame for
+alright just like that very easy, we have the data on the daily time frame for
 
 Bitcoin that we got from Finance we
 
