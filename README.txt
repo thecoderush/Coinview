@@ -4427,230 +4427,73 @@ so now all we have to do is add it to cerebra
         cerebro.plot()
 
 so we add our data, so you add our strategy, and so we're gonna add our RSI strategy here, 
-
 and let's run it again 
 
         $ python3 backtest.py
 
-alright just like that very easy, we have the data on the daily time frame for
+###################################### we got the price chart but strategy didn't work !!##############################
 
-Bitcoin that we got from Finance we
+alright just like that very easy, we have the data on the daily time frame for Bitcoin, that we got from binance, we download it to a CSV file, and you can see right here red line shows our cash, and then we can see whether the value of our account grew, and so what you'll see it looks like our green arrow must be covered up here, but right here is where we actually
+take a position, you'll see the RSI at the bottom here, so it starts off at the begin of the year overbought, but we're not in the position yet, we're not going to buy it when it's overbought
 
-download it to a CSV file and you can
+so there's nothing to do, all until this huge drop off here, and you can see Bitcoin got very oversold, and if you look at the top here, this is where we took our position, and then you can see that was a great time to take a position right, because Bitcoin price started going way up after it was oversold, and it bounced back strong, so this is when basically Covid hit, it crashed with everything else, so about March 12th year, it was very oversold, we entered a position and you see the RSI starts to go up along with the price, and it gains more and more momentum upward, and then eventually it goes way up right here, spikes up a bit more to 8740, so we enter it at what 4874, and you see the RSI here on the bottom, it goes above 70, and it eventually gets overbought right here, and this red arrow that's where we sell it, and you see our red cash line here goes back flat, and so you can see we started with $10,000, we only made one buy, and one sell during this period from January 1st to the present, and we made three thousand nine hundred and seventy eight dollars, so nearly a 40% return, making a single buy and sell which is great, that that's great, that's what you want yeah so RSI right, greatest indicator ever, we made a bunch of money just like that, very easy, we just do that over and over again and make 40% over and over again, well it turns out that'snot always the case if you analyze this over multiple timeframes, you see a lot
+of times where you buy something that's over sold and it just keeps going down, and it gets oversold more and more, or you sell something that's overbought way too early, and it keeps going up and you miss out on a lot of profit, 
 
-see right here
+so let's talk about some other timeframes where this might not have worked so successfully let's look at some other timeframes for this data, so this year 2020 as we know has been pretty unique, so we can't say that you know the same conditions that apply in 2020 would have happened in previous years right, this year is unique right, we had this huge oversold
+condition and if you just bought and just held it you made a pretty good return there, but the key which is detecting this initial oversold condition and making a buy, but would that have worked in previous years?
 
-red line shows our cash and then we can
+let's see so let's go back to our get_data.py script here, and instead of January 1st 2020, I have this other line commented out, and let's see what happens if we just get all of the data so binance  data is started in 2017 at some point, so you that will cover like the last run of the Bitcoin bubble that occurred, and also capture like the crash that happened after that, and then let's just run it all the way till present day, and just get all of the data daily candlesticks for several years and see what would have happened with the same RSI strategy 
 
-see whether the value of our account
+        (get_data.py)
 
-grew and so what you'll see it looks
+        ...
 
-like our green arrow must be covered up
+        # candlesticks = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_1DAY, "1 Jan, 2021", "5 Jun, 2021")
 
-here but right here is where we actually
+        candlesticks = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_1DAY, "1 Jan, 2017", "5 Jun, 2021")
 
-take a position you'll see the RSI at
+so I'm gonna run this again
 
-the bottom here so it starts off starts
+I'm gonna capture it so daily.cvs 
 
-off at the begin of the year overbought
+I'll do it too just so that we have a copy of both I'll do all-time daily like that, and I'm gonna run this and this will take a little second yeah 
 
-but we're not in the position yet we're
+        ...
 
-not going to buy it when it's over but
+        # csvfile = open('daily.csv', 'w', newline='')
+        csvfile = open('all_time_daily.csv', 'w', newline='')
+        candlestick_writer = csv.writer(csvfile, delimiter=',')
 
-so there's nothing to do all until this
+        ...
 
-huge drop off here and you can see
+                $ python3 get_data.py
 
-Bitcoin got very oversold and if you
+looks like it's done already so it didn't take that long, so look at that, 
 
-look at the top here this is where we
+        all_time_daily.csv
 
-took our position and then you can see
+so we have data starting in Januar,y and so the daily dot CSV had what, how many lines we
+had like 194 candlesticks, and then if I look at all-time daily, we have over a thousand so we have a lot more data to go off here, and let's apply this same strategy, so I'll go to the backtest.py
 
-that was a great time to take a position
+        (backtest.py)
 
-right because Bitcoin price
+        ...
 
-I started going way up after it was
+        # data = bt.feeds.GenericCSVData(dataname='daily.csv', dtformat=2)
+        data = bt.feeds.GenericCSVData(dataname='all_time_daily.csv', dtformat=2)
 
-oversold and it bounced back strong so
+        ...
 
-this is when basically kovat hit it
+instead of daily I'm gonna do all-time daily, and we'll plot all the Bitcoin data for that time period, and run the same RSI strategy and see what would've happened 
 
-crashed with everything else so about
+so I'm going to run this backtest again, so let me close this plot, run that again 
 
-March 12th year it was very oversold we
+        $ python3 backtest.py
 
-entered a position and you see the RSI
+alright so you can see, it maybe recognize the chart, you can see
 
-starts to go up along with the price and
+###################################### we got the price chart but strategy didn't work!! ##############################
 
-it gains more and more momentum upward
-
-and then eventually it goes way up right
-
-here spikes up a bit more to 8740 so we
-
-enter it at what 48 74 and you see the
-
-RSI here on the bottom it goes above 70
-
-and it eventually gets overbought right
-
-here and this red arrow that's where we
-
-sell it and you see our red cash line
-
-here goes back flat and so you can see
-
-we started with $10,000 we only made one
-
-buy and one sell during this period from
-
-January 1st to the present and we made
-
-three thousand nine hundred and seventy
-
-eight dollars so nearly a 40% return
-
-making a single buy and sell which is
-
-which is great that that's great that's
-
-what you want yeah so RSI right greatest
-
-indicator ever we made a bunch of money
-
-just like that very easy we just do that
-
-over and over again and make 40% over
-
-and over again well it turns out that's
-
-not always the case if you analyze this
-
-over multiple timeframes you see a lot
-
-of times where you buy something that's
-
-over sold and it just keeps going down
-
-and it gets oversold more and more or
-
-you sell something that's overbought way
-
-too early and it keeps going up and you
-
-miss out on a lot of profit so let's
-
-talk about some other timeframes where
-
-this might not have worked so
-
-successfully let's look at some other
-
-timeframes for this data so this year
-
-2020 as we know has been pretty unique
-
-so we can't
-
-say that you know the same conditions
-
-that apply in 2020 would have happened
-
-in previous years right this year is
-
-unique right we had this huge oversold
-
-condition and if you just bought and
-
-just held it you made a pretty good
-
-return there but the key which is
-
-detecting this initial oversold
-
-condition and making a buy but would
-
-that have worked in previous years let's
-
-see so let's go back to our get data pie
-
-script here and instead of January 1st
-
-2020 I have this other line commented
-
-out and let's see what happens if we
-
-just get all of the data
-
-so by Nantz data is started in 2017 at
-
-some point so you that will cover like
-
-the last run of the Bitcoin bubble that
-
-occurred and also capture like the crash
-
-that happened after that and then let's
-
-just run it all the way till present day
-
-and just get all of the data daily
-
-candlesticks for several years and see
-
-what would have happened with the same
-
-RSI strategy so I'm gonna run this again
-
-I'm gonna capture it so daily dot CSV
-
-I'll do it too just so that we have a
-
-copy of both I'll do all-time daily like
-
-that and I'm gonna run this and this
-
-will take a little second yeah looks
-
-like it's done already so it didn't take
-
-that long so look at that so we have a
-
-data starting in January and so the
-
-daily dot CSV had what how many lines we
-
-had like 194 candlesticks and then if I
-
-look at all-time daily we have over a
-
-thousand so we have a lot more data to
-
-go off here and let's apply this same
-
-strategy so I'll go to the backtest pi
-
-instead of daily I'm gonna do all-time
-
-daily and we'll plot all the Bitcoin
-
-data for that time period and run the
-
-same RSI strategy and see what would've
-
-happened so I'm going to run this back
-
-test again so let me close this plot run
-
-that again alright so you can see it
-
-maybe recognize the chart you can see
 
 Bitcoin was actually oversold here so
 

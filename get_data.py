@@ -16,7 +16,9 @@ client = Client(config.API_KEY, config.API_SECRET)
 # # csvfile = open('15minutes.csv', 'w', newline='')
 # csvfile = open('2012-2020.csv', 'w', newline='')
 # candlestick_writer = csv.writer(csvfile, delimiter=',')
-csvfile = open('daily.csv', 'w', newline='')
+
+# csvfile = open('daily.csv', 'w', newline='')
+csvfile = open('all_time_daily.csv', 'w', newline='')
 candlestick_writer = csv.writer(csvfile, delimiter=',')
 
 # # get Kline/Candlesticks
@@ -32,7 +34,9 @@ candlestick_writer = csv.writer(csvfile, delimiter=',')
 # fetch 5 minute klines interval for the 1st january of 2012 day to May 24th 2020
 # candlesticks = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_5MINUTE, "1 Jan, 2012", "24 May, 2020")
 
-candlesticks = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_1DAY, "1 Jan, 2021", "5 Jun, 2021")
+# candlesticks = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_1DAY, "1 Jan, 2021", "7 Jun, 2021")
+
+candlesticks = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_1DAY, "1 Jan, 2017", "7 Jun, 2021")
 
 # for candlestick in candlesticks:
 #   candlestick_writer.writerow(candlesticks)
