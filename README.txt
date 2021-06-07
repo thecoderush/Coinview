@@ -4427,8 +4427,6 @@ and let's run it again
 
         $ python3 backtest.py
 
-###################################### we got the price chart but strategy didn't work !!##############################
-
 alright just like that very easy, we have the data on the daily time frame for Bitcoin, that we got from binance, we download it to a CSV file, and you can see right here red line shows our cash, and then we can see whether the value of our account grew, and so what you'll see it looks like our green arrow must be covered up here, but right here is where we actually
 take a position, you'll see the RSI at the bottom here, so it starts off at the begin of the year overbought, but we're not in the position yet, we're not going to buy it when it's overbought
 
@@ -4487,8 +4485,6 @@ so I'm going to run this backtest again, so let me close this plot, run that aga
         $ python3 backtest.py
 
 alright so you can see, it maybe recognize the chart, you can see
-
-###################################### we got the price chart but strategy didn't work!! ##############################
 
 
 Bitcoin was actually oversold here so

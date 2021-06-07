@@ -21,13 +21,12 @@ client = Client(config.API_KEY, config.API_SECRET)
 csvfile = open('all_time_daily.csv', 'w', newline='')
 candlestick_writer = csv.writer(csvfile, delimiter=',')
 
+
 # # get Kline/Candlesticks
 # candles = client.get_klines(symbol='BTCUSDT', interval=Client.KLINE_INTERVAL_15MINUTE)
 
-
 # for candlesticks in candles:
 #   print(candlesticks)
-
 #   candlestick_writer.writerow(candlesticks)
 
 
@@ -46,7 +45,7 @@ candlesticks = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_1DA
 # print(len(candles))
 
 for candlestick in candlesticks:
-  candlestick[0] = candlestick[0] / 1000
-  candlestick_writer.writerow(candlestick)
+    candlestick[0] = candlestick[0] / 1000
+    candlestick_writer.writerow(candlestick)
 
 csvfile.close()
