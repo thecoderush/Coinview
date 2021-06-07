@@ -1,7 +1,7 @@
 By 
 Part Time Larry
 
-
+Source Code: https://github.com/hackingthemarkets
 
 
 
@@ -4243,8 +4243,7 @@ so I'm gonna do get_data and write it to a daily.csv, so if I write that out you
         ....
         ....
 
-so now let's quickly build a backtrador strategy that uses RSI to run through all of this
-candlestick data 
+so now let's quickly build a backtrader strategy that uses RSI to run through all of this candlestick data 
 
 so I'm gonna create a new file, I'm gonna call it backtest.py 
 
@@ -4267,7 +4266,7 @@ so the first thing we need to do is import backtrader
         cerebro.run()
         cerebro.plot()
 
-and go through other videos I'm going to kind of go through this real quick since I've already done multiple series on backtrader, but we're gonna import backtrader as bt, and then we need to create this cerebro object 
+and go through other videos, I'm going to kind of, go through this real quick since I've already done multiple series on backtrader, but we're gonna import backtrader as bt, and then we need to create this cerebro object 
 
 so we're gonna do a cerebro equals bt dot Cerebro() right 
 
@@ -4275,8 +4274,7 @@ and then we will do bt, so we're gonna do data equals bt dot feeds dot GenericCS
 
 so we do dataname equals, and this is all in the documentation, daily dot CSV 
 
-and that's all we really need I believe, so we have a data feed, and then we just add the
-data feed to cerebro so adddata data 
+and that's all we really need I believe, so we have a data feed, and then we just add the data feed to cerebro so adddata data 
 
 so our data feed will add it, and let's just run it and plot it, so I'm gonna do cerebro dot run(), and cerebro dot plot() right we'll add it to the feed and plot it, and if I run this 
 
@@ -4311,16 +4309,14 @@ so I'm doing date-time format is format 2, and so let's run that and see what ha
 
         $ python3 backtest.py
 
-alright so it actually runs, and then we get our Bitcoin price data that comes from January first so if I go over
-
-here this is January first if you look on the bottom right hand corner you'll see it says January 2020 starts about 6800, and then goes all the way across to ninety two hundred which is good, and you see our broker here has ten thousand dollars in cash, and it finished with ten thousand dollars in cash, because we didn't tell to buy anything, so we didn't make any trades, all we did is plot the price data 
+alright so it actually runs, and then we get our Bitcoin price data that comes from January first so if I go over here, this is January first if you look on the bottom right hand corner you'll see it says January 2020 starts about 6800, and then goes all the way across to ninety two hundred which is good, and you see our broker here has ten thousand dollars in cash, and it finished with ten thousand dollars in cash, because we didn't tell to buy anything, so we didn't make any trades, all we did is plot the price data 
 
         (I got different values as I change the dates time range for my own purpose)
 
 so to make trades right, we need to add a strategy, as we've covered in the past, and so let's add a strategy to this real quick, and our strategy is going to be an RSI strategy
 
 so what we need to do is create a new class, and so I'm just gonna put it in line here, you can edit in a new file if you want and import it, but I'm gonna do class RSIStrategy so you just
-give your strategy a nam,e I'm going to call it class RSIStrategy and it needs to extend bt dot Strategy, so I'm gonna extend that, and we're gonna initialize, so our init function, our
+give your strategy a name, I'm going to call it class RSIStrategy and it needs to extend bt dot Strategy, so I'm gonna extend that, and we're gonna initialize, so our init function, our
 constructor, we'll do 'self', 
 
         (backtest.py)
@@ -4419,7 +4415,7 @@ so I'm just gonna buy one Bitcoin and then when it's over oversold, and then if 
 so now all we have to do is add it to cerebra 
 
         ...
-        erebro.adddata(data)
+        cerebro.adddata(data)
 
         cerebro.addstrategy(RSIStrategy)
 

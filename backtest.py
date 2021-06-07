@@ -6,7 +6,7 @@ class RSIStrategy(bt.Strategy):
         self.rsi = bt.talib.RSI(self.data, period=14)
     
     def next(self):
-        if self.rsi < 30 and self.position:
+        if self.rsi < 30 and not self.position:
             self.buy(size=1)
 
         if self.rsi > 70 and self.position:
@@ -14,7 +14,8 @@ class RSIStrategy(bt.Strategy):
 
 cerebro = bt.Cerebro()
 
-data = bt.feeds.GenericCSVData(dataname='daily.csv', dtformat=2)
+# data = bt.feeds.GenericCSVData(dataname='daily.csv', dtformat=2)
+data = bt.feeds.GenericCSVData(dataname='all_time_daily.csv', dtformat=2)
 
 cerebro.adddata(data)
 
