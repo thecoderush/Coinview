@@ -4430,13 +4430,25 @@ and let's run it again
 alright just like that very easy, we have the data on the daily time frame for Bitcoin, that we got from binance, we download it to a CSV file, and you can see right here red line shows our cash, and then we can see whether the value of our account grew, and so what you'll see it looks like our green arrow must be covered up here, but right here is where we actually
 take a position, you'll see the RSI at the bottom here, so it starts off at the begin of the year overbought, but we're not in the position yet, we're not going to buy it when it's overbought
 
-so there's nothing to do, all until this huge drop off here, and you can see Bitcoin got very oversold, and if you look at the top here, this is where we took our position, and then you can see that was a great time to take a position right, because Bitcoin price started going way up after it was oversold, and it bounced back strong, so this is when basically Covid hit, it crashed with everything else, so about March 12th year, it was very oversold, we entered a position and you see the RSI starts to go up along with the price, and it gains more and more momentum upward, and then eventually it goes way up right here, spikes up a bit more to 8740, so we enter it at what 4874, and you see the RSI here on the bottom, it goes above 70, and it eventually gets overbought right here, and this red arrow that's where we sell it, and you see our red cash line here goes back flat, and so you can see we started with $10,000, we only made one buy, and one sell during this period from January 1st to the present, and we made three thousand nine hundred and seventy eight dollars, so nearly a 40% return, making a single buy and sell which is great, that that's great, that's what you want yeah so RSI right, greatest indicator ever, we made a bunch of money just like that, very easy, we just do that over and over again and make 40% over and over again, well it turns out that'snot always the case if you analyze this over multiple timeframes, you see a lot
-of times where you buy something that's over sold and it just keeps going down, and it gets oversold more and more, or you sell something that's overbought way too early, and it keeps going up and you miss out on a lot of profit, 
+so there's nothing to do, all until this huge drop off here, and you can see Bitcoin got very oversold, and if you look at the top here, this is where we took our position, and then you can see that was a great time to take a position right, because Bitcoin price started going way up after it was oversold, and it bounced back strong, so this is when basically Covid hit, it crashed with everything else, 
 
-so let's talk about some other timeframes where this might not have worked so successfully let's look at some other timeframes for this data, so this year 2020 as we know has been pretty unique, so we can't say that you know the same conditions that apply in 2020 would have happened in previous years right, this year is unique right, we had this huge oversold
-condition and if you just bought and just held it you made a pretty good return there, but the key which is detecting this initial oversold condition and making a buy, but would that have worked in previous years?
+so about March 12th year, it was very oversold, we entered a position and you see the RSI starts to go up along with the price, and it gains more and more momentum upward, and then eventually it goes way up right here, spikes up a bit more to 8740, so we enter it at what 4874, and you see the RSI here on the bottom, it goes above 70, and it eventually gets overbought right here, and this red arrow that's where we sell it, and you see our red cash line here goes back flat, 
 
-let's see so let's go back to our get_data.py script here, and instead of January 1st 2020, I have this other line commented out, and let's see what happens if we just get all of the data so binance  data is started in 2017 at some point, so you that will cover like the last run of the Bitcoin bubble that occurred, and also capture like the crash that happened after that, and then let's just run it all the way till present day, and just get all of the data daily candlesticks for several years and see what would have happened with the same RSI strategy 
+and so you can see we started with $10,000, we only made one buy, and one sell during this period from January 1st to the present, and we made three thousand nine hundred and seventy eight dollars, so nearly a 40% return, making a single buy and sell which is great, that's great, 
+
+that's what you want yeah so RSI right, greatest indicator ever, we made a bunch of money just like that, very easy, we just do that over and over again and make 40% over and over again, 
+
+well it turns out that's not always the case if you analyze this over multiple timeframes, you see a lot of times where you buy something that's oversold and it just keeps going down, and it gets oversold more and more, or you sell something that's overbought way too early, and it keeps going up and you miss out on a lot of profit, 
+
+so let's talk about some other timeframes where this might not have worked so successfully 
+
+let's look at some other timeframes for this data, 
+
+so this year 2020 as we know has been pretty unique, so we can't say that, you know the same conditions that apply in 2020 would have happened in previous years right, this year is unique right, we had this huge oversold condition and if you just bought and just held it you made a pretty good return there, but the key which is detecting this initial oversold condition and making a buy, but would that have worked in previous years?
+
+let's see, so let's go back to our get_data.py script here, and instead of January 1st 2020, I have this other line commented out, and let's see what happens if we just get all of the data, 
+
+so binance data is started in 2017 at some point, so you... that will cover like the last run of the Bitcoin bubble that occurred, and also capture like the crash that happened after that, and then let's just run it all the way till present day, and just get all of the data daily candlesticks for several years, and see what would have happened with the same RSI strategy 
 
         (get_data.py)
 
@@ -4455,6 +4467,7 @@ I'll do it too just so that we have a copy of both I'll do all-time daily like t
         ...
 
         # csvfile = open('daily.csv', 'w', newline='')
+
         csvfile = open('all_time_daily.csv', 'w', newline='')
         candlestick_writer = csv.writer(csvfile, delimiter=',')
 
@@ -4466,8 +4479,7 @@ looks like it's done already so it didn't take that long, so look at that,
 
         all_time_daily.csv
 
-so we have data starting in Januar,y and so the daily dot CSV had what, how many lines we
-had like 194 candlesticks, and then if I look at all-time daily, we have over a thousand so we have a lot more data to go off here, and let's apply this same strategy, so I'll go to the backtest.py
+so we have data starting in January, and so the daily dot CSV had what, how many lines we had like 194 candlesticks, and then if I look at all-time daily, we have over a thousand, so we have a lot more data to go off here, and let's apply this same strategy, so I'll go to the backtest.py
 
         (backtest.py)
 
@@ -4484,637 +4496,188 @@ so I'm going to run this backtest again, so let me close this plot, run that aga
 
         $ python3 backtest.py
 
-alright so you can see, it maybe recognize the chart, you can see
+alright so you can see, you maybe recognize the chart, you can see 
+Bitcoin was actually oversold here, so this is September there was a sell off in September of 2017 where people thought it might be done, but then BAM Bitcoin went all the way to almost 20,000 so it went hugely parabolic right there
 
+and now let's look at our RSI strategy, you have a green arrow where we would have entered and then it got overbought here, so we would have entered here what it 2600 or so, we would have bought and entered and then this red arrow would have sold because you see the RSI goes above 70 and we sell it
 
-Bitcoin was actually oversold here so
+so bitcoins ever bought because it went to from like 2600 to like nearly 6000 so it's like, obviously you know it's doubled in a short period of time,it's overbought, get out right, it's gonna crash again, but look at that, it went overbought even more, and so, people just kept buying and buying, and more people open coin based accounts and, it just went purely parabolic, and you can see the RSI here went all the way up to, looks like 93 so like so extremely overbought right, and then, it's had the crash afterwards right, and so you can
+see where it eventually got oversold again right so we had... so we weren't in that we would have only got this amount of profit right, here right, so the downside here is stocks can say overbought or oversold right, so we would have already been out of the position and we would have net not had another oversold condition until February of
+2018, 
 
-this is jint
+so we missed out on this huge run lots of profit right, you don't know how high it's gonna go, 
 
-this is a September there was a self in
+but we would have got this great a low point right here to make money off of right, so it got oversold again, so it jumped dropped from 20,000 back to closer to six thousand or fifty eight hundred or so, 
 
-September of 2017 where people thought
+we entered again, and it goes immediately up which is nice, but it doesn't quite get overbought, so we don't exit the position that had a double here we could have went from like 6,000 to 12,000, but we it
+didn't quite get overbought, so we didn't trigger our sell condition,
+and it sold off again, and kept going, and it looks like it eventually got overbought again here, because it went lower first and then got overbought quickly, right there, but the amount of profit there you know we it was a profitable trade, but not that profitable
+right, so these are two profitable trades in a row, but you know they we didn't capture this we didn't you know sell here, we're only capturing some pieces, and in the middle there right and then you can also see right here, look at this one, 
 
-it might be done but then BAM
+so we entered the trade again on this green arrow because it falls off a cliff, its oversold, but then it gets even more oversold right,it keeps going down, so we're in the position we're underwater, 
 
-Bitcoin went all the way to almost
+and then it gets overbought real quick right here,
 
-20,000 so it went hugely parabolic right
+and so with this red dot indicates we actually sold this one at a loss, so we had two profitable trades, and then we had a loss right, and then if you keep
+going on and on we eventually, you see that last profitable trade for from this year 
 
-there
+so when you look at this year on its own it worked great right, we have this profitable trade right here, but you can actually see, so if you ran it over this entire period, so Bitcoin from 2017 over, on the daily timeframe RSI strategy it looks like you had these four for profitable trades, you had one unprofitable trade here, and then yeah, 
 
-and now let's look at our RS extra as
 
-you have a green arrow where we would
+so a pretty good success rate, but also you missed out on some big gains, so it looks like our $10,000 would have grown to fifteen thousand three hundred dollars, which sounds pretty good yeah
 
-have entered and then it got overbought
+that's great, but this is over the course of three years, so it's not quite as good as our return, when we just did this one buy here, so if you really think about it over three years, what you have one point ten thousand times, 
 
-here so we would have entered here what
+        10000*(1.15^3) = 15208.75
 
-it 2600 or so we would have bought and
+let's say let's say you multiply that times fifteen percent, which two-thirds, so you compound fifteen percent three times, you know that's about fifteen thousand dollars there, 
 
-entered and then this red arrow would
+so fifteen percent return a year, you know, that's really good, but also you know you look at other things like the S&P 500 right, a lot of times you're comparing at the S&P 500, or some other index fund you were just held it not paid any short-term taxes right, you would just held the index, you would've got dividends the whole time, you would pay short-term tax if you ever sold it rather than, or you would play long-term capital gains, it's a short-term gains, 
 
-itself because you see the RSI goes
+so you know you got to think about that is this is trading over and over again like this, really really ideal 
 
-above 70 and we sell it so bitcoins ever
+so if you're gonna find a strategy you need to make sure, you know, it's compounding very very quickly, you know just 15% alone here and making short-term trades over the course of a year, or several years, isn't really that great compared to the returns of the S&P 500, 
 
-bought because it went to from like 2600
 
-to like nearly 6000 so it's like
+so let's try another time frame, so that's our daily time frame, so let's see what happens if we frequently traded like over the fight on 5-minute candlesticks, or 15-minute candlesticks for instance, and we're just doing some kind of intraday trading, 
 
-obviously you know it's doubled in a
+so let's try that out, so what we'll do is go back to our get_data.py
+and let's just say we're we're trading for this year, so I have my get_date.py, 
 
-short period of time
 
-it's overbought get out right it's gonna
+        (get_date.py)
 
-crash again but look at that it went
+        ...
 
-overbought even more and so people just
+        # candlesticks = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_1DAY, "1 Jan, 2017", "7 Jun, 2021")
 
-kept buying and buying and more people
+        candlesticks = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_15MINUTE, "1 Jan, 2020", "12 Jun, 2020")
 
-open coin based accounts and it just
+        ...
 
-went purely parabolic and you can see
+and I'll comment to that out, and let's just get our five-minute candlesticks since the beginning yeah, 
 
-the RSI here went all the way up to
+let's just get the 5-minute candlesticks for this year, 
 
-looks like 93 so like so extremely
+I don't need all the candlesticks so, I'm gonna do 5-minute candlesticks, and I'm gonna do January 1st of 2020 to July 12th of 2020 right, and we're gonna output this to a 20 minutes CSV, 
 
-overbought right and then it's had the
+        ...
 
-crash afterwards right and so you can
+        csvfile = open('2020_minutes.csv', 'w', newline='')
+        candlestick_writer = csv.writer(csvfile, delimiter=',')
 
-see where it eventually got oversold
+        ...
 
-again right so we had so we weren't in
 
-that we would have only got this amount
+so 2020 and we'll specify let's do 15 minutes, so interval 15 minutes for this year, and output that so run that one more time, and then let it go
 
-of profit right here right so the
+        $ python3 get_data.py
 
-downside here is stocks can say
+and so we have our 20 20, 15 minutes here, and that'll be done in a second, 
 
-overbought or oversold right so we would
+so once that's done we have a bunch of 15-minute candlesticks so quite a few of them, so now we have like 20,000 or so 18,000 candlesticks to run on our backtest on, 
 
-have already been out of the position
+so let's go back to our backtest.py, 
 
-and we would have net not had another
+       (backtest.py)
 
-oversold condition until February of
+        ...
 
-2018 so we missed out on this huge run
+        # data = bt.feeds.GenericCSVData(dataname='daily.csv', dtformat=2)
+        data = bt.feeds.GenericCSVData(dataname='2020_minutes.csv', dtformat=2)
 
-lots of profit right you don't know how
+        ...
 
-high it's gonna go but we would have got
+instead of all-time daily let's run this on the 20 20 15 minutes right, and now if I run this you're gonna see a couple of issues, so I'm gonna run this, takes a bit longer since there's more candlesticks
 
-this great a low point right here to
+        $ python3 backtest.py
 
-make money off of right so it got
+        2020_15minutes.py
 
-oversold again so it jumped dropped from
+        $ python3 backtest.py
 
-20,000 back to closer to six thousand or
+you'll see it's subdivided a lot more because we're looking at the 15-minute chart but you also notice that it still says one day there and so our things are a little misaligned here, you see all these arrows but then there's like none over here and then you see our RSI is all jumpy over here, so this isn't quite configured right we need to tell backtrader that, that's the minute timeframe, or the 15 timeframe, so this one day needs to say 15 minutes, 
 
-fifty eight hundred or so we entered
 
-again and it goes immediately up which
+so I'm gonna close this and I'm gonna show you a couple parameters you need to use, 
 
-is nice but it doesn't quite get over
+so I had to figure this out, so DT format, we already have a date time format for generic CSV data 
+but we need to tell backtrader the timeframe we're interested in plotting and testing on, and so, 
 
-baht so we don't exit the position that
+        (backtest.py)
 
-had a double here we could have went
+        data = bt.feeds.GenericCSVData(dataname='2020_15minutes.csv', dtformat=2, compression=15, timeframe=bt.Timeframe.Minutes)
 
-from like 6,000 to 12,000 but we it
+what I want to do, is do a compression equals 15, and then timeframe equals bt time frame dot minutes
 
-didn't quite get over Botts
+and so we tell backtrader that's the 15-minute time frame that we're interested in, and we could do like the 5-minute as well right, 
 
-so we didn't trigger our sell condition
+and so if we do that, then we can run this one more time 
 
-and it sold off again and kept going and
+        $ python3 backtest.py
 
-it looks like it eventually got
 
-overbought again here because it went
+and we should get a little bit of a result here, and a lot of buys and sells occurring in a shorter time period, 
 
-lower first and then got overbought
+so you see we have tons of green, and red arrows, we're making a lot of trades here right, and so you see we're buying here, selling here,
+buying here, selling here, buying and selling over and over and over again as we're overbought and oversold on 15-minute candlesticks, so tons and tons of trades, 
 
-quickly right there but the amount of
+but look at that we didn't do very well, we grew our account from ten
+thousand to ten thousand eighty four right, which isn't very good, that's a very small return for this year ,we were better off just making the one trade on the daily timeframe for this year instead of over trading every single day, and if you paid commissions which much
+like you most likely you did you probably lost money if you tried to over trade the market, 
 
-profit there you know we it was a
+so this kind of shows you how... while that initial RSI strategy worked when making one trade over the daily timeframe whenever it was overbought oversold when we're over trading on the 15-minute timeframe here, 
 
-profitable trade but not that profitable
+we barely made any money in fact after commissions, we probably actually lost money, so that that doesn't work out very well there, 
 
-right so these are two profitable trades
+and then one more thing we'll do is zoom in on a more specific timeframe, that's a little more recently, and so let's say we want to just run this back test on the same data set, but only on a certain range of that data set,
 
-in a row but you know they we didn't
+I just want to show one more parameter right, 
 
-capture this we didn't you know sell
 
-here we're only capturing some
 
-pieces and in the middle there right and
+so I'll go in, and we can do a from date, and a to date, and so let me set those parameters for you real quick
 
-then you can also see right here look at
+        import datetime
 
-this one so we entered the trade again
+        ...
 
-on this screen arrow because it falls
+        fromdate = datetime.datetime.strptime('2020-06-01', '%Y-%m-%d')
+        toDate = datetime.datetime.strptime('2020-06-12', '%Y-%m-%d')
+        
+so let's say we're just interested in July, so I'm gonna do from date equals date time dot date time, and we need to import date time to make this work
 
-off a cliff its oversold but then it
+import date time, we can specify a short time frame, so we'll do date time about datetime, and I have this written down next to me
 
-gets even more oversold right
+so I got string time and we say 20 2007, oh 1 and I gotta say year
+month date like this year % m & & % d and basically I'm just saying use this time this date and I'm telling it the format so I'm from date and we're doing to date, and I'm gonna say till today just 12th and I'm gonna pass these as parameters 
 
-it keeps going down so we're in the
+so I'm gonna do from date goes from date, and you can do like keyword arguments, or whatever to so two day equals to date right, and then I run this, and it'll use our our same data set
 
-position we're underwater and then it
+I don't need to redownload it run again, and you'll see it's more zoomed in over the 15-minute candlesticks from July 1st through July 14 so this is a fair number of trades, 
 
-gets over but real quick right here and
 
-so with this red dot indicates we
+you can look at, and you can see what would have happened, and let's just to verify finally that this data is correct, and that the overbought and oversold conditions are similar 
 
-actually sold this one at a loss so we
+so what is actual we can look at tradingview, it's often good to just
+verify make sure your programs right look at one that already exists that you trust so we have the 15-minute time frame for July and so let's do 15 minutes on trading view, and then we zoom out till July right, and we can see that same spike here it's right there and then let's look at that sell-off, 
 
-had two profitable trades and then we
+will see that sell-off right, and then I'm gonna go to indicators on tradingview right, and I can do relative strength all right, and then add that to the chart, and then you can see our side clothes there 
 
-had a loss right and then if you keep
+so you can see the RSI here, and let's see the oversold condition right there, and you see the oversold condition I guess it's right there, there's another one here, but it looks like it was oversold briefly here first, and then let's look for an overbought condition
+over here, yeah 
 
-going on and on
+so this one right here, and then we look will see an overbought condition right here, and so yeah , that all looks good,
 
-we eventually you see that last
+we have overbought and oversold conditions our 15-minute chart looks
+like it has the same shape even though our scale is a little different here yeah 
 
-profitable trade for from this year so
+so we verified that our RSI looks good our price date on multiple time
+frame looks good, and we have explored and back tested the results that would happen if we use the RSI indicator on its own on different time frames you see why where it may have worked really well for the daily timeframe in the current year 
 
-when you look at this year on its own it
+it didn't work that great over the course of several years, and when doing it on the 15-minute candlesticks didn't work well at all, and so yeah you see the importance of back testing over multiple time frames, and you also see we're just using one simple indicator like RSI is not going to be enough to make a great strategy that outperforms the S&P 500 for instance 
 
-worked great right we have this
+so now that we've shown the concept here, and back tested it, and had
+some results, let's see how we would hook up an indicator a simple indicator, to our UI save those settings and then actually execute those binance buy and sell orders based on this indicator 
 
-profitable trade right here but you can
-
-actually see so if you ran it over this
-
-entire period so Bitcoin from 2017 over
-
-on the daily timeframe
-
-Rance RSI strategy it looks like you had
-
-these four for profitable trades you had
-
-one unprofitable trade here and then
-
-yeah so a pretty good success rate but
-
-also you missed out on some big gains so
-
-it looks like our $10,000 would have
-
-grown to fifteen thousand three hundred
-
-dollars which sounds pretty good yeah
-
-that's great but this is over the course
-
-of three years so it's not quite as good
-
-as our return when we just did this one
-
-by here so if you really think about it
-
-over three years what you have one point
-
-ten thousand times let's say let's say
-
-you multiply that times fifteen percent
-
-which two-thirds so you compound fifteen
-
-percent three times you know that's
-
-about fifteen thousand dollars there so
-
-fifteen percent return a year you know
-
-that's really good but also you know you
-
-look at other things like the S&P 500
-
-right a lot of times you're comparing at
-
-the S&P 500 or some other index fund
-
-you were just held it not paid any
-
-short-term taxes right you would just
-
-held the index you would've got
-
-dividends the whole time you would pay
-
-short-term tax if you ever sold it
-
-rather than or you would play long-term
-
-capital gains it's a short-term gains so
-
-you know you got to think about that is
-
-this is trading over and over again like
-
-this really really ideal so if you're
-
-gonna find a strategy you need to make
-
-sure you know it's compounding very very
-
-quickly you know just 15% alone here and
-
-making short-term trades over the course
-
-of a year or several years isn't really
-
-that great compared to the returns of
-
-the S&P 500 so let's try another time
-
-frame so that's our daily time frame so
-
-let's see what happens
-
-if we frequently traded like over the
-
-fight on 5-minute candlesticks or
-
-15-minute candlesticks for instance and
-
-we're just doing some kind of intraday
-
-trading so let's try that out so what
-
-we'll do is go back to our get data PI
-
-and let's just say we're we're trading
-
-for this year so I have my get date at
-
-PI and I'll come to that out and let's
-
-just get our five-minute candlesticks
-
-since the beginning yeah let's just get
-
-the 5-minute candlesticks for this year
-
-I don't need all the candlesticks so I'm
-
-gonna do 5-minute candlesticks and I'm
-
-gonna do January 1st of 2023 July 12th
-
-12th of 2020 right and we're gonna
-
-output this to a 20 20 minutes TV CSV so
-
-2020 and we'll specify
-
-let's do 15 minutes so interval 15
-
-minutes for this year and output that so
-
-run that one more time and then let it
-
-go
-
-and so we have our 20 20 15 minutes here
-
-and that'll be done in a second so once
-
-that's done we have a bunch of 15-minute
-
-candlesticks so quite a few of them so
-
-now we have like 20,000 or so 18,000
-
-candlesticks to run on our back test on
-
-so let's go back to our back test pie
-
-instead of all-time daily let's run this
-
-on the 20 20 15 minutes right and now if
-
-I run this you're gonna see a couple of
-
-issues so I'm gonna run this takes a bit
-
-longer since there's more candlesticks
-
-you'll see it's subdivided a lot more
-
-because we're looking at the 15-minute
-
-chart but you also notice that it still
-
-says one day there and so our our things
-
-are a little misaligned here you see all
-
-these arrows but then there's like none
-
-over here and then you see our RSI is
-
-all jumpy over here so this isn't quite
-
-configured right we need to tell back
-
-trader that that's the minute timeframe
-
-or the 15
-
-timeframe so this one day needs to say
-
-15 minutes so I'm gonna close this and
-
-I'm gonna show you a couple parameters
-
-you need to use so I had to figure this
-
-out so DT format we already have a date
-
-time format for generic CSV data but we
-
-need to tell back trader the timeframe
-
-we're interested in plotting and testing
-
-on and so what I want to do is do a
-
-compression equals 5 and compression
-
-equals 15 and then time frame equals bt
-
-time frame dot minutes and so we tell
-
-back trader that's the 15-minute time
-
-frame that we're interested in and we
-
-could do like the 5-minute as well right
-
-and so if we do that then we can run
-
-this one more time and we should get a
-
-little bit of a result here and a lot of
-
-a lot of buys and sells occurring in a
-
-shorter time period so you see we have
-
-tons of green and red arrows we're
-
-making a lot of trades here right and so
-
-you see we're buying here selling here
-
-buying here selling here buying and
-
-selling over and over and over again as
-
-we're overbought and oversold on
-
-15-minute candlesticks so tons and tons
-
-of trades but look at that we didn't do
-
-very well we grew our account from ten
-
-thousand to ten thousand eighty four
-
-right which isn't very good that's a
-
-very small return for this year we were
-
-better off just making the one trade on
-
-the daily timeframe for this year
-
-instead of over trading every single day
-
-and if you paid commissions which much
-
-like you most likely you did you
-
-probably lost money if you tried to over
-
-trade the market so this kind of shows
-
-you how while that initial RSI strategy
-
-worked when making one trade over the
-
-daily timeframe whenever it was over
-
-buttons oversold when we're over trading
-
-on the 15-minute timeframe here we
-
-barely made any money in fact after
-
-commissions we probably actually lost
-
-money so that that doesn't work out very
-
-well there and then one more thing we'll
-
-do is zoom in on a more specific
-
-timeframe that's a little more recently
-
-and so let's say we want to just run
-
-this back test on the same data set but
-
-only on a certain range of that data set
-
-I just want to show one more parameter
-
-right so I'll go in and we can do a from
-
-date and a to date and so let me set
-
-those parameters for you real quick
-
-so let's say we're just interested in
-
-July so I'm gonna do from date equals
-
-date time dot date time and we need to
-
-import date time to make this work
-
-import date time we can specify a short
-
-time frame so we'll do date time about
-
-date time and I have this written down
-
-next to me so I got string time and we
-
-say 20 2007 oh 1 and I gotta say year
-
-month date like this year % m & & % d
-
-and basically I'm just saying use this
-
-time this date and I'm telling it the
-
-format so I'm from date and we're doing
-
-to date and I'm gonna say till today
-
-just 12th and I'm gonna pass these as
-
-parameters so I'm gonna do from date
-
-goes from date and you can do like
-
-keyword arguments or whatever to so two
-
-day equals to date right and then I run
-
-this and it'll use our our same data set
-
-I don't need to redownload it run again
-
-and you'll see it's more zoomed in over
-
-the 15-minute candlesticks from July 1st
-
-through July 14 so this is a fair number
-
-of trades you can look at and you can
-
-see what would have happened
-
-and let's just to verify finally that
-
-this data is correct and that the
-
-overbought and oversold conditions are
-
-similar so what is actual we can look at
-
-trading view it's often good to just
-
-verify make sure your programs right
-
-look at one that already exists that you
-
-trust so we have the 15-minute time
-
-frame for July and so let's do 15
-
-minutes on trading view and then we zoom
-
-out till July right and we can see that
-
-same spike here it's right there and
-
-then let's look at that sell-off will
-
-see that sell-off right and then I'm
-
-gonna go to indicators on trading view
-
-right and I can do relative strength
-
-all right and then add that to the chart
-
-and then you can see our side clothes
-
-there so you can see the RSI here and
-
-let's see the over sold condition right
-
-there and you see the oversold condition
-
-I guess it's right there there's another
-
-one here but it looks like it was
-
-oversold briefly here first and then
-
-let's look for an overbought condition
-
-over here yeah so this one right here
-
-and then we look will see an overbought
-
-condition right here and so yeah that
-
-all looks good
-
-we have overbought and oversold
-
-conditions our 15-minute chart looks
-
-like it has the same shape even though
-
-our scale is a little different here
-
-yeah so we verified that our RSI looks
-
-good our price date on multiple time
-
-frame looks good and we have explored
-
-and back tested the results that would
-
-happen if we use the RSI indicator on
-
-its own on different time frames you see
-
-why where it may have worked really well
-
-for the daily timeframe in the current
-
-year it didn't work that great over the
-
-course of several years and when doing
-
-it on the 15-minute candlesticks didn't
-
-work well at all and so yeah you see the
-
-importance of back testing over multiple
-
-time frames and you also see we're just
-
-using one simple indicator like RSI is
-
-not going to be enough to make a great
-
-strategy that outperforms the S&P 500
-
-for instance so now that we've shown the
-
-concept here and back tested it and had
-
-some results let's see how we would hook
-
-up an indicator a simple indicator to
-
-our UI save those settings and then
-
-actually execute those finance buy and
-
-sell orders based on this indicator so
-
-thanks a lot for watching and stay tuned
-
-for the next video
+so thanks a lot for watching and stay tuned for the next video

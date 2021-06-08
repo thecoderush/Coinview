@@ -18,7 +18,9 @@ client = Client(config.API_KEY, config.API_SECRET)
 # candlestick_writer = csv.writer(csvfile, delimiter=',')
 
 # csvfile = open('daily.csv', 'w', newline='')
-csvfile = open('all_time_daily.csv', 'w', newline='')
+# csvfile = open('all_time_daily.csv', 'w', newline='')
+csvfile = open('2020_15minutes.csv', 'w', newline='')
+# csvfile = open('2021_15minutes.csv', 'w', newline='')
 candlestick_writer = csv.writer(csvfile, delimiter=',')
 
 
@@ -35,7 +37,11 @@ candlestick_writer = csv.writer(csvfile, delimiter=',')
 
 # candlesticks = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_1DAY, "1 Jan, 2021", "7 Jun, 2021")
 
-candlesticks = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_1DAY, "1 Jan, 2017", "7 Jun, 2021")
+# candlesticks = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_1DAY, "1 Jan, 2017", "7 Jun, 2021")
+
+candlesticks = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_15MINUTE, "1 Jan, 2020", "12 Jun, 2020")
+
+# candlesticks = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_15MINUTE, "1 May, 2020", "7 Jun, 2020")
 
 # for candlestick in candlesticks:
 #   candlestick_writer.writerow(candlesticks)
